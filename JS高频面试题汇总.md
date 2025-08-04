@@ -26,7 +26,7 @@ typeof Symbol() // 'symbol'
 typeof 123n // 'bigint'
 ```
 
-2. **instanceof**：检测构造函数的prototype属性是否出现在某个实例对象的原型链上
+2. **instanceof**：检测构造函数的prototype（原型）属性是否出现在某个实例对象的原型链上
 ```javascript
 [] instanceof Array // true
 {} instanceof Object // true
@@ -339,7 +339,7 @@ fn1();
 
 #### 题目1：什么是闭包？
 **答案：**
-闭包是指有权访问另一个函数作用域中变量的函数。简单说，闭包就是能够读取其他函数内部变量的函数。
+闭包是指有函数作用域中变量的函数。简权访问另一个单说，闭包就是能够读取其他函数内部变量的函数。
 
 **闭包的特点：**
 1. 函数嵌套函数

@@ -30,11 +30,12 @@
 
 # JavaScript数据类型整体分为两大类：
 - 基本数据类型（7种）：
-- Number(数字类型)、String(字符串型)、Boolean（布尔型:true、false）、Undefined（未定义型）、Null（空类型）、Symbol、BigInt
+- Number(数字类型)、String(字符串型)、Boolean（布尔型:true、false）、Undefined（未定义型）、Null（空类型）、Symbol（特殊类数据类型、独一无二的）、BigInt（大型数据类型）
 
-- 引用数据类型：Object（对象）（包括Array、Function、Date、RegExp等）
+- 引用数据类型：Object（对象）（包括Array（数组）、Function（函数）、Date（日期）、RegExp（正则表达式）等）
 
-# 如何检测数据类型（typeof）
+# 如何检测数据类型
+一、（typeof）返回一个字符串，表示未经计算的操作数的类型
 - 1.typeof  200 //number
 - 2.typeof  "Hello Woeld" //string
 - 3.typeof  false //boolean
@@ -51,9 +52,25 @@
 - 14.typeof Symbol('id')  //Symbol
 - 15.typeof  Math //Object
  
-
- # null和undefined的区别
- > null是一个空对象，undefined表示已声明但未赋值
+---
+ > null和undefined的区别
+ - null是一个空对象，undefined表示已声明但未赋值
  - 相同点：都是假值，返回都是ture
  - 不同点：typeof null //'object'，
  typeof undefined // 'undefined'
+
+
+二、如何准确判断一个变量是否是数组
+判断数组的最佳方式是：Array.isArray（arr）  //或者  
+arr instanceof Array
+
+
+三、如何检测一个对象是否是某个特定类的实例
+obj instanceof ClassName
+
+四、最准确的类型检测方法：object.prototype.tostring.call()
+
+五、instanceof:检测构造函数的prototype（原型）属性是否出现在某个实例对象的原型链上
+[] instanceof  Array
+{} instanceof  Object
+function(){}instanceof Function
