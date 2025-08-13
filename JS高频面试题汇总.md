@@ -145,6 +145,89 @@ obj4.fn2();
   - apply：立即执行，参数以数组形式传递 `fn.apply(obj, [arg1, arg2])`
   - bind：返回改变this后的新函数，不立即执行 `fn.bind(obj, arg1, arg2)`
 
+**详细示例：**
+```javascript
+// 定义一个函数和对象
+function greet(name, age) {
+  console.log(`Hello, I'm ${name}, ${age} years old.`);
+  console.log('this指向:', this);
+  console.log('this.name:', this.name);
+}
+
+const person = {
+  name: '张三',
+  age: 25
+};
+
+const student = {
+  name: '李四',
+  age: 20
+};
+
+// 1. call方法 - 立即执行，参数逐个传递
+console.log('=== call方法示例 ===');
+greet.call(person, '王五', 30);
+// 输出：
+// Hello, I'm 王五, 30 years old.
+// this指向: {name: '张三', age: 25}
+// this.name: 张三
+
+// 2. apply方法 - 立即执行，参数以数组形式传递
+console.log('=== apply方法示例 ===');
+greet.apply(student, ['赵六', 35]);
+// 输出：
+// Hello, I'm 赵六, 35 years old.
+// this指向: {name: '李四', age: 20}
+// this.name: 李四
+
+// 3. bind方法 - 返回新函数，不立即执行
+console.log('=== bind方法示例 ===');
+const boundGreet = greet.bind(person, '孙七', 28);
+console.log('bind后返回新函数，但未执行');
+boundGreet(); // 现在才执行
+// 输出：
+// Hello, I'm 孙七, 28 years old.
+// this指向: {name: '张三', age: 25}
+// this.name: 张三
+
+// 实际应用场景示例
+console.log('=== 实际应用场景 ===');
+
+// 场景1：借用数组方法
+const arrayLike = {
+  0: 'a',
+  1: 'b',
+  2: 'c',
+  length: 3
+};
+
+// 使用call借用数组的push方法
+Array.prototype.push.call(arrayLike, 'd');
+console.log('借用push后:', arrayLike); // {0: 'a', 1: 'b', 2: 'c', 3: 'd', length: 4}
+
+// 场景2：使用apply求数组最大值
+const numbers = [1, 5, 3, 9, 2];
+const max = Math.max.apply(null, numbers);
+console.log('数组最大值:', max); // 9
+
+// 场景3：使用bind创建事件处理函数
+const button = document.createElement('button');
+button.textContent = '点击我';
+
+// 使用bind确保事件处理函数中的this指向特定对象
+const handler = {
+  name: '按钮处理器',
+  handleClick: function(event) {
+    console.log('按钮被点击了！');
+    console.log('this.name:', this.name);
+    console.log('事件对象:', event);
+  }
+};
+
+// bind确保this指向handler对象
+button.addEventListener('click', handler.handleClick.bind(handler));
+```
+
 #### 题目2：手写实现call方法
 **答案：**
 ```javascript

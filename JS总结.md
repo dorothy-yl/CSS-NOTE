@@ -788,7 +788,7 @@ window.addEventListener('unhandledrejection', function(event) {
 这些面试题涵盖了JavaScript的核心概念和常见应用场景，建议深入理解每个概念的原理和实际应用。
 
 # 闭包
-- 概念：一个函数对周围状态的引用捆绑在一起，内层函数中访问到其外层函数的作用域
+- 概念：一个函数对周围态状的引用捆绑在一起，内层函数中访问到其外层函数的作用域
 - 简单理解：闭包=里层函数+引用外层函数变量
 
 
@@ -815,11 +815,12 @@ window.addEventListener('unhandledrejection', function(event) {
 3.宏任务的异步代码（宿主环境） Script(代码块)  setTimeout/setInterval定时器  setImmediate定时器
 
 
-
-
-
 # 什么是原型
 - 函数都有prototype属性，称之为原型，也称之为原型对象；原型可以放一些属性和方法，共享给实例对象使用；原型可以继承
 
 # 原型链
   - 对象有_proto_属性，这个属性指向它的原型对象，原型对象也是对象，也有_proto_属性，指向原型对象的原型对象，这样一层一层形成的链式结构称之为原型链，最顶层找不到则返回nul
+  
+
+
+ 交互两个变量：（ temp临时变量）
