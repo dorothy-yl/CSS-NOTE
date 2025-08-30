@@ -6,6 +6,7 @@
 
 **Vue 2.x 响应式原理：**
 - 使用 `Object.defineProperty()` 劫持对象属性的 getter 和 setter
+  (get 函数不能接收参数，必须返回一个值。set 函数接收一个参数（即等号右边的值）)
 - 通过 Dep 收集依赖，Watcher 监听数据变化
 - 数组通过重写原型方法实现响应式
 - **缺陷**：无法监听对象属性的添加删除，数组索引和长度变化
@@ -183,7 +184,7 @@ const fullName2 = computed({
 ### 9. watch 与 watchEffect
 
 **watch：**
-- 需要明确指定监视的数据源
+- 需要明确指定监视的数据源 
 - 可以访问新值和旧值
 - 懒执行（可配置 immediate）
 
@@ -192,6 +193,16 @@ const fullName2 = computed({
 - 立即执行
 - 无法访问旧值
 
+
+ 官网：立即运行一个函数，同时响应式地追踪其依赖，并在依赖更改时重新执行该函数。
+
+* `watch`对比`watchEffect`
+
+  > 1. 都能监听响应式数据的变化，不同的是监听数据变化的方式不同
+  >
+  > 2. `watch`：要明确指出监视的数据
+  >
+  > 3. `watchEffect`：不用明确指出监视的数据（函数中用到哪些属性，那就监视哪些属性）。
 ```javascript
 // watch
 watch(source, (newVal, oldVal) => {
@@ -798,3 +809,645 @@ export default defineConfig({
 - 熟悉 Vue3 生态系统（Vite、Pinia、VueRouter 4等）
 - 关注最新特性和发展趋势
 - 多写代码练习，理论结合实践
+
+## 第十一部分：高频面试题
+
+### 36. 操作DOM元素在哪个生命周期函数执行？
+
+**Vue 2.x：**
+- **mounted**：组件挂载完成后，DOM已经渲染完成，可以安全操作DOM
+- **updated**：组件更新完成后，DOM已更新，可以操作更新后的DOM
+
+**Vue 3.x：**
+- **onMounted**：对应Vue2的mounted
+- **onUpdated**：对应Vue2的updated
+
+```javascript
+// Vue2 Options API
+export default {
+  mounted() {
+    // DOM已渲染完成，可以操作DOM
+    this.$refs.myElement.style.color = 'red'
+  },
+  updated() {
+    // 组件更新后操作DOM
+    this.$refs.myElement.scrollTop = 0
+  }
+}
+
+// Vue3 Composition API
+import { onMounted, onUpdated } from 'vue'
+
+onMounted(() => {
+  // DOM已渲染完成
+  const element = document.getElementById('myElement')
+  element.style.color = 'red'
+})
+
+onUpdated(() => {
+  // 组件更新后
+  const element = document.getElementById('myElement')
+  element.scrollTop = 0
+})
+```
+
+### 37. 网络请求后端API写在哪个生命周期函数里面？
+
+**推荐位置：**
+- **created/mounted**（Vue2）或 **onMounted**（Vue3）
+
+**原因：**
+1. **created**：组件实例创建完成，数据观测、属性和方法已配置，但DOM未挂载
+2. **mounted**：DOM挂载完成，适合需要操作DOM的API请求
+
+```javascript
+// Vue2 - 推荐在created中
+export default {
+  data() {
+    return {
+      userList: []
+    }
+  },
+  async created() {
+    try {
+      const response = await fetch('/api/users')
+      this.userList = await response.json()
+    } catch (error) {
+      console.error('获取用户列表失败:', error)
+    }
+  }
+}
+
+// Vue3 - 推荐在onMounted中
+import { ref, onMounted } from 'vue'
+
+const userList = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/api/users')
+    userList.value = await response.json()
+  } catch (error) {
+    console.error('获取用户列表失败:', error)
+  }
+})
+```
+
+### 38. 移除定时器、移除监听函数在哪个生命周期执行？
+
+**Vue 2.x：**
+- **beforeDestroy** 或 **destroyed**
+
+**Vue 3.x：**
+- **onBeforeUnmount** 或 **onUnmounted**
+
+```javascript
+// Vue2
+export default {
+  data() {
+    return {
+      timer: null,
+      eventHandler: null
+    }
+  },
+  mounted() {
+    // 设置定时器
+    this.timer = setInterval(() => {
+      console.log('定时器执行')
+    }, 1000)
+    
+    // 添加事件监听
+    this.eventHandler = () => console.log('事件触发')
+    window.addEventListener('resize', this.eventHandler)
+  },
+  beforeDestroy() {
+    // 清理定时器
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
+    }
+    
+    // 移除事件监听
+    if (this.eventHandler) {
+      window.removeEventListener('resize', this.eventHandler)
+      this.eventHandler = null
+    }
+  }
+}
+
+// Vue3
+import { onMounted, onBeforeUnmount } from 'vue'
+
+let timer = null
+let eventHandler = null
+
+onMounted(() => {
+  // 设置定时器
+  timer = setInterval(() => {
+    console.log('定时器执行')
+  }, 1000)
+  
+  // 添加事件监听
+  eventHandler = () => console.log('事件触发')
+  window.addEventListener('resize', eventHandler)
+})
+
+onBeforeUnmount(() => {
+  // 清理定时器
+  if (timer) {
+    clearInterval(timer)
+    timer = null
+  }
+  
+  // 移除事件监听
+  if (eventHandler) {
+    window.removeEventListener('resize', eventHandler)
+    eventHandler = null
+  }
+})
+```
+
+### 39. Vue2和Vue3方法名称有哪些变动？
+
+| Vue 2.x | Vue 3.x | 说明 |
+|---------|---------|------|
+| `beforeCreate` | `setup` | 新增setup函数，在beforeCreate之前执行 |
+| `created` | `setup` | setup函数替代created |
+| `beforeMount` | `onBeforeMount` | 挂载前 |
+| `mounted` | `onMounted` | 挂载后 |
+| `beforeUpdate` | `onBeforeUpdate` | 更新前 |
+| `updated` | `onUpdated` | 更新后 |
+| `beforeDestroy` | `onBeforeUnmount` | 销毁前（名称更语义化） |
+| `destroyed` | `onUnmounted` | 销毁后（名称更语义化） |
+| `activated` | `onActivated` | keep-alive激活 |
+| `deactivated` | `onDeactivated` | keep-alive停用 |
+| `errorCaptured` | `onErrorCaptured` | 错误捕获 |
+
+```javascript
+// Vue2 生命周期
+export default {
+  beforeCreate() { /* ... */ },
+  created() { /* ... */ },
+  beforeMount() { /* ... */ },
+  mounted() { /* ... */ },
+  beforeUpdate() { /* ... */ },
+  updated() { /* ... */ },
+  beforeDestroy() { /* ... */ },
+  destroyed() { /* ... */ }
+}
+
+// Vue3 生命周期
+import { 
+  onBeforeMount, 
+  onMounted, 
+  onBeforeUpdate, 
+  onUpdated, 
+  onBeforeUnmount, 
+  onUnmounted 
+} from 'vue'
+
+onBeforeMount(() => { /* ... */ })
+onMounted(() => { /* ... */ })
+onBeforeUpdate(() => { /* ... */ })
+onUpdated(() => { /* ... */ })
+onBeforeUnmount(() => { /* ... */ })
+onUnmounted(() => { /* ... */ })
+```
+
+### 40. Diff算法是如何做比较的？（3点核心）
+
+**Diff算法的三个核心策略：**
+
+1. **同层比较，不跨层级**
+   - 只比较同一层级的节点
+   - 不会跨层级比较，提高性能
+
+2. **双端比较（Vue2）或快速Diff（Vue3）**
+   - **Vue2双端比较**：同时从新旧子节点的两端开始比较
+   - **Vue3快速Diff**：先处理相同的前置和后置节点，再处理中间部分
+
+3. **key值优化**
+   - 使用key标识节点，避免不必要的DOM操作
+   - 相同key的节点会被复用
+
+```javascript
+// Vue2 Diff算法核心逻辑（简化版）
+function patchChildren(oldChildren, newChildren) {
+  let oldStartIdx = 0
+  let oldEndIdx = oldChildren.length - 1
+  let newStartIdx = 0
+  let newEndIdx = newChildren.length - 1
+  
+  let oldStartVNode = oldChildren[oldStartIdx]
+  let oldEndVNode = oldChildren[oldEndIdx]
+  let newStartVNode = newChildren[newStartIdx]
+  let newEndVNode = newChildren[newEndIdx]
+  
+  while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+    // 1. 比较旧头和新头
+    if (sameVNode(oldStartVNode, newStartVNode)) {
+      patchVNode(oldStartVNode, newStartVNode)
+      oldStartVNode = oldChildren[++oldStartIdx]
+      newStartVNode = newChildren[++newStartIdx]
+    }
+    // 2. 比较旧尾和新尾
+    else if (sameVNode(oldEndVNode, newEndVNode)) {
+      patchVNode(oldEndVNode, newEndVNode)
+      oldEndVNode = oldChildren[--oldEndIdx]
+      newEndVNode = newChildren[--newEndIdx]
+    }
+    // 3. 比较旧头和新尾
+    else if (sameVNode(oldStartVNode, newEndVNode)) {
+      patchVNode(oldStartVNode, newEndVNode)
+      // 移动DOM节点
+      moveVNode(oldStartVNode, oldEndVNode.nextSibling)
+      oldStartVNode = oldChildren[++oldStartIdx]
+      newEndVNode = newChildren[--newEndIdx]
+    }
+    // 4. 比较旧尾和新头
+    else if (sameVNode(oldEndVNode, newStartVNode)) {
+      patchVNode(oldEndVNode, newStartVNode)
+      // 移动DOM节点
+      moveVNode(oldEndVNode, oldStartVNode)
+      oldEndVNode = oldChildren[--oldEndIdx]
+      newStartVNode = newChildren[++newStartIdx]
+    }
+    // 5. 都不匹配，创建新节点
+    else {
+      createVNode(newStartVNode)
+      newStartVNode = newChildren[++newStartIdx]
+    }
+  }
+}
+```
+
+### 41. 响应式原理：缺陷、Vue3改为Proxy有什么区别？
+
+**Vue2 Object.defineProperty的缺陷：**
+
+1. **无法监听对象属性的添加和删除**
+2. **无法监听数组索引和length变化**
+3. **需要递归遍历对象的所有属性**
+4. **性能较差，内存占用大**
+
+**Vue3 Proxy的优势：**
+
+1. **可以监听动态新增的属性**
+2. **可以监听数组索引和length变化**
+3. **不需要递归遍历，性能更好**
+4. **内存占用更小**
+
+```javascript
+// Vue2 的缺陷演示
+const obj = {}
+Object.defineProperty(obj, 'name', {
+  get() { return this._name },
+  set(val) { this._name = val }
+})
+
+obj.name = 'Vue2' // 可以监听
+obj.age = 18      // 无法监听，不会触发setter
+
+// Vue3 Proxy 的优势演示
+const obj = { name: 'Vue3' }
+const proxy = new Proxy(obj, {
+  get(target, key, receiver) {
+    console.log('get:', key)
+    return Reflect.get(target, key, receiver)
+  },
+  set(target, key, value, receiver) {
+    console.log('set:', key, value)
+    return Reflect.set(target, key, value, receiver)
+  },
+  deleteProperty(target, key) {
+    console.log('delete:', key)
+    return Reflect.deleteProperty(target, key)
+  }
+})
+
+proxy.name = 'Vue3'    // 触发set
+proxy.age = 18         // 触发set，新增属性也能监听
+delete proxy.name       // 触发deleteProperty
+```
+
+### 42. 浏览器不兼容问题
+
+**Vue2 兼容性：**
+- IE9+（需要polyfill）
+- 现代浏览器完全支持
+
+**Vue3 兼容性：**
+- IE不支持（需要Vue2）
+- 现代浏览器完全支持
+- 需要ES2015+环境
+
+**解决方案：**
+
+```javascript
+// 1. 使用polyfill（Vue2）
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
+
+// 2. 条件编译（Vue3）
+// vite.config.js
+export default defineConfig({
+  build: {
+    target: 'es2015', // 设置目标环境
+    polyfills: ['es.promise', 'es.symbol'] // 添加polyfill
+  }
+})
+
+// 3. 浏览器检测
+if (!window.Promise) {
+  // 降级到Vue2或提示用户升级浏览器
+  console.warn('当前浏览器不支持Vue3，请升级浏览器')
+}
+```
+
+### 43. Dep算法、Proxy、Reflect对象分别是什么？
+
+**1. Dep（依赖收集器）：**
+- Vue2响应式系统的核心，负责收集和通知依赖
+- 每个响应式属性都有一个Dep实例
+
+```javascript
+// Dep类的简化实现
+class Dep {
+  constructor() {
+    this.subscribers = new Set()
+  }
+  
+  depend() {
+    if (Dep.target) {
+      this.subscribers.add(Dep.target)
+    }
+  }
+  
+  notify() {
+    this.subscribers.forEach(watcher => {
+      watcher.update()
+    })
+  }
+}
+
+// 全局的当前Watcher
+Dep.target = null
+```
+
+**2. Proxy（代理对象）：**
+- ES6新增的元编程特性
+- 可以拦截对象的基本操作（get、set、delete等）
+- Vue3响应式系统的核心
+
+```javascript
+// Proxy基本用法
+const target = { name: 'Vue3' }
+const proxy = new Proxy(target, {
+  get(target, prop, receiver) {
+    console.log(`获取属性: ${prop}`)
+    return target[prop]
+  },
+  set(target, prop, value, receiver) {
+    console.log(`设置属性: ${prop} = ${value}`)
+    target[prop] = value
+    return true
+  }
+})
+
+proxy.name  // 输出: 获取属性: name
+proxy.age = 18  // 输出: 设置属性: age = 18
+```
+
+**3. Reflect（反射对象）：**
+- ES6新增的全局对象
+- 提供操作对象的默认行为
+- 与Proxy配合使用，确保操作的一致性
+
+```javascript
+// Reflect基本用法
+const obj = { name: 'Vue3' }
+
+// 获取属性
+console.log(Reflect.get(obj, 'name'))  // 'Vue3'
+
+// 设置属性
+Reflect.set(obj, 'age', 18)
+console.log(obj.age)  // 18
+
+// 删除属性
+Reflect.deleteProperty(obj, 'age')
+console.log(obj.hasOwnProperty('age'))  // false
+
+// 与Proxy配合使用
+const proxy = new Proxy(obj, {
+  get(target, prop, receiver) {
+    // 使用Reflect确保默认行为
+    return Reflect.get(target, prop, receiver)
+  },
+  set(target, prop, value, receiver) {
+    // 使用Reflect确保默认行为
+    return Reflect.set(target, prop, value, receiver)
+  }
+})
+```
+
+### 44. watch写出来
+
+**Vue2 Options API：**
+
+```javascript
+export default {
+  data() {
+    return {
+      message: 'Hello',
+      user: { name: 'John', age: 25 }
+    }
+  },
+  watch: {
+    // 监听简单数据
+    message(newVal, oldVal) {
+      console.log('message changed:', oldVal, '->', newVal)
+    },
+    
+    // 深度监听对象
+    user: {
+      handler(newVal, oldVal) {
+        console.log('user changed:', oldVal, '->', newVal)
+      },
+      deep: true,
+      immediate: true
+    },
+    
+    // 监听对象特定属性
+    'user.name'(newVal, oldVal) {
+      console.log('user.name changed:', oldVal, '->', newVal)
+    }
+  }
+}
+```
+
+**Vue3 Composition API：**
+
+```javascript
+import { ref, reactive, watch, watchEffect } from 'vue'
+
+const message = ref('Hello')
+const user = reactive({ name: 'John', age: 25 })
+
+// 1. 基础watch
+watch(message, (newVal, oldVal) => {
+  console.log('message changed:', oldVal, '->', newVal)
+})
+
+// 2. 监听多个数据源
+watch([message, () => user.name], ([newMessage, newName], [oldMessage, oldName]) => {
+  console.log('message or name changed')
+})
+
+// 3. 深度监听对象
+watch(user, (newVal, oldVal) => {
+  console.log('user changed:', oldVal, '->', newVal)
+}, { deep: true, immediate: true })
+
+// 4. 监听对象特定属性
+watch(() => user.name, (newVal, oldVal) => {
+  console.log('user.name changed:', oldVal, '->', newVal)
+})
+
+// 5. watchEffect（自动追踪依赖）
+watchEffect(() => {
+  console.log('message:', message.value)
+  console.log('user name:', user.name)
+})
+
+// 6. 停止监听
+const stopWatch = watch(message, (newVal) => {
+  console.log(newVal)
+})
+
+// 在需要时停止
+stopWatch()
+```
+
+### 45. Pinia插槽
+
+**Pinia插槽（Slots）的使用：**
+
+```javascript
+// store/counter.js
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+
+export const useCounterStore = defineStore('counter', () => {
+  const count = ref(0)
+  const doubleCount = computed(() => count.value * 2)
+  
+  function increment() {
+    count.value++
+  }
+  
+  function decrement() {
+    count.value--
+  }
+  
+  return {
+    count,
+    doubleCount,
+    increment,
+    decrement
+  }
+})
+
+// 组件中使用
+<template>
+  <div>
+    <h2>计数器: {{ counter.count }}</h2>
+    <p>双倍: {{ counter.doubleCount }}</p>
+    <button @click="counter.increment">+</button>
+    <button @click="counter.decrement">-</button>
+  </div>
+</template>
+
+<script setup>
+import { useCounterStore } from '@/stores/counter'
+
+const counter = useCounterStore()
+</script>
+```
+
+**Pinia的高级特性：**
+
+```javascript
+// 1. 状态持久化
+import { defineStore } from 'pinia'
+import { useStorage } from '@vueuse/core'
+
+export const useUserStore = defineStore('user', () => {
+  // 自动持久化到localStorage
+  const token = useStorage('token', '')
+  const userInfo = useStorage('userInfo', {})
+  
+  function login(credentials) {
+    // 登录逻辑
+    token.value = 'new-token'
+    userInfo.value = { name: 'John' }
+  }
+  
+  function logout() {
+    token.value = ''
+    userInfo.value = {}
+  }
+  
+  return { token, userInfo, login, logout }
+})
+
+// 2. 组合多个store
+import { useCounterStore } from './counter'
+import { useUserStore } from './user'
+
+export const useMainStore = defineStore('main', () => {
+  const counter = useCounterStore()
+  const user = useUserStore()
+  
+  // 组合逻辑
+  const isLoggedIn = computed(() => !!user.token.value)
+  
+  return { counter, user, isLoggedIn }
+})
+
+// 3. 插件系统
+import { createPinia } from 'pinia'
+
+const pinia = createPinia()
+
+// 添加插件
+pinia.use(({ store }) => {
+  // 为每个store添加$reset方法
+  store.$reset = () => {
+    store.$patch({})
+  }
+})
+
+// 4. 订阅store变化
+const counter = useCounterStore()
+
+// 监听store变化
+counter.$subscribe((mutation, state) => {
+  console.log('Store changed:', mutation.type, state)
+})
+
+// 监听action
+counter.$onAction(({ name, args, after, onError }) => {
+  console.log('Action started:', name, args)
+  
+  after((result) => {
+    console.log('Action succeeded:', result)
+  })
+  
+  onError((error) => {
+    console.log('Action failed:', error)
+  })
+})
+```
+
+这些高频面试题涵盖了Vue2和Vue3的核心概念、生命周期、响应式原理、性能优化等关键知识点，是面试中经常被问到的问题。建议深入理解每个概念的原理和实际应用场景。
