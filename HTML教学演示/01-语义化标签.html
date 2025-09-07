@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML5语义化标签教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* 语义化标签样式 */
+        header {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        nav {
+            background: #2c3e50;
+            padding: 1rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background: #3498db;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        article {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 5px solid #28a745;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        aside {
+            background: linear-gradient(45deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            border-left: 5px solid #f39c12;
+        }
+
+        footer {
+            background: #343a40;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .code-demo {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 5px solid #4299e1;
+        }
+
+        .visual-demo {
+            border: 3px dashed #007bff;
+            padding: 1rem;
+            margin: 1rem 0;
+            background: rgba(0,123,255,0.1);
+            border-radius: 10px;
+        }
+
+        .tag-highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #ffeaa7;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison div {
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .bad-example {
+            background: #fadbd8;
+            border: 2px solid #e74c3c;
+        }
+
+        .good-example {
+            background: #d5f4e6;
+            border: 2px solid #27ae60;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HTML5语义化标签演示 -->
+        <header>
+            <h1>🏷️ HTML5语义化标签教学</h1>
+            <p>学习如何使用语义化标签构建更好的网页结构</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#what-is">什么是语义化</a></li>
+                <li><a href="#benefits">语义化优势</a></li>
+                <li><a href="#tags">常用标签</a></li>
+                <li><a href="#examples">实例对比</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section id="what-is">
+                <h2>🎯 什么是HTML语义化？</h2>
+                <p>语义化HTML是指使用恰当的HTML标签来描述页面内容的含义，而不仅仅是外观。</p>
+                
+                <div class="visual-demo">
+                    <strong>核心理念：</strong>让HTML标签的使用符合其语义，用正确的标签做正确的事情。
+                </div>
+
+                <div class="code-demo">
+<!-- 语义化的思考方式 -->
+这是页面标题 → 使用 &lt;h1&gt;
+这是导航菜单 → 使用 &lt;nav&gt;
+这是主要内容 → 使用 &lt;main&gt;
+这是一篇文章 → 使用 &lt;article&gt;
+这是侧边信息 → 使用 &lt;aside&gt;
+                </div>
+            </section>
+
+            <section id="benefits">
+                <h2>✨ 语义化的优势</h2>
+                
+                <article>
+                    <h3>🔍 SEO优化</h3>
+                    <p>搜索引擎更容易理解页面结构和内容层次，提升搜索排名。</p>
+                </article>
+
+                <article>
+                    <h3>♿ 无障碍访问</h3>
+                    <p>屏幕阅读器等辅助设备能更好地解析页面内容，帮助视障用户。</p>
+                </article>
+
+                <article>
+                    <h3>👥 团队协作</h3>
+                    <p>代码结构清晰，团队成员更容易理解和维护。</p>
+                </article>
+
+                <article>
+                    <h3>📱 设备兼容</h3>
+                    <p>不同设备和浏览器能更好地渲染和理解页面内容。</p>
+                </article>
+            </section>
+
+            <section id="tags">
+                <h2>🏗️ HTML5新增语义化标签</h2>
+
+                <div class="visual-demo">
+                    <h3>页面结构标签</h3>
+                    <ul>
+                        <li><span class="tag-highlight">&lt;header&gt;</span> - 页面或章节头部</li>
+                        <li><span class="tag-highlight">&lt;nav&gt;</span> - 导航链接区域</li>
+                        <li><span class="tag-highlight">&lt;main&gt;</span> - 页面主要内容</li>
+                        <li><span class="tag-highlight">&lt;section&gt;</span> - 文档章节</li>
+                        <li><span class="tag-highlight">&lt;article&gt;</span> - 独立的文章内容</li>
+                        <li><span class="tag-highlight">&lt;aside&gt;</span> - 侧边栏内容</li>
+                        <li><span class="tag-highlight">&lt;footer&gt;</span> - 页面或章节底部</li>
+                    </ul>
+                </div>
+
+                <div class="visual-demo">
+                    <h3>内容标签</h3>
+                    <ul>
+                        <li><span class="tag-highlight">&lt;figure&gt;</span> - 图片、图表等媒体内容</li>
+                        <li><span class="tag-highlight">&lt;figcaption&gt;</span> - 媒体内容标题</li>
+                        <li><span class="tag-highlight">&lt;mark&gt;</span> - 高亮标记文本</li>
+                        <li><span class="tag-highlight">&lt;time&gt;</span> - 时间和日期</li>
+                        <li><span class="tag-highlight">&lt;details&gt;</span> - 可折叠的详细信息</li>
+                        <li><span class="tag-highlight">&lt;summary&gt;</span> - details元素的标题</li>
+                    </ul>
+                </div>
+
+                <div class="code-demo">
+&lt;!-- 典型的HTML5语义化页面结构 --&gt;
+&lt;header&gt;
+  &lt;h1&gt;网站标题&lt;/h1&gt;
+  &lt;nav&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/"&gt;首页&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/about"&gt;关于&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;
+
+&lt;main&gt;
+  &lt;article&gt;
+    &lt;header&gt;
+      &lt;h2&gt;文章标题&lt;/h2&gt;
+      &lt;time datetime="2024-01-01"&gt;2024年1月1日&lt;/time&gt;
+    &lt;/header&gt;
+    &lt;p&gt;文章内容...&lt;/p&gt;
+  &lt;/article&gt;
+  
+  &lt;aside&gt;
+    &lt;h3&gt;相关链接&lt;/h3&gt;
+    &lt;ul&gt;...&lt;/ul&gt;
+  &lt;/aside&gt;
+&lt;/main&gt;
+
+&lt;footer&gt;
+  &lt;p&gt;&copy; 2024 版权信息&lt;/p&gt;
+&lt;/footer&gt;
+                </div>
+            </section>
+
+            <section id="examples">
+                <h2>📊 语义化对比示例</h2>
+
+                <div class="comparison">
+                    <div class="bad-example">
+                        <h3>❌ 非语义化写法</h3>
+                        <div class="code-demo">
+&lt;div class="header"&gt;
+  &lt;div class="title"&gt;网站标题&lt;/div&gt;
+  &lt;div class="menu"&gt;
+    &lt;div&gt;首页&lt;/div&gt;
+    &lt;div&gt;关于&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="content"&gt;
+  &lt;div class="post"&gt;
+    &lt;div class="post-title"&gt;文章标题&lt;/div&gt;
+    &lt;div class="post-content"&gt;内容...&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="footer"&gt;
+  &lt;div&gt;版权信息&lt;/div&gt;
+&lt;/div&gt;
+                        </div>
+                        <p><strong>问题：</strong>所有元素都是div，没有语义含义</p>
+                    </div>
+
+                    <div class="good-example">
+                        <h3>✅ 语义化写法</h3>
+                        <div class="code-demo">
+&lt;header&gt;
+  &lt;h1&gt;网站标题&lt;/h1&gt;
+  &lt;nav&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/"&gt;首页&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/about"&gt;关于&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;
+
+&lt;main&gt;
+  &lt;article&gt;
+    &lt;h2&gt;文章标题&lt;/h2&gt;
+    &lt;p&gt;文章内容...&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/main&gt;
+
+&lt;footer&gt;
+  &lt;p&gt;&copy; 2024 版权信息&lt;/p&gt;
+&lt;/footer&gt;
+                        </div>
+                        <p><strong>优势：</strong>标签语义清晰，结构一目了然</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>🔬 实际应用演示</h2>
+                
+                <aside>
+                    <h3>💡 提示</h3>
+                    <p>当前页面就是使用语义化标签构建的！查看页面源码可以看到完整的语义化结构。</p>
+                </aside>
+
+                <details>
+                    <summary><strong>点击查看：figure和figcaption示例</strong></summary>
+                    <figure style="text-align: center; margin: 1rem 0;">
+                        <div style="width: 200px; height: 120px; background: linear-gradient(45deg, #ff6b6b, #4ecdc4); margin: 0 auto; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                            示例图片
+                        </div>
+                        <figcaption style="margin-top: 0.5rem; color: #666; font-style: italic;">
+                            这是使用figure和figcaption标签的图片说明
+                        </figcaption>
+                    </figure>
+                </details>
+
+                <p>文章发布时间：<time datetime="2024-01-01T10:30:00">2024年1月1日 上午10:30</time></p>
+                
+                <p>这段文字包含<mark>高亮标记的重要内容</mark>，展示mark标签的使用。</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>🎓 HTML5语义化标签教学演示</p>
+            <p>让HTML更具语义，让网页更易理解</p>
+        </footer>
+    </div>
+
+    <script>
+        // 平滑滚动
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        console.log('✅ 语义化标签页面加载完成！');
+    </script>
+</body>
+</html>

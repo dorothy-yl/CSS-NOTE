@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>伪类与伪元素教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(45deg, #ff6b6b 0%, #4ecdc4 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 20px
+            );
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        header h1 {
+            position: relative;
+            z-index: 1;
+        }
+
+        nav {
+            background: #2c3e50;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        nav a:hover::before {
+            left: 100%;
+        }
+
+        nav a:hover {
+            background: #3498db;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .pseudo-class-section {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-left: 5px solid #667eea;
+        }
+
+        .pseudo-element-section {
+            background: linear-gradient(135deg, #ff6b6b20, #4ecdc420);
+            border-left: 5px solid #ff6b6b;
+        }
+
+        h2 {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            position: relative;
+        }
+
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        /* 伪类演示样式 */
+        .pseudo-class-demo {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .demo-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .demo-list li {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* :hover 伪类 */
+        .demo-list li:hover {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: translateX(10px);
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* :first-child 伪类 */
+        .demo-list li:first-child {
+            border-color: #28a745;
+            border-width: 3px;
+        }
+
+        .demo-list li:first-child::before {
+            content: "👑";
+            margin-right: 0.5rem;
+        }
+
+        /* :last-child 伪类 */
+        .demo-list li:last-child {
+            border-color: #dc3545;
+            border-width: 3px;
+        }
+
+        .demo-list li:last-child::after {
+            content: "🏁";
+            margin-left: 0.5rem;
+        }
+
+        /* :nth-child 伪类 */
+        .demo-list li:nth-child(even) {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .demo-list li:nth-child(3n) {
+            border-left: 5px solid #ffc107;
+        }
+
+        /* 链接伪类演示 */
+        .link-demo {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .demo-link {
+            color: #007bff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .demo-link:link {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-color: #bbdefb;
+        }
+
+        .demo-link:visited,
+        .demo-link.visited-demo {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            border-color: #ce93d8;
+        }
+
+        .demo-link:hover {
+            background: #2196f3;
+            color: white;
+            transform: scale(1.05);
+            border-color: #1976d2;
+        }
+
+        .demo-link:active {
+            background: #1565c0;
+            transform: scale(0.95);
+        }
+
+        /* 表单伪类演示 */
+        .form-demo {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .form-demo input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .form-demo input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            transform: scale(1.02);
+        }
+
+        .form-demo input:valid {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .form-demo input:invalid {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        /* 伪元素演示 */
+        .pseudo-element-demo {
+            margin: 2rem 0;
+        }
+
+        .before-after-demo {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+            text-align: center;
+            position: relative;
+            border: 3px dashed #667eea;
+        }
+
+        .before-after-demo::before {
+            content: "✨ BEFORE";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .before-after-demo::after {
+            content: "AFTER 🎉";
+            position: absolute;
+            bottom: -15px;
+            right: 20px;
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .first-letter-demo::first-letter {
+            font-size: 4em;
+            font-weight: bold;
+            float: left;
+            line-height: 1;
+            margin: 0.1em 0.1em 0.1em 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .first-line-demo::first-line {
+            font-weight: bold;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .selection-demo::selection {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+        }
+
+        /* 代码展示 */
+        .code-demo {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 5px solid #4299e1;
+            position: relative;
+        }
+
+        .code-demo::before {
+            content: "CSS";
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            background: #4299e1;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .comparison-table td {
+            padding: 1.2rem;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+
+        /* 交互式演示 */
+        .interactive-demo {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .demo-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-button::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transition: all 0.6s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .demo-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .demo-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .demo-button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 伪类与伪元素教学</h1>
+            <p>深入学习CSS伪类和伪元素的使用技巧</p>
+        </header>
+
+        <nav>
+            <a href="#pseudo-classes">伪类详解</a>
+            <a href="#pseudo-elements">伪元素详解</a>
+            <a href="#comparison">区别对比</a>
+            <a href="#examples">实战应用</a>
+            <a href="#interactive">交互演示</a>
+        </nav>
+
+        <main>
+            <section id="pseudo-classes" class="section pseudo-class-section">
+                <h2>🎯 伪类 (Pseudo-classes)</h2>
+                <p><strong>伪类用于选择处于特定状态的元素，以单冒号(:)开头</strong></p>
+
+                <h3>🖱️ 用户交互伪类</h3>
+                <div class="link-demo">
+                    <strong>试试点击和悬停这些链接：</strong><br>
+                    <a href="javascript:void(0)" class="demo-link">普通链接 (:link)</a>
+                    <a href="javascript:void(0)" class="demo-link visited-demo">已访问链接 (:visited)</a>
+                    <a href="javascript:void(0)" class="demo-link">悬停效果 (:hover)</a>
+                    <a href="javascript:void(0)" class="demo-link">激活状态 (:active)</a>
+                    <br><small style="color: #666; margin-top: 0.5rem; display: block;">
+                        💡 提示：由于浏览器安全限制，:visited效果用CSS类模拟显示
+                    </small>
+                </div>
+
+                <div class="code-demo">
+/* 链接状态伪类 */
+a:link    { color: #007bff; }     /* 未访问的链接 */
+a:visited { color: #6f42c1; }     /* 已访问的链接 */
+a:hover   { color: #0056b3; }     /* 鼠标悬停 */
+a:active  { color: #004085; }     /* 激活状态 */
+                </div>
+
+                <h3>📝 表单伪类</h3>
+                <div class="form-demo">
+                    <label>测试输入框（输入邮箱格式）：</label>
+                    <input type="email" placeholder="输入邮箱观察颜色变化">
+                    <input type="text" placeholder="获取焦点时的效果" required>
+                </div>
+
+                <div class="code-demo">
+/* 表单伪类 */
+input:focus   { border-color: #007bff; }    /* 获得焦点 */
+input:valid   { border-color: #28a745; }    /* 验证通过 */
+input:invalid { border-color: #dc3545; }    /* 验证失败 */
+input:required{ background: #fff3cd; }      /* 必填字段 */
+                </div>
+
+                <h3>👶 结构伪类</h3>
+                <div class="pseudo-class-demo">
+                    <strong>观察每个列表项的不同样式：</strong>
+                    <ul class="demo-list">
+                        <li>第一个元素 (:first-child)</li>
+                        <li>第二个元素 (偶数 :nth-child(even))</li>
+                        <li>第三个元素 (3的倍数)</li>
+                        <li>第四个元素 (偶数)</li>
+                        <li>第五个元素 (normal)</li>
+                        <li>最后一个元素 (:last-child)</li>
+                    </ul>
+                </div>
+
+                <div class="code-demo">
+/* 结构伪类 */
+li:first-child     { border-color: #28a745; }
+li:last-child      { border-color: #dc3545; }
+li:nth-child(even) { background: #f8f9fa; }
+li:nth-child(3n)   { border-left: 5px solid #ffc107; }
+li:hover           { transform: translateX(10px); }
+                </div>
+            </section>
+
+            <section id="pseudo-elements" class="section pseudo-element-section">
+                <h2>✨ 伪元素 (Pseudo-elements)</h2>
+                <p><strong>伪元素用于创建不存在于DOM中的虚拟元素，以双冒号(::)开头</strong></p>
+
+                <h3>🎨 ::before 和 ::after</h3>
+                <div class="before-after-demo">
+                    <strong>这个框使用了 ::before 和 ::after 伪元素</strong><br>
+                    查看左上角和右下角的装饰元素
+                </div>
+
+                <div class="code-demo">
+/* ::before 和 ::after 伪元素 */
+.demo::before {
+    content: "✨ BEFORE";
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    /* 更多样式... */
+}
+
+.demo::after {
+    content: "AFTER 🎉";
+    position: absolute;
+    bottom: -15px;
+    right: 20px;
+    /* 样式设置... */
+}
+                </div>
+
+                <h3>📝 文本伪元素</h3>
+                <div class="pseudo-element-demo">
+                    <p class="first-letter-demo">
+                        这段文字使用了::first-letter伪元素，首字母会显示特殊的样式效果。伪元素让我们能够对文本的特定部分进行精确的样式控制。
+                    </p>
+                    
+                    <p class="first-line-demo">
+                        这段文字使用了::first-line伪元素，第一行会显示不同的样式。
+                        后续的文字行会保持正常的样式显示。
+                    </p>
+                    
+                    <p class="selection-demo">
+                        选中这段文字试试！使用了::selection伪元素自定义选中时的背景颜色。
+                    </p>
+                </div>
+
+                <div class="code-demo">
+/* 文本伪元素 */
+p::first-letter {
+    font-size: 4em;
+    font-weight: bold;
+    float: left;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+p::first-line {
+    font-weight: bold;
+    color: #667eea;
+    text-transform: uppercase;
+}
+
+p::selection {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    color: white;
+}
+                </div>
+            </section>
+
+            <section id="comparison" class="section">
+                <h2>⚖️ 伪类 vs 伪元素对比</h2>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>特性</th>
+                            <th>伪类 (Pseudo-classes)</th>
+                            <th>伪元素 (Pseudo-elements)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>语法标识</strong></td>
+                            <td>单冒号 <code>:</code></td>
+                            <td>双冒号 <code>::</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>主要功能</strong></td>
+                            <td>选择特定状态的现有元素</td>
+                            <td>创建虚拟的新元素</td>
+                        </tr>
+                        <tr>
+                            <td><strong>是否添加内容</strong></td>
+                            <td>❌ 不能添加内容</td>
+                            <td>✅ 可以通过 content 添加</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DOM中是否存在</strong></td>
+                            <td>✅ 选择已存在的元素</td>
+                            <td>❌ 创建虚拟元素</td>
+                        </tr>
+                        <tr>
+                            <td><strong>常见示例</strong></td>
+                            <td>:hover, :focus, :first-child</td>
+                            <td>::before, ::after, ::first-letter</td>
+                        </tr>
+                        <tr>
+                            <td><strong>使用场景</strong></td>
+                            <td>交互效果、状态样式</td>
+                            <td>装饰元素、文本效果</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="background: #d1ecf1; padding: 1.5rem; border-radius: 10px; border-left: 5px solid #0dcaf0; margin: 2rem 0;">
+                    <h3>💡 记忆技巧</h3>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>伪类：</strong>":选择已有的" - 选择已存在元素的特定状态</li>
+                        <li><strong>伪元素：</strong>"::创建新的" - 创建页面上不存在的虚拟元素</li>
+                        <li><strong>content属性：</strong>只有伪元素能使用，伪类不行</li>
+                        <li><strong>数量限制：</strong>一个元素可以有多个伪类，但伪元素通常只能有两个(::before和::after)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="examples" class="section">
+                <h2>🚀 实战应用案例</h2>
+
+                <h3>1. 清除浮动 (::after)</h3>
+                <div class="code-demo">
+/* 经典的clearfix方法 */
+.clearfix::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+                </div>
+
+                <h3>2. 工具提示 (::before)</h3>
+                <div class="code-demo">
+/* 创建工具提示 */
+.tooltip::before {
+    content: attr(data-tip);
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    /* 定位和动画... */
+}
+                </div>
+
+                <h3>3. 按钮悬停效果</h3>
+                <div class="code-demo">
+/* 按钮交互效果 */
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button::before {
+    content: "";
+    position: absolute;
+    /* 创建悬停背景效果... */
+}
+                </div>
+            </section>
+
+            <section id="interactive" class="section">
+                <h2>🎮 交互演示</h2>
+                
+                <div class="interactive-demo">
+                    <h3>试试这些按钮效果：</h3>
+                    <button class="demo-button">悬停我 (:hover)</button>
+                    <button class="demo-button">点击我 (:active)</button>
+                    <button class="demo-button">伪元素效果 (::before)</button>
+                    
+                    <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
+                        <strong>💡 观察要点：</strong>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>鼠标悬停时的变换效果 (:hover)</li>
+                            <li>点击时的状态变化 (:active)</li>
+                            <li>伪元素创建的波纹效果 (::before)</li>
+                            <li>过渡动画的流畅性 (transition)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: #fff3cd; padding: 1.5rem; border-radius: 10px; border-left: 5px solid #ffc107; margin: 2rem 0;">
+                    <h3>⚠️ 重要提醒</h3>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>content属性必需：</strong>::before和::after必须设置content属性才能显示</li>
+                        <li><strong>定位关系：</strong>伪元素相对于父元素定位</li>
+                        <li><strong>兼容性：</strong>老版本浏览器可能需要单冒号语法</li>
+                        <li><strong>性能考虑：</strong>复杂的伪元素动画可能影响性能</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // 平滑滚动导航
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 添加一些交互效果
+        document.querySelectorAll('.demo-list li').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4)';
+                this.style.color = 'white';
+                setTimeout(() => {
+                    this.style.background = '';
+                    this.style.color = '';
+                }, 1000);
+            });
+        });
+
+        console.log('🎨 伪类与伪元素教学页面加载完成！');
+    </script>
+</body>
+</html>

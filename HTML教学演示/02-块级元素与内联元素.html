@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>块级元素与内联元素教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        nav {
+            background: #2c3e50;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+        }
+
+        nav a:hover {
+            background: #3498db;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .block-section {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-left: 5px solid #667eea;
+        }
+
+        .inline-section {
+            background: linear-gradient(135deg, #f093fb20, #f5576c20);
+            border-left: 5px solid #f093fb;
+        }
+
+        .inline-block-section {
+            background: linear-gradient(135deg, #4facfe20, #00f2fe20);
+            border-left: 5px solid #4facfe;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+        }
+
+        /* 演示样式 */
+        .demo-container {
+            background: #f8f9fa;
+            border: 2px dashed #6c757d;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .demo-title {
+            background: #495057;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        /* 块级元素演示 */
+        .block-demo {
+            display: block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .block-demo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        /* 内联元素演示 */
+        .inline-demo {
+            display: inline;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            margin: 0 0.3rem;
+            border-radius: 15px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(240, 147, 251, 0.3);
+        }
+
+        .inline-demo:hover {
+            background: linear-gradient(45deg, #f5576c, #f093fb);
+            transition: all 0.3s ease;
+        }
+
+        /* 内联块元素演示 */
+        .inline-block-demo {
+            display: inline-block;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 1rem;
+            margin: 0.5rem;
+            border-radius: 10px;
+            width: 120px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(79, 172, 254, 0.3);
+        }
+
+        .inline-block-demo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background: #e3f2fd;
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+
+        /* 代码展示 */
+        .code-demo {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 5px solid #4299e1;
+        }
+
+        .highlight {
+            background: #ffd700;
+            color: #333;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* 交互式测试 */
+        .test-element {
+            background: #e9ecef;
+            border: 2px solid #6c757d;
+            padding: 1rem;
+            margin: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .test-element:hover {
+            border-color: #007bff;
+            background: #cfe2ff;
+        }
+
+        .controls {
+            margin: 1rem 0;
+        }
+
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 块级元素 vs 内联元素</h1>
+            <p>深入理解HTML元素的显示类型和布局特性</p>
+        </header>
+
+        <nav>
+            <a href="#block">块级元素</a>
+            <a href="#inline">内联元素</a>
+            <a href="#inline-block">内联块元素</a>
+            <a href="#comparison">对比总结</a>
+            <a href="#interactive">交互测试</a>
+        </nav>
+
+        <main>
+            <section id="block" class="section block-section">
+                <h2>🟦 块级元素 (Block Elements)</h2>
+                <p><strong>特点：独占一行，可设置宽高和所有边距</strong></p>
+
+                <div class="demo-container">
+                    <div class="demo-title">实际效果演示</div>
+                    <div class="block-demo">第一个块级元素 (div)</div>
+                    <div class="block-demo">第二个块级元素 (div)</div>
+                    <div class="block-demo">第三个块级元素 (div)</div>
+                </div>
+
+                <h3>📋 常见块级元素列表</h3>
+                <div class="code-demo">
+&lt;div&gt;      - 通用块级容器
+&lt;p&gt;       - 段落
+&lt;h1&gt;-&lt;h6&gt;  - 标题
+&lt;ul&gt;, &lt;ol&gt;, &lt;li&gt; - 列表
+&lt;form&gt;    - 表单
+&lt;table&gt;   - 表格
+&lt;header&gt;  - HTML5语义化标签
+&lt;section&gt; - HTML5语义化标签
+&lt;article&gt; - HTML5语义化标签
+&lt;footer&gt;  - HTML5语义化标签
+                </div>
+
+                <h3>🎯 块级元素特性</h3>
+                <ul style="margin-left: 2rem; margin-top: 1rem;">
+                    <li><strong>独占一行：</strong>每个块级元素都从新行开始</li>
+                    <li><strong>默认宽度：</strong>占满父容器的100%宽度</li>
+                    <li><strong>可设置尺寸：</strong>width、height属性有效</li>
+                    <li><strong>完整边距：</strong>margin、padding的上下左右都生效</li>
+                    <li><strong>可包含内容：</strong>可以包含其他块级或内联元素</li>
+                </ul>
+            </section>
+
+            <section id="inline" class="section inline-section">
+                <h2>🟨 内联元素 (Inline Elements)</h2>
+                <p><strong>特点：在同一行显示，不可设置宽高，垂直边距无效</strong></p>
+
+                <div class="demo-container">
+                    <div class="demo-title">实际效果演示</div>
+                    <p>
+                        这段文字中包含
+                        <span class="inline-demo">内联元素1</span>
+                        <span class="inline-demo">内联元素2</span>
+                        <strong class="inline-demo">强调文本</strong>
+                        <em class="inline-demo">斜体文本</em>
+                        它们在同一行显示。
+                    </p>
+                </div>
+
+                <h3>📋 常见内联元素列表</h3>
+                <div class="code-demo">
+&lt;span&gt;     - 通用内联容器
+&lt;a&gt;       - 链接
+&lt;strong&gt;  - 强调(粗体)
+&lt;em&gt;      - 强调(斜体)
+&lt;img&gt;     - 图片
+&lt;input&gt;   - 表单输入
+&lt;label&gt;   - 表单标签
+&lt;code&gt;    - 代码
+&lt;small&gt;   - 小号文字
+&lt;sub&gt;     - 下标
+&lt;sup&gt;     - 上标
+                </div>
+
+                <h3>🎯 内联元素特性</h3>
+                <ul style="margin-left: 2rem; margin-top: 1rem;">
+                    <li><strong>同行显示：</strong>不会换行，在同一行内排列</li>
+                    <li><strong>宽度自适应：</strong>宽度由内容决定</li>
+                    <li><strong>不可设置宽高：</strong>width、height属性无效</li>
+                    <li><strong>垂直边距无效：</strong>margin、padding的上下无效，只有左右有效</li>
+                    <li><strong>内容限制：</strong>只能包含文本或其他内联元素</li>
+                </ul>
+
+                <div class="demo-container">
+                    <div class="demo-title">边距测试 - 内联元素垂直边距无效</div>
+                    <span style="background: #ffc107; padding: 20px 10px; margin: 20px 10px;">
+                        设置了20px的上下padding和margin，但只有左右生效
+                    </span>
+                </div>
+            </section>
+
+            <section id="inline-block" class="section inline-block-section">
+                <h2>🟩 内联块元素 (Inline-block Elements)</h2>
+                <p><strong>特点：既能同行显示，又能设置宽高和完整边距</strong></p>
+
+                <div class="demo-container">
+                    <div class="demo-title">实际效果演示</div>
+                    <div class="inline-block-demo">盒子1</div>
+                    <div class="inline-block-demo">盒子2</div>
+                    <div class="inline-block-demo">盒子3</div>
+                    <div class="inline-block-demo">盒子4</div>
+                </div>
+
+                <h3>💡 如何创建内联块元素</h3>
+                <div class="code-demo">
+/* CSS方式 */
+.inline-block {
+    display: inline-block;
+}
+
+/* 或者某些元素默认就是内联块 */
+&lt;img&gt;     - 图片元素
+&lt;input&gt;   - 表单输入元素
+&lt;button&gt;  - 按钮元素
+                </div>
+
+                <h3>🎯 内联块元素特性</h3>
+                <ul style="margin-left: 2rem; margin-top: 1rem;">
+                    <li><strong>同行显示：</strong>多个元素可以在同一行</li>
+                    <li><strong>可设置尺寸：</strong>width、height属性有效</li>
+                    <li><strong>完整边距：</strong>margin、padding的上下左右都生效</li>
+                    <li><strong>基线对齐：</strong>默认按基线对齐</li>
+                    <li><strong>最佳选择：</strong>需要同行显示且要控制尺寸时的理想选择</li>
+                </ul>
+            </section>
+
+            <section id="comparison" class="section">
+                <h2>📊 三种元素类型对比</h2>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>特性</th>
+                            <th>块级元素</th>
+                            <th>内联元素</th>
+                            <th>内联块元素</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>换行行为</strong></td>
+                            <td>独占一行</td>
+                            <td>同行显示</td>
+                            <td>同行显示</td>
+                        </tr>
+                        <tr>
+                            <td><strong>宽度设置</strong></td>
+                            <td>✅ 可以设置</td>
+                            <td>❌ 无效</td>
+                            <td>✅ 可以设置</td>
+                        </tr>
+                        <tr>
+                            <td><strong>高度设置</strong></td>
+                            <td>✅ 可以设置</td>
+                            <td>❌ 无效</td>
+                            <td>✅ 可以设置</td>
+                        </tr>
+                        <tr>
+                            <td><strong>水平margin/padding</strong></td>
+                            <td>✅ 完全有效</td>
+                            <td>✅ 完全有效</td>
+                            <td>✅ 完全有效</td>
+                        </tr>
+                        <tr>
+                            <td><strong>垂直margin/padding</strong></td>
+                            <td>✅ 完全有效</td>
+                            <td>❌ 无效</td>
+                            <td>✅ 完全有效</td>
+                        </tr>
+                        <tr>
+                            <td><strong>默认宽度</strong></td>
+                            <td>父容器的100%</td>
+                            <td>内容宽度</td>
+                            <td>内容宽度</td>
+                        </tr>
+                        <tr>
+                            <td><strong>常见用途</strong></td>
+                            <td>布局结构</td>
+                            <td>文本装饰</td>
+                            <td>按钮、导航</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="interactive" class="section">
+                <h2>🎮 交互式测试</h2>
+                <p>点击按钮切换元素的显示类型，观察变化：</p>
+
+                <div class="controls">
+                    <button class="btn" onclick="changeDisplay('block')">块级元素</button>
+                    <button class="btn" onclick="changeDisplay('inline')">内联元素</button>
+                    <button class="btn" onclick="changeDisplay('inline-block')">内联块元素</button>
+                    <button class="btn" onclick="resetDemo()">重置</button>
+                </div>
+
+                <div class="demo-container">
+                    <div class="demo-title">测试区域 - 点击上方按钮观察变化</div>
+                    <div id="test1" class="test-element">测试元素 1</div>
+                    <div id="test2" class="test-element">测试元素 2</div>
+                    <div id="test3" class="test-element">测试元素 3</div>
+                </div>
+
+                <div class="code-demo" id="current-css">
+当前CSS: display: block; (默认)
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>💡 实际应用建议</h2>
+                
+                <div style="background: #d1ecf1; padding: 1.5rem; border-radius: 10px; border-left: 5px solid #0dcaf0; margin: 1rem 0;">
+                    <h3>🎯 选择指南</h3>
+                    <ul style="margin-left: 1rem;">
+                        <li><strong>块级元素：</strong>用于页面布局、内容分区</li>
+                        <li><strong>内联元素：</strong>用于文本内容的标记和装饰</li>
+                        <li><strong>内联块元素：</strong>用于导航按钮、工具栏、需要精确控制的同行元素</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fff3cd; padding: 1.5rem; border-radius: 10px; border-left: 5px solid #ffc107; margin: 1rem 0;">
+                    <h3>⚠️ 注意事项</h3>
+                    <ul style="margin-left: 1rem;">
+                        <li>内联元素不能包含块级元素</li>
+                        <li>内联元素的vertical-align属性可以调整垂直对齐</li>
+                        <li>内联块元素之间可能有空白间隙（HTML空格导致）</li>
+                        <li>使用CSS的display属性可以改变元素的显示类型</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function changeDisplay(displayType) {
+            const testElements = document.querySelectorAll('#test1, #test2, #test3');
+            const cssDisplay = document.getElementById('current-css');
+            
+            testElements.forEach(el => {
+                el.style.display = displayType;
+                // 根据类型设置不同的样式以便观察
+                if (displayType === 'block') {
+                    el.style.width = 'auto';
+                    el.style.backgroundColor = '#667eea';
+                    el.style.color = 'white';
+                } else if (displayType === 'inline') {
+                    el.style.width = 'auto';
+                    el.style.backgroundColor = '#f093fb';
+                    el.style.color = 'white';
+                } else if (displayType === 'inline-block') {
+                    el.style.width = '120px';
+                    el.style.backgroundColor = '#4facfe';
+                    el.style.color = 'white';
+                }
+            });
+
+            cssDisplay.textContent = `当前CSS: display: ${displayType};`;
+        }
+
+        function resetDemo() {
+            const testElements = document.querySelectorAll('#test1, #test2, #test3');
+            const cssDisplay = document.getElementById('current-css');
+            
+            testElements.forEach(el => {
+                el.style.display = 'block';
+                el.style.width = 'auto';
+                el.style.backgroundColor = '#e9ecef';
+                el.style.color = '#333';
+            });
+
+            cssDisplay.textContent = '当前CSS: display: block; (默认)';
+        }
+
+        // 平滑滚动
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        console.log('📦 块级元素与内联元素教学页面加载完成！');
+    </script>
+</body>
+</html>
