@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>响应式布局教学示例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        h2 {
+            margin: 30px 0 15px 0;
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        .demo-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .demo-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #e74c3c;
+        }
+
+        /* 1. 媒体查询示例 */
+        .media-query-demo {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .mq-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .mq-box {
+            background: #3498db;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        /* 移动端样式 */
+        .mq-box {
+            flex: 1 1 100%;
+            font-size: 14px;
+        }
+
+        /* 平板样式 */
+        @media (min-width: 768px) {
+            .mq-box {
+                flex: 1 1 calc(50% - 5px);
+                font-size: 16px;
+            }
+        }
+
+        /* 桌面样式 */
+        @media (min-width: 1200px) {
+            .mq-box {
+                flex: 1 1 calc(33.333% - 7px);
+                font-size: 18px;
+            }
+        }
+
+        /* 2. 百分比布局示例 */
+        .percentage-demo {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            height: 300px; /* 给父元素明确高度 */
+        }
+
+        .percentage-sidebar {
+            width: 25%;
+            height: 100%;
+            background: #e74c3c;
+            color: white;
+            float: left;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+
+        .percentage-main {
+            width: 75%;
+            height: 100%;
+            background: #27ae60;
+            color: white;
+            float: left;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+
+        /* 3. rem/em单位示例 */
+        html {
+            font-size: 16px; /* 默认根字体大小 */
+        }
+
+        @media (max-width: 767px) {
+            html {
+                font-size: 14px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            html {
+                font-size: 18px;
+            }
+        }
+
+        .rem-demo {
+            background: #fff;
+            padding: 1.25rem; /* 20px */
+            border-radius: 5px;
+        }
+
+        .rem-box {
+            background: #9b59b6;
+            color: white;
+            padding: 1rem; /* 16px */
+            margin: 0.5rem 0; /* 8px */
+            border-radius: 0.25rem; /* 4px */
+            font-size: 1rem; /* 16px */
+        }
+
+        .rem-title {
+            font-size: 1.5rem; /* 24px */
+            margin-bottom: 0.75rem; /* 12px */
+        }
+
+        /* 4. Flexbox/Grid示例 */
+        .flex-demo {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .flex-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .flex-item {
+            flex: 1 1 100%; /* 移动端单列 */
+            background: #f39c12;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .flex-item {
+                flex: 1 1 calc(50% - 7.5px); /* 平板两列 */
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .flex-item {
+                flex: 1 1 calc(33.333% - 10px); /* 桌面三列 */
+            }
+        }
+
+        /* Grid示例 */
+        .grid-demo {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .grid-container {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: 1fr; /* 移动端单列 */
+        }
+
+        .grid-item {
+            background: #1abc9c;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr); /* 平板两列 */
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr); /* 桌面三列 */
+            }
+        }
+
+        /* 响应式导航示例 */
+        .nav-demo {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column; /* 移动端垂直 */
+            gap: 10px;
+        }
+
+        .nav-item {
+            background: #34495e;
+            padding: 10px 15px;
+            border-radius: 3px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: #3498db;
+        }
+
+        @media (min-width: 768px) {
+            .nav {
+                flex-direction: row; /* 桌面端水平 */
+                justify-content: space-around;
+            }
+        }
+
+        /* 屏幕尺寸提示 */
+        .screen-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        /* 清除浮动 */
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* 说明文字 */
+        .explanation {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-info" id="screenInfo">
+        屏幕宽度: <span id="screenWidth"></span>px
+    </div>
+
+    <div class="container">
+        <h1>响应式布局教学示例</h1>
+        
+        <div class="explanation">
+            <strong>使用说明：</strong>调整浏览器窗口大小或使用开发者工具的设备模拟器来查看不同屏幕尺寸下的布局效果。
+        </div>
+
+        <!-- 1. 媒体查询示例 -->
+        <div class="demo-section">
+            <h2>1. 媒体查询 (Media Queries)</h2>
+            <div class="demo-title">根据屏幕宽度改变布局和样式</div>
+            <div class="explanation">
+                移动端：单列布局，字体14px<br>
+                平板端：两列布局，字体16px<br>
+                桌面端：三列布局，字体18px
+            </div>
+            <div class="media-query-demo">
+                <div class="mq-container">
+                    <div class="mq-box">移动端单列</div>
+                    <div class="mq-box">平板两列</div>
+                    <div class="mq-box">桌面三列</div>
+                </div>
+            </div>
+            <div class="code">
+.mq-container { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* 移动端样式 */
+.mq-box { flex: 1 1 100%; font-size: 14px; }
+
+/* 平板样式 */
+@media (min-width: 768px) {
+  .mq-box { flex: 1 1 calc(50% - 5px); font-size: 16px; }
+}
+
+/* 桌面样式 */
+@media (min-width: 1200px) {
+  .mq-box { flex: 1 1 calc(33.333% - 7px); font-size: 18px; }
+}
+            </div>
+        </div>
+
+        <!-- 2. 百分比布局示例 -->
+        <div class="demo-section">
+            <h2>2. 百分比布局</h2>
+            <div class="demo-title">使用百分比宽度实现响应式</div>
+            <div class="explanation">
+                侧边栏占25%宽度，主内容区占75%宽度，自动适应父容器
+            </div>
+            <div class="percentage-demo clearfix">
+                <div class="percentage-sidebar">侧边栏<br>25%</div>
+                <div class="percentage-main">主内容区<br>75%</div>
+            </div>
+            <div class="code">
+.percentage-sidebar { width: 25%; height: 100%; }
+.percentage-main { width: 75%; height: 100%; }
+            </div>
+        </div>
+
+        <!-- 3. rem/em单位示例 -->
+        <div class="demo-section">
+            <h2>3. rem/em单位</h2>
+            <div class="demo-title">使用相对单位实现整体缩放</div>
+            <div class="explanation">
+                通过改变根字体大小，所有使用rem的元素都会按比例缩放
+            </div>
+            <div class="rem-demo">
+                <div class="rem-title">这是标题 (1.5rem)</div>
+                <div class="rem-box">这是内容 (1rem)</div>
+                <div class="rem-box">这也是内容 (1rem)</div>
+            </div>
+            <div class="code">
+html { font-size: 16px; }
+@media (max-width: 767px) { html { font-size: 14px; } }
+@media (min-width: 1200px) { html { font-size: 18px; } }
+
+.rem-title { font-size: 1.5rem; }
+.rem-box { font-size: 1rem; padding: 1rem; }
+            </div>
+        </div>
+
+        <!-- 4. Flexbox示例 -->
+        <div class="demo-section">
+            <h2>4. Flexbox布局</h2>
+            <div class="demo-title">使用Flexbox实现响应式网格</div>
+            <div class="explanation">
+                移动端：单列 | 平板：两列 | 桌面：三列
+            </div>
+            <div class="flex-demo">
+                <div class="flex-container">
+                    <div class="flex-item">Flex项目1</div>
+                    <div class="flex-item">Flex项目2</div>
+                    <div class="flex-item">Flex项目3</div>
+                    <div class="flex-item">Flex项目4</div>
+                    <div class="flex-item">Flex项目5</div>
+                    <div class="flex-item">Flex项目6</div>
+                </div>
+            </div>
+            <div class="code">
+.flex-container { display: flex; flex-wrap: wrap; gap: 15px; }
+.flex-item { flex: 1 1 100%; } /* 移动端单列 */
+
+@media (min-width: 768px) {
+  .flex-item { flex: 1 1 calc(50% - 7.5px); } /* 平板两列 */
+}
+
+@media (min-width: 1200px) {
+  .flex-item { flex: 1 1 calc(33.333% - 10px); } /* 桌面三列 */
+}
+            </div>
+        </div>
+
+        <!-- 5. Grid示例 -->
+        <div class="demo-section">
+            <h2>5. CSS Grid布局</h2>
+            <div class="demo-title">使用Grid实现响应式网格</div>
+            <div class="explanation">
+                移动端：单列 | 平板：两列 | 桌面：三列
+            </div>
+            <div class="grid-demo">
+                <div class="grid-container">
+                    <div class="grid-item">Grid项目1</div>
+                    <div class="grid-item">Grid项目2</div>
+                    <div class="grid-item">Grid项目3</div>
+                    <div class="grid-item">Grid项目4</div>
+                    <div class="grid-item">Grid项目5</div>
+                    <div class="grid-item">Grid项目6</div>
+                </div>
+            </div>
+            <div class="code">
+.grid-container { 
+  display: grid; 
+  gap: 15px; 
+  grid-template-columns: 1fr; /* 移动端单列 */
+}
+
+@media (min-width: 768px) {
+  .grid-container { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1200px) {
+  .grid-container { grid-template-columns: repeat(3, 1fr); }
+}
+            </div>
+        </div>
+
+        <!-- 6. 响应式导航示例 -->
+        <div class="demo-section">
+            <h2>6. 响应式导航</h2>
+            <div class="demo-title">导航栏的响应式设计</div>
+            <div class="explanation">
+                移动端：垂直排列 | 桌面端：水平排列
+            </div>
+            <div class="nav-demo">
+                <div class="nav">
+                    <div class="nav-item">首页</div>
+                    <div class="nav-item">产品</div>
+                    <div class="nav-item">服务</div>
+                    <div class="nav-item">关于我们</div>
+                    <div class="nav-item">联系我们</div>
+                </div>
+            </div>
+            <div class="code">
+.nav { 
+  display: flex; 
+  flex-direction: column; /* 移动端垂直 */
+  gap: 10px; 
+}
+
+@media (min-width: 768px) {
+  .nav { 
+    flex-direction: row; /* 桌面端水平 */
+    justify-content: space-around; 
+  }
+}
+            </div>
+        </div>
+
+        <div class="explanation">
+            <strong>总结：</strong><br>
+            1. <strong>媒体查询</strong>：最基础的方法，精确控制不同屏幕下的样式<br>
+            2. <strong>百分比布局</strong>：简单直观，自动适应父容器<br>
+            3. <strong>rem/em单位</strong>：只需改变根字体大小即可整体缩放<br>
+            4. <strong>Flexbox/Grid</strong>：现代布局方案，更灵活强大<br><br>
+            实际项目中通常会组合使用这些方案，根据具体需求选择最适合的方法。
+        </div>
+    </div>
+
+    <script>
+        // 实时显示屏幕宽度
+        function updateScreenInfo() {
+            const width = window.innerWidth;
+            document.getElementById('screenWidth').textContent = width;
+            
+            // 根据屏幕宽度显示当前断点
+            let breakpoint = '';
+            if (width < 768) {
+                breakpoint = ' (移动端)';
+            } else if (width < 1200) {
+                breakpoint = ' (平板端)';
+            } else {
+                breakpoint = ' (桌面端)';
+            }
+            
+            document.getElementById('screenInfo').innerHTML = 
+                `屏幕宽度: ${width}px${breakpoint}`;
+        }
+
+        // 页面加载时执行
+        updateScreenInfo();
+
+        // 窗口大小改变时执行
+        window.addEventListener('resize', updateScreenInfo);
+
+        // 添加一些交互效果
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.background = '#e74c3c';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

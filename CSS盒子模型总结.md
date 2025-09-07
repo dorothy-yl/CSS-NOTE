@@ -1,5 +1,14 @@
 # CSS的盒模型
 
+Flexbox是CSS弹性盒子的布局模块，可以实现对齐，分布和空间分配
+弹性盒子的核心：
+1.父控子（亲父子）
+- 父盒子控制子盒子如何排列布局
+-  父盒子称为容器，子盒子称为项目
+2.
+
+
+
 - 在HTML页面中的所有元素都可以看成是一个盒子
 
 - 盒子的组成:内容content、内边距padding、边框border、外边距margin、
@@ -46,3 +55,54 @@ box-sizing:content-box(默认值，标准盒模型)、border-box(IE盒模型)**\
 # 预处理器
 预处理语言增加了变量、函数、混入等强大功能
 > SASS LESS
+
+
+span 元素的默认 display 值
+span 元素的默认 display 值是 inline。
+display 属性的主要值
+1. inline（内联元素）
+特点：
+元素在一行内显示，不会换行
+不能设置 width 和 height
+只能设置水平方向的 margin 和 padding
+内容决定元素大小
+常见元素：span、a、em、strong、img 等
+2. block（块级元素）
+特点：
+独占一行，会换行
+可以设置 width 和 height
+可以设置所有方向的 margin 和 padding
+默认宽度是父容器的100%
+常见元素：div、p、h1-h6、ul、li 等
+3. inline-block（内联块级元素）
+特点：
+结合了 inline 和 block 的特性
+像 inline 一样在一行内显示，不会换行
+像 block 一样可以设置 width、height、margin、padding
+内容决定元素大小，但可以通过CSS控制
+常见应用：导航菜单、按钮组、图片列表等
+为什么需要 inline-block？
+在你的代码中：
+span:first-child {
+  display: inline-block;  /* 让span可以设置宽度 */
+  width: 120px;          /* 现在可以设置宽度了 */
+}
+问题：
+span 默认是 inline，不能设置 width
+如果你直接写 width: 120px，浏览器会忽略这个属性
+解决方案：
+设置 display: inline-block
+现在 span 既可以保持在一行内显示，又可以设置固定宽度
+实际效果对比
+<!-- 原始HTML -->
+<p><span>上次登录时间:</span> <span>2022-7-11</span></p>
+默认情况（display: inline）：
+上次登录时间: 2022-7-11
+两个 span 紧挨着显示
+宽度由内容决定
+使用 display: inline-block + width: 120px：
+上次登录时间:     2022-7-11
+第一个 span 固定120px宽度
+第二个 span 紧跟在后面
+整体布局更整齐
+这就是为什么你需要 inline-block 的原因！

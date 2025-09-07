@@ -1694,7 +1694,206 @@ fetch('/api/data', {
 .catch(error => console.error('Error:', error));
 ```
 
-### 25. 深入数组
+### 25. 事件循环（Event Loop）
+
+#### 题目1：什么是事件循环？JavaScript的事件循环机制是什么？
+**答案：**
+事件循环是JavaScript处理异步操作的机制，它确保JavaScript单线程能够处理非阻塞的异步操作。
+
+**事件循环的核心概念：**
+1. **调用栈（Call Stack）**：执行同步代码的地方
+2. **任务队列（Task Queue）**：存放异步任务回调的地方
+3. **微任务队列（Microtask Queue）**：存放Promise、MutationObserver等微任务
+4. **事件循环**：不断检查调用栈和任务队列的机制
+
+**执行顺序：**
+1. 执行同步代码（调用栈）
+2. 调用栈清空后，执行所有微任务
+3. 执行一个宏任务
+4. 重复步骤2-3
+
+```javascript
+console.log('1'); // 同步
+
+setTimeout(() => {
+  console.log('2'); // 宏任务
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log('3'); // 微任务
+});
+
+console.log('4'); // 同步
+
+// 输出顺序：1, 4, 3, 2
+```
+
+#### 题目2：宏任务和微任务的区别？有哪些宏任务和微任务？
+**答案：**
+
+**宏任务（Macrotask）：**
+- setTimeout、setInterval
+- setImmediate（Node.js）
+- I/O操作
+- UI渲染
+- script标签
+
+**微任务（Microtask）：**
+- Promise.then/catch/finally
+- queueMicrotask
+- MutationObserver
+- process.nextTick（Node.js）
+
+**执行优先级：**
+微任务 > 宏任务
+
+```javascript
+console.log('1');
+
+setTimeout(() => console.log('2'), 0);
+
+Promise.resolve().then(() => {
+  console.log('3');
+  return Promise.resolve();
+}).then(() => {
+  console.log('4');
+});
+
+setTimeout(() => console.log('5'), 0);
+
+console.log('6');
+
+// 输出：1, 6, 3, 4, 2, 5
+```
+
+#### 题目3：请解释以下代码的执行顺序
+**答案：**
+```javascript
+console.log('start');
+
+setTimeout(() => {
+  console.log('timeout1');
+  Promise.resolve().then(() => {
+    console.log('promise1');
+  });
+}, 0);
+
+setTimeout(() => {
+  console.log('timeout2');
+  Promise.resolve().then(() => {
+    console.log('promise2');
+  });
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log('promise3');
+});
+
+console.log('end');
+
+// 执行顺序分析：
+// 1. 同步代码：start, end
+// 2. 微任务：promise3
+// 3. 宏任务1：timeout1
+// 4. 微任务：promise1
+// 5. 宏任务2：timeout2
+// 6. 微任务：promise2
+
+// 最终输出：start, end, promise3, timeout1, promise1, timeout2, promise2
+```
+
+#### 题目4：async/await在事件循环中的执行机制？
+**答案：**
+async/await本质上是Promise的语法糖，在事件循环中的行为与Promise一致。
+
+```javascript
+async function async1() {
+  console.log('async1 start');
+  await async2();
+  console.log('async1 end');
+}
+
+async function async2() {
+  console.log('async2');
+}
+
+console.log('script start');
+
+setTimeout(() => {
+  console.log('setTimeout');
+}, 0);
+
+async1();
+
+new Promise(resolve => {
+  console.log('promise1');
+  resolve();
+}).then(() => {
+  console.log('promise2');
+});
+
+console.log('script end');
+
+// 执行顺序：
+// 1. script start
+// 2. async1 start
+// 3. async2
+// 4. promise1
+// 5. script end
+// 6. async1 end (await后面的代码相当于.then)
+// 7. promise2
+// 8. setTimeout
+```
+
+#### 题目5：Node.js和浏览器的事件循环有什么区别？
+**答案：**
+
+**浏览器事件循环：**
+- 只有一个宏任务队列
+- 微任务队列优先级最高
+- 每个宏任务执行完后，清空所有微任务
+
+**Node.js事件循环：**
+- 6个阶段：timers、pending callbacks、idle/prepare、poll、check、close callbacks
+- process.nextTick优先级最高
+- 每个阶段执行完后，清空nextTick队列和微任务队列
+
+```javascript
+// Node.js中的执行顺序
+setTimeout(() => console.log('1'), 0);
+setImmediate(() => console.log('2'));
+process.nextTick(() => console.log('3'));
+Promise.resolve().then(() => console.log('4'));
+
+// 输出：3, 4, 1, 2 (或 3, 4, 2, 1)
+```
+
+#### 题目6：如何理解"JavaScript是单线程的"？
+**答案：**
+JavaScript是单线程的，但浏览器是多线程的：
+
+**JavaScript线程：**
+- 主线程：执行JavaScript代码
+- 单线程：同一时间只能执行一个任务
+
+**浏览器其他线程：**
+- GUI渲染线程
+- 事件触发线程
+- 定时器线程
+- 异步HTTP请求线程
+- WebWorker线程
+
+**为什么是单线程：**
+1. **避免DOM操作冲突**：多线程同时操作DOM会导致竞态条件
+2. **简化编程模型**：不需要考虑线程同步问题
+3. **提高执行效率**：避免线程切换开销
+
+**单线程的解决方案：**
+- 事件循环机制处理异步操作
+- 非阻塞I/O操作
+- WebWorker处理CPU密集型任务
+
+### 26. 深入数组
 
 #### 题目1：数组的高阶方法有哪些？
 **答案：**
@@ -1783,4 +1982,422 @@ const unique4 = (arr, key) => {
 // 测试
 const arr = [1, 2, 2, 3, 3, 4];
 console.log(unique1(arr)); // [1, 2, 3, 4]
+```
+
+## 二、HTTP缓存机制
+
+### 26. 协商缓存
+
+#### 题目1：什么是协商缓存？协商缓存的实现原理？
+**答案：**
+协商缓存是HTTP缓存机制的一种，当强缓存失效时，浏览器会向服务器发送请求，服务器根据请求头中的缓存标识来决定是否使用缓存。
+
+**实现原理：**
+1. 浏览器发送请求时携带缓存标识（If-Modified-Since 或 If-None-Match）
+2. 服务器比较缓存标识与资源当前状态
+3. 如果资源未变化，返回304状态码，浏览器使用本地缓存
+4. 如果资源已变化，返回200状态码和新的资源内容
+
+**两种协商缓存方式：**
+
+1. **Last-Modified / If-Modified-Since**
+```http
+# 首次请求响应头
+HTTP/1.1 200 OK
+Last-Modified: Wed, 21 Oct 2015 07:28:00 GMT
+Cache-Control: no-cache
+
+# 再次请求请求头
+GET /api/data HTTP/1.1
+If-Modified-Since: Wed, 21 Oct 2015 07:28:00 GMT
+
+# 服务器响应
+HTTP/1.1 304 Not Modified
+```
+
+2. **ETag / If-None-Match**
+```http
+# 首次请求响应头
+HTTP/1.1 200 OK
+ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
+Cache-Control: no-cache
+
+# 再次请求请求头
+GET /api/data HTTP/1.1
+If-None-Match: "33a64df551425fcc55e4d42a148795d9f25f89d4"
+
+# 服务器响应
+HTTP/1.1 304 Not Modified
+```
+
+#### 题目2：Last-Modified和ETag的区别？
+**答案：**
+
+| 特性 | Last-Modified | ETag |
+|------|---------------|------|
+| **精度** | 秒级精度 | 任意精度 |
+| **性能** | 性能更好 | 需要计算哈希值 |
+| **分布式** | 不适合分布式系统 | 适合分布式系统 |
+| **文件变化** | 只检测内容变化 | 检测内容和元数据变化 |
+| **实现复杂度** | 简单 | 相对复杂 |
+
+**ETag的优势：**
+1. 可以检测文件内容变化，即使修改时间相同
+2. 支持分布式系统，避免时间同步问题
+3. 可以检测文件元数据变化（如权限）
+
+**Last-Modified的优势：**
+1. 实现简单，性能开销小
+2. 人类可读，便于调试
+
+#### 题目3：协商缓存的经典面试题场景？
+**答案：**
+
+**场景1：文件内容未变化，但修改时间变化**
+```javascript
+// 问题：文件内容相同，但touch命令修改了时间
+// Last-Modified会认为文件已变化，导致不必要的下载
+// ETag可以正确识别内容未变化
+
+// 解决方案：优先使用ETag，Last-Modified作为备选
+if (request.headers['if-none-match'] === currentETag) {
+  return 304; // 使用缓存
+} else if (request.headers['if-modified-since'] === lastModified) {
+  return 304; // 使用缓存
+} else {
+  return 200; // 返回新内容
+}
+```
+
+**场景2：分布式系统中的缓存一致性问题**
+```javascript
+// 问题：多台服务器时间不同步
+// 解决方案：使用ETag而不是Last-Modified
+
+// 服务器A
+const etagA = generateETag(content); // "abc123"
+
+// 服务器B  
+const etagB = generateETag(content); // "abc123" (相同内容)
+
+// 即使时间不同步，ETag也能正确判断
+```
+
+**场景3：CDN边缘节点的缓存策略**
+```javascript
+// CDN节点缓存策略
+app.get('/api/data', (req, res) => {
+  const etag = generateETag(data);
+  const lastModified = new Date(fileStats.mtime).toUTCString();
+  
+  // 设置缓存头
+  res.set({
+    'ETag': etag,
+    'Last-Modified': lastModified,
+    'Cache-Control': 'no-cache' // 强制协商缓存
+  });
+  
+  // 检查协商缓存
+  if (req.headers['if-none-match'] === etag) {
+    return res.status(304).end();
+  }
+  
+  if (req.headers['if-modified-since'] === lastModified) {
+    return res.status(304).end();
+  }
+  
+  res.json(data);
+});
+```
+
+### 27. 跨域问题
+
+#### 题目1：什么是跨域？为什么会出现跨域问题？
+**答案：**
+跨域是指浏览器不能执行其他网站的脚本，它是由浏览器的同源策略造成的。
+
+**同源策略限制：**
+- 协议相同（http/https）
+- 域名相同
+- 端口相同
+
+**跨域场景示例：**
+```javascript
+// 同源：http://localhost:3000
+// 跨域：https://localhost:3000 (协议不同)
+// 跨域：http://localhost:8080 (端口不同)  
+// 跨域：http://api.example.com (域名不同)
+```
+
+**为什么需要同源策略：**
+1. **防止CSRF攻击**：恶意网站无法获取用户在其他网站的数据
+2. **保护用户隐私**：防止恶意网站读取用户敏感信息
+3. **维护数据安全**：防止恶意网站篡改其他网站的数据
+
+#### 题目2：跨域的解决方案有哪些？
+**答案：**
+
+**1. CORS（跨域资源共享）**
+```javascript
+// 服务端设置CORS头
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*'); // 允许所有域名
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true'); // 允许携带cookie
+  
+  // 预检请求处理
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
+// 客户端请求
+fetch('http://api.example.com/data', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer token'
+  },
+  credentials: 'include', // 携带cookie
+  body: JSON.stringify(data)
+});
+```
+
+**2. JSONP（JSON with Padding）**
+```javascript
+// 客户端
+function jsonp(url, callback) {
+  const script = document.createElement('script');
+  const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+  
+  window[callbackName] = function(data) {
+    callback(data);
+    document.body.removeChild(script);
+    delete window[callbackName];
+  };
+  
+  script.src = url + '?callback=' + callbackName;
+  document.body.appendChild(script);
+}
+
+// 使用
+jsonp('http://api.example.com/data?callback=handleData', function(data) {
+  console.log(data);
+});
+
+// 服务端
+app.get('/data', (req, res) => {
+  const data = { message: 'Hello World' };
+  const callback = req.query.callback;
+  res.send(`${callback}(${JSON.stringify(data)});`);
+});
+```
+
+**3. 代理服务器**
+```javascript
+// webpack devServer代理
+module.exports = {
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://api.example.com',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
+  }
+};
+
+// nginx代理
+server {
+  listen 80;
+  server_name localhost;
+  
+  location /api/ {
+    proxy_pass http://api.example.com/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+  }
+}
+```
+
+**4. postMessage**
+```javascript
+// 父页面
+window.addEventListener('message', function(event) {
+  if (event.origin !== 'http://trusted-domain.com') return;
+  console.log('收到消息:', event.data);
+});
+
+// 子页面（iframe）
+parent.postMessage('Hello Parent', 'http://parent-domain.com');
+```
+
+**5. document.domain**
+```javascript
+// 适用于子域名跨域
+// 主页面：http://www.example.com
+document.domain = 'example.com';
+
+// 子页面：http://api.example.com  
+document.domain = 'example.com';
+// 现在可以互相访问
+```
+
+#### 题目3：CORS的预检请求是什么？
+**答案：**
+预检请求（Preflight Request）是浏览器在发送复杂跨域请求前自动发送的OPTIONS请求，用于检查服务器是否允许该跨域请求。
+
+**触发预检请求的条件：**
+1. 请求方法不是简单方法（GET、HEAD、POST）
+2. 请求头包含非简单头部
+3. Content-Type不是简单类型
+
+**简单请求条件：**
+- 方法：GET、HEAD、POST
+- 头部：Accept、Accept-Language、Content-Language、Content-Type
+- Content-Type：application/x-www-form-urlencoded、multipart/form-data、text/plain
+
+**预检请求流程：**
+```javascript
+// 1. 浏览器发送预检请求
+OPTIONS /api/data HTTP/1.1
+Origin: http://localhost:3000
+Access-Control-Request-Method: PUT
+Access-Control-Request-Headers: Content-Type,Authorization
+
+// 2. 服务器响应
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: http://localhost:3000
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE
+Access-Control-Allow-Headers: Content-Type,Authorization
+Access-Control-Max-Age: 86400
+
+// 3. 浏览器发送实际请求
+PUT /api/data HTTP/1.1
+Origin: http://localhost:3000
+Content-Type: application/json
+Authorization: Bearer token
+```
+
+#### 题目4：跨域携带Cookie的问题？
+**答案：**
+默认情况下，跨域请求不会携带Cookie，需要特殊配置。
+
+**客户端配置：**
+```javascript
+// fetch请求
+fetch('http://api.example.com/data', {
+  credentials: 'include' // 携带cookie
+});
+
+// XMLHttpRequest
+const xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+xhr.open('GET', 'http://api.example.com/data');
+xhr.send();
+```
+
+**服务端配置：**
+```javascript
+// 不能使用通配符 *
+res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+res.header('Access-Control-Allow-Credentials', 'true');
+
+// 动态设置允许的域名
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:8080'];
+const origin = req.headers.origin;
+if (allowedOrigins.includes(origin)) {
+  res.header('Access-Control-Allow-Origin', origin);
+}
+res.header('Access-Control-Allow-Credentials', 'true');
+```
+
+#### 题目5：跨域问题的经典面试场景？
+**答案：**
+
+**场景1：开发环境跨域问题**
+```javascript
+// 问题：本地开发时前端localhost:3000访问后端localhost:8080
+// 解决方案：开发服务器代理
+
+// package.json
+{
+  "scripts": {
+    "dev": "webpack serve --config webpack.dev.js"
+  }
+}
+
+// webpack.dev.js
+module.exports = {
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
+  }
+};
+```
+
+**场景2：生产环境跨域问题**
+```javascript
+// 问题：前端域名和后端域名不同
+// 解决方案：CORS配置
+
+// 后端CORS中间件
+const cors = require('cors');
+app.use(cors({
+  origin: ['https://www.example.com', 'https://admin.example.com'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+```
+
+**场景3：第三方API跨域问题**
+```javascript
+// 问题：调用第三方API遇到跨域限制
+// 解决方案：后端代理
+
+// 后端代理接口
+app.get('/api/weather', async (req, res) => {
+  try {
+    const response = await fetch('https://api.weather.com/data', {
+      headers: {
+        'Authorization': `Bearer ${process.env.WEATHER_API_KEY}`
+      }
+    });
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch weather data' });
+  }
+});
+```
+
+**场景4：WebSocket跨域问题**
+```javascript
+// 问题：WebSocket连接跨域
+// 解决方案：服务端设置CORS
+
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({
+  port: 8080,
+  verifyClient: (info) => {
+    const origin = info.origin;
+    const allowedOrigins = ['http://localhost:3000', 'https://example.com'];
+    return allowedOrigins.includes(origin);
+  }
+});
+```
 ```
