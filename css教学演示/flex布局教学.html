@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex布局教学演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            margin: 30px 0 15px 0;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin: 20px 0 10px 0;
+        }
+        
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .flex-container {
+            display: flex;
+            border: 2px solid #3498db;
+            padding: 10px;
+            margin: 10px 0;
+            background: #ecf0f1;
+        }
+        
+        .flex-item {
+            background: #e74c3c;
+            color: white;
+            padding: 20px;
+            margin: 5px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 3px;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        /* 基础演示样式 */
+        .basic-flex {
+            display: flex;
+        }
+        
+        .justify-start { justify-content: flex-start; }
+        .justify-center { justify-content: center; }
+        .justify-end { justify-content: flex-end; }
+        .justify-between { justify-content: space-between; }
+        .justify-around { justify-content: space-around; }
+        .justify-evenly { justify-content: space-evenly; }
+        
+        .align-start { align-items: flex-start; height: 100px; }
+        .align-center { align-items: center; height: 100px; }
+        .align-end { align-items: flex-end; height: 100px; }
+        .align-stretch { align-items: stretch; height: 100px; }
+        
+        .flex-row { flex-direction: row; }
+        .flex-column { flex-direction: column; height: 150px; }
+        .flex-row-reverse { flex-direction: row-reverse; }
+        .flex-column-reverse { flex-direction: column-reverse; height: 150px; }
+        
+        .flex-wrap { flex-wrap: wrap; width: 200px; }
+        .flex-nowrap { flex-wrap: nowrap; width: 200px; }
+        
+        /* 面试题样式 */
+        .interview-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .question {
+            font-weight: bold;
+            color: #d63031;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .answer {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        /* 具体演示案例 */
+        .holy-grail {
+            display: flex;
+            min-height: 100px;
+            border: 2px solid #3498db;
+        }
+        
+        .holy-grail-header,
+        .holy-grail-footer {
+            background: #3498db;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .holy-grail-nav {
+            background: #e74c3c;
+            color: white;
+            width: 150px;
+            padding: 10px;
+        }
+        
+        .holy-grail-main {
+            flex: 1;
+            background: #2ecc71;
+            color: white;
+            padding: 10px;
+        }
+        
+        .holy-grail-aside {
+            background: #f39c12;
+            color: white;
+            width: 150px;
+            padding: 10px;
+        }
+        
+        .center-demo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            background: #ecf0f1;
+            border: 2px solid #3498db;
+        }
+        
+        .center-item {
+            background: #e74c3c;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        
+        .equal-height {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .equal-height-item {
+            flex: 1;
+            background: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Flex布局教学演示</h1>
+        
+        <h2>1. Flex布局基础概念</h2>
+        <div class="demo-section">
+            <h3>什么是Flex布局？</h3>
+            <p>Flex布局（Flexible Box Layout）是CSS3新增的一种布局方式，能够更加高效地排列、分布和对齐容器中的项目。</p>
+            
+            <h3>基本概念</h3>
+            <ul>
+                <li><strong>Flex Container（容器）</strong>：设置了 display: flex 的父元素</li>
+                <li><strong>Flex Item（项目）</strong>：Flex容器的直接子元素</li>
+                <li><strong>主轴（main axis）</strong>：Flex容器的主要轴线</li>
+                <li><strong>交叉轴（cross axis）</strong>：垂直于主轴的轴线</li>
+            </ul>
+            
+            <div class="code-block">
+.container {
+    display: flex; /* 设置为flex容器 */
+}</div>
+            
+            <div class="flex-container basic-flex">
+                <div class="flex-item">Item 1</div>
+                <div class="flex-item">Item 2</div>
+                <div class="flex-item">Item 3</div>
+            </div>
+        </div>
+        
+        <h2>2. 容器属性演示</h2>
+        
+        <div class="demo-section">
+            <h3>justify-content（主轴对齐）</h3>
+            
+            <h4>flex-start（默认）</h4>
+            <div class="flex-container justify-start">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">justify-content: flex-start;</div>
+            
+            <h4>center</h4>
+            <div class="flex-container justify-center">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">justify-content: center;</div>
+            
+            <h4>flex-end</h4>
+            <div class="flex-container justify-end">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">justify-content: flex-end;</div>
+            
+            <h4>space-between</h4>
+            <div class="flex-container justify-between">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">justify-content: space-between;</div>
+            
+            <h4>space-around</h4>
+            <div class="flex-container justify-around">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">justify-content: space-around;</div>
+            
+            <h4>space-evenly</h4>
+            <div class="flex-container justify-evenly">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">justify-content: space-evenly;</div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>align-items（交叉轴对齐）</h3>
+            
+            <h4>flex-start</h4>
+            <div class="flex-container align-start">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2<br>多行</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">align-items: flex-start;</div>
+            
+            <h4>center</h4>
+            <div class="flex-container align-center">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2<br>多行</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">align-items: center;</div>
+            
+            <h4>flex-end</h4>
+            <div class="flex-container align-end">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2<br>多行</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">align-items: flex-end;</div>
+            
+            <h4>stretch（默认）</h4>
+            <div class="flex-container align-stretch">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2<br>多行</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">align-items: stretch;</div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>flex-direction（主轴方向）</h3>
+            
+            <h4>row（默认）</h4>
+            <div class="flex-container flex-row">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">flex-direction: row;</div>
+            
+            <h4>column</h4>
+            <div class="flex-container flex-column">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">flex-direction: column;</div>
+            
+            <h4>row-reverse</h4>
+            <div class="flex-container flex-row-reverse">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">flex-direction: row-reverse;</div>
+            
+            <h4>column-reverse</h4>
+            <div class="flex-container flex-column-reverse">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+            </div>
+            <div class="code-block">flex-direction: column-reverse;</div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>flex-wrap（换行）</h3>
+            
+            <h4>nowrap（默认）</h4>
+            <div class="flex-container flex-nowrap">
+                <div class="flex-item">Item 1</div>
+                <div class="flex-item">Item 2</div>
+                <div class="flex-item">Item 3</div>
+                <div class="flex-item">Item 4</div>
+            </div>
+            <div class="code-block">flex-wrap: nowrap;</div>
+            
+            <h4>wrap</h4>
+            <div class="flex-container flex-wrap">
+                <div class="flex-item">Item 1</div>
+                <div class="flex-item">Item 2</div>
+                <div class="flex-item">Item 3</div>
+                <div class="flex-item">Item 4</div>
+            </div>
+            <div class="code-block">flex-wrap: wrap;</div>
+        </div>
+        
+        <h2>3. 项目属性演示</h2>
+        
+        <div class="demo-section">
+            <h3>flex-grow（放大比例）</h3>
+            <div class="flex-container">
+                <div class="flex-item" style="flex-grow: 1;">flex-grow: 1</div>
+                <div class="flex-item" style="flex-grow: 2;">flex-grow: 2</div>
+                <div class="flex-item" style="flex-grow: 1;">flex-grow: 1</div>
+            </div>
+            <div class="code-block">
+.item1 { flex-grow: 1; }
+.item2 { flex-grow: 2; } /* 占用剩余空间的2倍 */
+.item3 { flex-grow: 1; }</div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>flex-shrink（收缩比例）</h3>
+            <div class="flex-container" style="width: 300px;">
+                <div class="flex-item" style="flex-shrink: 1; width: 150px;">shrink: 1</div>
+                <div class="flex-item" style="flex-shrink: 3; width: 150px;">shrink: 3</div>
+                <div class="flex-item" style="flex-shrink: 1; width: 150px;">shrink: 1</div>
+            </div>
+            <div class="code-block">
+/* 当空间不足时，item2会收缩得更多 */
+.item1 { flex-shrink: 1; }
+.item2 { flex-shrink: 3; }
+.item3 { flex-shrink: 1; }</div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>flex-basis（初始大小）</h3>
+            <div class="flex-container">
+                <div class="flex-item" style="flex-basis: 100px;">basis: 100px</div>
+                <div class="flex-item" style="flex-basis: 200px;">basis: 200px</div>
+                <div class="flex-item" style="flex-basis: 150px;">basis: 150px</div>
+            </div>
+            <div class="code-block">
+.item1 { flex-basis: 100px; }
+.item2 { flex-basis: 200px; }
+.item3 { flex-basis: 150px; }</div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>flex简写属性</h3>
+            <div class="flex-container">
+                <div class="flex-item" style="flex: 1;">flex: 1</div>
+                <div class="flex-item" style="flex: 2;">flex: 2</div>
+                <div class="flex-item" style="flex: 1;">flex: 1</div>
+            </div>
+            <div class="code-block">
+/* flex: grow shrink basis */
+.item1 { flex: 1; }     /* 等同于 flex: 1 1 0% */
+.item2 { flex: 2; }     /* 等同于 flex: 2 1 0% */
+.item3 { flex: 1; }</div>
+        </div>
+        
+        <h2>4. 实际应用案例</h2>
+        
+        <div class="demo-section">
+            <h3>水平垂直居中</h3>
+            <div class="center-demo">
+                <div class="center-item">完美居中</div>
+            </div>
+            <div class="code-block">
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}</div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>等高布局</h3>
+            <div class="equal-height">
+                <div class="equal-height-item">
+                    <h4>栏目1</h4>
+                    <p>这是第一栏的内容</p>
+                </div>
+                <div class="equal-height-item">
+                    <h4>栏目2</h4>
+                    <p>这是第二栏的内容</p>
+                    <p>内容比较多</p>
+                    <p>但是高度会自动对齐</p>
+                </div>
+                <div class="equal-height-item">
+                    <h4>栏目3</h4>
+                    <p>第三栏内容</p>
+                </div>
+            </div>
+            <div class="code-block">
+.container {
+    display: flex;
+    gap: 10px;
+}
+.item {
+    flex: 1; /* 等宽且等高 */
+}</div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>圣杯布局</h3>
+            <div style="display: flex; flex-direction: column; height: 300px; border: 2px solid #3498db;">
+                <div class="holy-grail-header">Header</div>
+                <div class="holy-grail">
+                    <div class="holy-grail-nav">Nav</div>
+                    <div class="holy-grail-main">Main Content</div>
+                    <div class="holy-grail-aside">Aside</div>
+                </div>
+                <div class="holy-grail-header">Footer</div>
+            </div>
+            <div class="code-block">
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+.main-content {
+    display: flex;
+    flex: 1;
+}
+.nav { width: 150px; }
+.main { flex: 1; }
+.aside { width: 150px; }</div>
+        </div>
+        
+        <h2>🎯 经典Flex布局面试题</h2>
+        
+        <div class="interview-section">
+            <div class="question">面试题1：flex: 1 表示什么意思？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                flex: 1 是 flex 属性的简写，等同于：<br>
+                • flex-grow: 1（项目会放大占满剩余空间）<br>
+                • flex-shrink: 1（项目会收缩）<br>
+                • flex-basis: 0%（项目的初始大小为0%）<br><br>
+                <strong>实际效果：</strong>项目会平均分配容器的可用空间。
+            </div>
+        </div>
+        
+        <div class="interview-section">
+            <div class="question">面试题2：justify-content 和 align-items 的区别？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                • <strong>justify-content</strong>：控制项目在主轴上的对齐方式<br>
+                &nbsp;&nbsp;- flex-direction: row 时控制水平对齐<br>
+                &nbsp;&nbsp;- flex-direction: column 时控制垂直对齐<br><br>
+                • <strong>align-items</strong>：控制项目在交叉轴上的对齐方式<br>
+                &nbsp;&nbsp;- flex-direction: row 时控制垂直对齐<br>
+                &nbsp;&nbsp;- flex-direction: column 时控制水平对齐<br><br>
+                <strong>记忆技巧：</strong>justify-content 是"主轴对齐"，align-items 是"交叉轴对齐"
+            </div>
+        </div>
+        
+        <div class="interview-section">
+            <div class="question">面试题3：如何实现一个元素在容器中完美居中？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                <div class="code-block">
+.container {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center;     /* 垂直居中 */
+    height: 100vh; /* 或者指定容器高度 */
+}</div>
+                <strong>原理：</strong>justify-content: center 让元素在主轴居中，align-items: center 让元素在交叉轴居中。
+            </div>
+        </div>
+        
+        <div class="interview-section">
+            <div class="question">面试题4：flex-basis、width、min-width 的优先级？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                优先级从高到低：<br>
+                1. <strong>max-width/max-height</strong>（最大值限制）<br>
+                2. <strong>min-width/min-height</strong>（最小值限制）<br>
+                3. <strong>flex-basis</strong>（flex项目的初始大小）<br>
+                4. <strong>width/height</strong>（普通的宽高属性）<br><br>
+                <strong>实际应用：</strong>在flex布局中，通常使用flex-basis而不是width来控制项目大小。
+            </div>
+        </div>
+        
+        <div class="interview-section">
+            <div class="question">面试题5：flex-grow、flex-shrink 是如何计算的？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                <strong>flex-grow计算：</strong><br>
+                • 先计算剩余空间 = 容器宽度 - 所有项目flex-basis之和<br>
+                • 每个项目分配的额外空间 = 剩余空间 × (该项目的flex-grow / 所有flex-grow之和)<br><br>
+                <strong>flex-shrink计算：</strong><br>
+                • 先计算溢出空间 = 所有项目flex-basis之和 - 容器宽度<br>
+                • 每个项目收缩的空间 = 溢出空间 × (该项目的flex-shrink × 该项目的flex-basis) / Σ(每个项目的flex-shrink × flex-basis)<br><br>
+                <strong>示例：</strong><br>
+                容器300px，三个项目flex-basis都是100px，flex-grow分别为1、2、1<br>
+                剩余空间 = 300 - 300 = 0px（无剩余空间，所以flex-grow不起作用）
+            </div>
+        </div>
+        
+        <div class="interview-section">
+            <div class="question">面试题6：如何实现左侧固定宽度，右侧自适应的布局？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                <div class="code-block">
+.container {
+    display: flex;
+}
+.sidebar {
+    width: 200px; /* 或者 flex-basis: 200px; */
+    flex-shrink: 0; /* 防止收缩 */
+}
+.main {
+    flex: 1; /* 占满剩余空间 */
+}</div>
+                <strong>演示：</strong>
+                <div style="display: flex; height: 60px; margin: 10px 0; border: 2px solid #3498db;">
+                    <div style="width: 200px; background: #e74c3c; color: white; padding: 20px; flex-shrink: 0;">
+                        固定宽度
+                    </div>
+                    <div style="flex: 1; background: #2ecc71; color: white; padding: 20px;">
+                        自适应宽度
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interview-section">
+            <div class="question">面试题7：space-between、space-around、space-evenly 的区别？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                • <strong>space-between</strong>：两端对齐，项目之间的间距相等，首末项目贴边<br>
+                • <strong>space-around</strong>：每个项目两侧的间距相等，所以项目之间的间距比边缘间距大一倍<br>
+                • <strong>space-evenly</strong>：所有间距都相等，包括首末项目到边缘的距离<br><br>
+                <strong>可视化理解：</strong><br>
+                space-between: |item| ——— |item| ——— |item|<br>
+                space-around:  ——|item|——— |item|——— |item|——<br>
+                space-evenly:  ——|item|—— |item|—— |item|——
+            </div>
+        </div>
+        
+        <div class="interview-section">
+            <div class="question">面试题8：如何解决flex项目内容溢出问题？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                <strong>问题：</strong>当flex项目内容过长时，可能会撑破容器<br><br>
+                <strong>解决方案：</strong><br>
+                1. 设置 <code>min-width: 0</code> 或 <code>overflow: hidden</code><br>
+                2. 使用 <code>word-break: break-all</code> 强制换行<br>
+                3. 设置 <code>flex-shrink: 1</code>（默认值）<br><br>
+                <div class="code-block">
+.flex-item {
+    min-width: 0; /* 允许项目收缩到比内容更小 */
+    overflow: hidden; /* 隐藏溢出内容 */
+    text-overflow: ellipsis; /* 显示省略号 */
+}</div>
+            </div>
+        </div>
+        
+        <div class="interview-section">
+            <div class="question">面试题9：align-self 属性的作用？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                align-self 允许单个flex项目有与其他项目不一样的对齐方式，可以覆盖align-items属性。<br><br>
+                <strong>可选值：</strong><br>
+                • auto（默认）：继承父元素的align-items属性<br>
+                • flex-start、flex-end、center、baseline、stretch<br><br>
+                <strong>示例：</strong><br>
+                <div style="display: flex; align-items: flex-start; height: 80px; border: 2px solid #3498db; margin: 10px 0;">
+                    <div class="flex-item">正常</div>
+                    <div class="flex-item" style="align-self: center;">center</div>
+                    <div class="flex-item" style="align-self: flex-end;">flex-end</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interview-section">
+            <div class="question">面试题10：如何实现响应式的flex布局？</div>
+            <div class="answer">
+                <strong>答案：</strong><br>
+                结合媒体查询和flex属性实现响应式布局：<br><br>
+                <div class="code-block">
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.item {
+    flex: 1 1 300px; /* 最小宽度300px */
+}
+
+/* 移动端 */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    .item {
+        flex: 1 1 auto;
+    }
+}</div>
+                <strong>关键技巧：</strong><br>
+                • 使用 flex-wrap: wrap 允许换行<br>
+                • 设置合适的 flex-basis 作为最小宽度<br>
+                • 在小屏幕上改为 flex-direction: column
+            </div>
+        </div>
+        
+        <h2>5. 练习建议</h2>
+        <div class="demo-section">
+            <h3>掌握Flex布局的关键步骤：</h3>
+            <ol>
+                <li><strong>理解概念</strong>：主轴、交叉轴、容器、项目</li>
+                <li><strong>熟记属性</strong>：容器的6个属性，项目的6个属性</li>
+                <li><strong>多做练习</strong>：尝试不同的属性组合</li>
+                <li><strong>解决实际问题</strong>：居中、两栏布局、响应式等</li>
+                <li><strong>调试技巧</strong>：使用浏览器开发者工具查看flex效果</li>
+            </ol>
+            
+            <h3>常用Flex模式：</h3>
+            <div class="code-block">
+/* 水平居中 */
+justify-content: center;
+
+/* 垂直居中 */
+align-items: center;
+
+/* 完美居中 */
+justify-content: center; align-items: center;
+
+/* 两端对齐 */
+justify-content: space-between;
+
+/* 等分布局 */
+.item { flex: 1; }
+
+/* 左固定右自适应 */
+.left { width: 200px; flex-shrink: 0; }
+.right { flex: 1; }</div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: #3498db; color: white; border-radius: 10px;">
+            <h3>🎉 恭喜完成Flex布局学习！</h3>
+            <p>继续练习和应用这些概念，你会成为CSS布局专家！</p>
+        </div>
+    </div>
+</body>
+</html>
