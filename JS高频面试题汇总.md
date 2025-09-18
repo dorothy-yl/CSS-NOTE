@@ -564,38 +564,59 @@ console.log(myInstanceof([], Function)); // false
 1. **原型链继承**
 ```javascript
 function Parent() {
-  this.name = 'parent';
-  this.colors = ['red', 'blue'];
+  this.name = '张三';
+  this.hobbies = ['读书', '运动'];
 }
 Parent.prototype.getName = function() {
   return this.name;
 };
 
-function Child() {}
+function Child() {
+  this.age = 20;
+}
 Child.prototype = new Parent();
 
+let child1 = new Child();
+let child2 = new Child();
+console.log(child1.name); // '张三'
+console.log(child1.age);  // 20
+
 // 缺点：引用类型属性会被所有实例共享
+child1.hobbies.push('游戏');
+console.log(child2.hobbies); // ['读书', '运动', '游戏'] - 被共享了
 ```
 
 2. **构造函数继承**
 ```javascript
 function Parent(name) {
   this.name = name;
-  this.colors = ['red', 'blue'];
+  this.hobbies = ['读书', '运动'];
+}
+Parent.prototype.getName = function() {
+  return this.name;
+};
+
+function Child(name, age) {
+  Parent.call(this, name);
+  this.age = age;
 }
 
-function Child(name) {
-  Parent.call(this, name);
-}
+let child1 = new Child('李四', 18);
+let child2 = new Child('王五', 22);
+console.log(child1.name); // '李四'
+console.log(child1.age);  // 18
+child1.hobbies.push('游戏');
+console.log(child2.hobbies); // ['读书', '运动'] - 不会被共享
 
 // 缺点：无法继承原型上的方法
+console.log(child1.getName); // undefined
 ```
 
 3. **组合继承**
 ```javascript
 function Parent(name) {
   this.name = name;
-  this.colors = ['red', 'blue'];
+  this.hobbies = ['读书', '运动'];
 }
 Parent.prototype.getName = function() {
   return this.name;
@@ -608,6 +629,11 @@ function Child(name, age) {
 Child.prototype = new Parent(); // 第二次调用Parent
 Child.prototype.constructor = Child;
 
+let child1 = new Child('赵六', 25);
+console.log(child1.name); // '赵六'
+console.log(child1.age);  // 25
+console.log(child1.getName()); // '赵六' - 可以继承原型方法
+
 // 缺点：调用两次父构造函数
 ```
 
@@ -619,18 +645,38 @@ function object(o) {
   return new F();
 }
 
-// ES5的Object.create就是这个原理
+let person = {
+  name: '孙七',
+  age: 30,
+  hobbies: ['读书', '运动']
+};
+
+let child1 = object(person);
+let child2 = Object.create(person); // ES5的Object.create就是这个原理
+
+child1.name = '周八';
+child1.age = 28;
+console.log(child1.name); // '周八'
+console.log(child2.name); // '孙七'
 ```
 
 5. **寄生式继承**
 ```javascript
 function createAnother(original) {
   const clone = Object.create(original);
-  clone.sayHi = function() {
-    console.log('hi');
+  clone.sayHello = function() {
+    console.log(`你好，我是${this.name}，今年${this.age}岁`);
   };
   return clone;
 }
+
+let person = {
+  name: '吴九',
+  age: 35
+};
+
+let child = createAnother(person);
+child.sayHello(); // '你好，我是吴九，今年35岁'
 ```
 
 6. **寄生组合式继承**（最理想）
@@ -643,6 +689,7 @@ function inheritPrototype(Child, Parent) {
 
 function Parent(name) {
   this.name = name;
+  this.hobbies = ['读书', '运动'];
 }
 Parent.prototype.getName = function() {
   return this.name;
@@ -654,6 +701,11 @@ function Child(name, age) {
 }
 inheritPrototype(Child, Parent);
 
+let child1 = new Child('郑十', 26);
+console.log(child1.name); // '郑十'
+console.log(child1.age);  // 26
+console.log(child1.getName()); // '郑十'
+
 // 优点：只调用一次Parent构造函数，避免了在Child.prototype上创建不必要的属性
 ```
 
@@ -662,9 +714,13 @@ inheritPrototype(Child, Parent);
 class Parent {
   constructor(name) {
     this.name = name;
+    this.hobbies = ['读书', '运动'];
   }
   getName() {
     return this.name;
+  }
+  introduce() {
+    return `我是${this.name}`;
   }
 }
 
@@ -673,7 +729,18 @@ class Child extends Parent {
     super(name);
     this.age = age;
   }
+  getAge() {
+    return this.age;
+  }
+  introduce() {
+    return `${super.introduce()}，今年${this.age}岁`;
+  }
 }
+
+let child1 = new Child('陈十一', 24);
+console.log(child1.getName()); // '陈十一'
+console.log(child1.getAge());  // 24
+console.log(child1.introduce()); // '我是陈十一，今年24岁'
 ```
 
 ### 11. 面向对象
@@ -2033,13 +2100,13 @@ HTTP/1.1 304 Not Modified
 #### 题目2：Last-Modified和ETag的区别？
 **答案：**
 
-| 特性 | Last-Modified | ETag |
-|------|---------------|------|
-| **精度** | 秒级精度 | 任意精度 |
-| **性能** | 性能更好 | 需要计算哈希值 |
-| **分布式** | 不适合分布式系统 | 适合分布式系统 |
-| **文件变化** | 只检测内容变化 | 检测内容和元数据变化 |
-| **实现复杂度** | 简单 | 相对复杂 |
+| 特性           | Last-Modified    | ETag                 |
+| -------------- | ---------------- | -------------------- |
+| **精度**       | 秒级精度         | 任意精度             |
+| **性能**       | 性能更好         | 需要计算哈希值       |
+| **分布式**     | 不适合分布式系统 | 适合分布式系统       |
+| **文件变化**   | 只检测内容变化   | 检测内容和元数据变化 |
+| **实现复杂度** | 简单             | 相对复杂             |
 
 **ETag的优势：**
 1. 可以检测文件内容变化，即使修改时间相同

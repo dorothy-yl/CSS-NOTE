@@ -8,6 +8,7 @@ JavaScript由三部分组成：
 - **DOM** - 文档对象模型，操作HTML文档的API
 - **BOM** - 浏览器对象模型，操作浏览器的API
 
+
 ### 2. 数据类型
 
 **基本类型（7个）：**
@@ -75,6 +76,17 @@ function foo() {
 }
 ```
 
+**💡 理解要点：**
+- **var的提升**：就像把声明部分"搬到"作用域顶部，但赋值留在原地
+  ```javascript
+  // 实际执行顺序相当于：
+  var a;           // 声明被提升到顶部，值为undefined
+  console.log(a);  // 所以这里是undefined而不是报错
+  a = 1;           // 赋值还在原来位置
+  ```
+- **let/const的暂时性死区**：虽然也提升了，但在声明前不能访问（像被"冻结"了）
+- **函数提升**：整个函数定义都被提升，所以可以在声明前调用
+
 ### 3. 暂时性死区
 ```javascript
 // 情况1
@@ -93,6 +105,17 @@ let a = 2;  // SyntaxError: Identifier 'a' has already been declared
 let null = 1;  // SyntaxError: Unexpected token 'null'
 ```
 
+**💡 理解要点：**
+- **暂时性死区**：从作用域开始到let/const声明这段区域，变量不可访问
+  ```javascript
+  console.log(x); // ReferenceError: Cannot access 'x' before initialization
+  let x = 1;      // 这里才真正"激活"变量x
+  ```
+- **记忆技巧**：
+  - var = "随意大叔"：可以重复声明，到处都能用
+  - let = "严格青年"：不能重复声明，有自己的块级作用域
+  - const = "固执老头"：不能重复声明，还不能改值
+
 ## 三、作用域与闭包
 
 ### 1. 作用域链
@@ -101,6 +124,25 @@ JavaScript作用域链是查找变量的机制：
 2. 如果没找到，向上一级作用域查找
 3. 直到全局作用域
 4. 如果都没找到，返回undefined
+
+**💡 理解要点：**
+- **作用域链**：就像"找东西"的过程，先在自己房间找，找不到就去客厅找，再找不到就去其他房间找
+  ```javascript
+  let global = '全局变量';
+  
+  function outer() {
+    let outerVar = '外层变量';
+    
+    function inner() {
+      let innerVar = '内层变量';
+      console.log(innerVar);  // 1. 先在inner作用域找 ✓
+      console.log(outerVar);  // 2. inner没有，去outer找 ✓
+      console.log(global);    // 3. outer没有，去全局找 ✓
+      console.log(notExist);  // 4. 全局也没有，报错 ✗
+    }
+  }
+  ```
+- **记忆技巧**：作用域链 = 向上查找的"家族关系"，儿子找不到问爸爸，爸爸找不到问爷爷
 
 ### 2. 闭包
 闭包是函数可以访问其外部作用域的变量，即使外部函数已经执行完毕。
@@ -119,10 +161,36 @@ console.log(counter()); // 1
 console.log(counter()); // 2
 ```
 
+**💡 理解要点：**
+- **闭包**：就像一个"保险箱"，内层函数可以永久访问外层函数的变量
+  ```javascript
+  function createWallet() {
+    let money = 100;  // 这个变量被"锁"在闭包里
+    
+    return {
+      getMoney: () => money,        // 可以查看余额
+      spend: (amount) => {          // 可以花钱
+        if (money >= amount) {
+          money -= amount;
+          return `花了${amount}元，余额${money}元`;
+        }
+        return '余额不足';
+      }
+    };
+  }
+  
+  const wallet = createWallet();
+  console.log(wallet.getMoney()); // 100
+  console.log(wallet.spend(30));  // "花了30元，余额70元"
+  // 外部无法直接访问money变量，实现了数据私有化
+  ```
+
 **闭包的作用：**
-- 创建私有变量
-- 延长变量生命周期
-- 模块化代码
+- 创建私有变量（外部无法直接访问）
+- 延长变量生命周期（函数执行完变量不销毁）
+- 模块化代码（封装功能）
+
+**记忆技巧**：闭包 = "私人保险箱"，只有特定的钥匙（内层函数）才能打开
 
 ### 3. 闭包应用 - 私有计数器
 ```javascript
@@ -273,10 +341,58 @@ Function.prototype.myBind = function(context, ...args) {
 ### 1. 原型链
 每个对象都有`__proto__`属性指向其原型对象，原型对象也有自己的原型，形成链式结构。
 
+**💡 理解要点：**
+- **原型链**：就像"遗传关系"，孩子没有的特征会从父母那里继承
+  ```javascript
+  // 想象一个家族：
+  // 爷爷(Object.prototype) -> 爸爸(Animal.prototype) -> 儿子(dog实例)
+  
+  function Animal(name) {
+    this.name = name;  // 每个实例自己的属性
+  }
+  Animal.prototype.eat = function() {  // 所有动物共有的方法
+    console.log(this.name + ' is eating');
+  };
+  
+  const dog = new Animal('旺财');
+  dog.eat();  // 旺财 is eating
+  
+  // 查找过程：
+  // 1. dog对象有eat方法吗？没有
+  // 2. dog.__proto__(Animal.prototype)有eat方法吗？有！调用它
+  ```
+- **记忆技巧**：原型链 = "家族遗传链"，没有的能力就问上一代要
+
 ### 2. 构造函数、原型、实例的关系
 - 构造函数有`prototype`属性指向原型对象
 - 原型对象有`constructor`属性指向构造函数
 - 实例有`__proto__`属性指向原型对象
+
+**💡 理解要点：**
+- **三者关系**：就像"工厂-模板-产品"的关系
+  ```javascript
+  function Person(name) {    // 构造函数 = 工厂
+    this.name = name;
+  }
+  
+  Person.prototype.sayHi = function() {  // 原型对象 = 模板
+    console.log('Hi, I am ' + this.name);
+  };
+  
+  const alice = new Person('Alice');     // 实例 = 产品
+  
+  // 关系图：
+  // Person(构造函数) ←--constructor--- Person.prototype(原型对象)
+  //    ↓                                      ↑
+  // prototype                            __proto__
+  //    ↓                                      ↑
+  //  指向                                   alice(实例)
+  ```
+- **记忆口诀**：
+  - 构造函数的prototype指向原型
+  - 原型的constructor指向构造函数  
+  - 实例的__proto__指向原型
+  - "工厂有模板，模板记工厂，产品找模板"
 
 ### 3. 原型链示例
 ```javascript
@@ -325,6 +441,32 @@ console.log(dog2.colors); // ['white', 'black']
 dog1.sayName(); // 'My name is Max'
 ```
 
+**💡 理解要点：**
+- **继承的两个步骤**：
+  1. **继承属性**：`Animal.call(this, name)` - 在子类构造函数中调用父类构造函数
+  2. **继承方法**：`Dog.prototype = Object.create(Animal.prototype)` - 让子类原型继承父类原型
+  
+  ```javascript
+  // 步骤拆解：
+  function Dog(name, breed) {
+    // 第1步：继承父类的实例属性
+    Animal.call(this, name);  // 相当于把Animal函数在Dog的this上执行一遍
+    // 现在this.name和this.colors都有了
+    
+    this.breed = breed;  // 添加子类特有属性
+  }
+  
+  // 第2步：继承父类的原型方法
+  Dog.prototype = Object.create(Animal.prototype);  // 创建一个新对象，原型指向Animal.prototype
+  Dog.prototype.constructor = Dog;  // 修正constructor指向
+  ```
+
+- **为什么要两步？**
+  - 第1步解决：每个实例有自己的属性副本（不共享）
+  - 第2步解决：所有实例共享父类的方法（节省内存）
+
+- **记忆技巧**：继承 = "搬家"，先搬东西（属性），再搬关系（方法）
+
 ### 5. ES6 Class继承
 ```javascript
 class Animal {
@@ -348,6 +490,35 @@ class Dog extends Animal {
     }
 }
 ```
+
+**💡 理解要点：**
+- **ES6 Class vs 传统继承**：
+  ```javascript
+  // 传统方式（复杂）
+  function Dog(name, breed) {
+    Animal.call(this, name);  // 继承属性
+    this.breed = breed;
+  }
+  Dog.prototype = Object.create(Animal.prototype);  // 继承方法
+  Dog.prototype.constructor = Dog;  // 修正constructor
+  
+  // ES6方式（简洁）
+  class Dog extends Animal {
+    constructor(name, breed) {
+      super(name);  // 相当于Animal.call(this, name)
+      this.breed = breed;
+    }
+  }
+  ```
+
+- **super关键字**：
+  - `super(name)` = 调用父类构造函数，相当于 `Animal.call(this, name)`
+  - `super.speak()` = 调用父类方法
+
+- **记忆技巧**：
+  - ES6 Class = "语法糖"，让继承写法更像其他面向对象语言
+  - extends = "扩展"，Dog扩展了Animal的功能
+  - super = "超级"，调用超级父类的能力
 
 ## 七、数组方法
 

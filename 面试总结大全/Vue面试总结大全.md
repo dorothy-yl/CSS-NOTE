@@ -47,6 +47,28 @@
 3. 子组件 destroyed
 4. 父组件 destroyed
 
+**Vue3父子组件生命周期执行顺序：**
+
+**父组件创建：**
+1. 父组件 setup
+2. 父组件 onBeforeMount
+3. 子组件 setup
+4. 子组件 onBeforeMount
+5. 子组件 onMounted
+6. 父组件 onMounted
+
+**父组件更新：**
+1. 父组件 onBeforeUpdate
+2. 子组件 onBeforeUpdate
+3. 子组件 onUpdated
+4. 父组件 onUpdated
+
+**父组件卸载：**
+1. 父组件 onBeforeUnmount
+2. 子组件 onBeforeUnmount
+3. 子组件 onUnmounted
+4. 父组件 onUnmounted
+
 ### 3. keep-alive组件生命周期
 - `activated` - 组件激活时
 - `deactivated` - 组件失活时
@@ -66,14 +88,24 @@
 - `v-once` - 只渲染一次
 
 ### 2. v-if vs v-show
-| 特性 | v-if | v-show |
-|------|------|--------|
-| 渲染方式 | 条件性渲染 | 总是渲染，切换display |
-| 性能 | 切换时性能开销大 | 初始渲染开销大 |
-| 使用场景 | 条件很少改变 | 频繁切换 |
-| DOM | 会创建/销毁元素 | 元素始终存在 |
+| 特性     | v-if             | v-show                |
+| -------- | ---------------- | --------------------- |
+| 渲染方式 | 条件性渲染       | 总是渲染，切换display |
+| 性能     | 切换时性能开销大 | 初始渲染开销大        |
+| 使用场景 | 条件很少改变     | 频繁切换              |
+| DOM      | 会创建/销毁元素  | 元素始终存在          |
 
 ### 3. v-model原理
+核心原理：v-model通过组合属性绑定和事件监听，实现了数据与视图的双向同步，让开发者可以用一个简单的指令就完成复杂的双向绑定逻辑。
+文本输入框：监听input事件，绑定value属性
+复选框：监听change事件，绑定checked属性
+单选框：监听change事件，绑定checked属性
+下拉选择框：监听change事件，绑定value属性
+Vue版本差异
+Vue2中：自定义组件使用value属性和input事件
+Vue3中：自定义组件使用modelValue属性和update:modelValue事件
+
+
 v-model是语法糖，本质上是：
 ```vue
 <!-- 使用v-model -->
@@ -415,13 +447,13 @@ export const useCounterStore = defineStore('counter', {
 
 ### 5. Pinia vs Vuex对比
 
-| 特性 | Vuex | Pinia |
-|------|------|-------|
-| API设计 | 复杂，需要mutations | 简单，直接修改state |
-| TypeScript支持 | 需要额外配置 | 原生支持 |
-| 模块化 | 需要modules | 自动模块化 |
-| 代码分割 | 需要动态导入 | 自动代码分割 |
-| 开发工具 | Vuex DevTools | Pinia DevTools |
+| 特性           | Vuex                | Pinia               |
+| -------------- | ------------------- | ------------------- |
+| API设计        | 复杂，需要mutations | 简单，直接修改state |
+| TypeScript支持 | 需要额外配置        | 原生支持            |
+| 模块化         | 需要modules         | 自动模块化          |
+| 代码分割       | 需要动态导入        | 自动代码分割        |
+| 开发工具       | Vuex DevTools       | Pinia DevTools      |
 
 ## 五、Vue路由
 

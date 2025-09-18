@@ -5,54 +5,22 @@
 ### 1. Vue 响应式原理
 
 **Vue 2.x 响应式原理：**
-- 使用 `Object.defineProperty()` 劫持对象属性的 getter 和 setter
-  (get 函数不能接收参数，必须返回一个值。set 函数接收一个参数（即等号右边的值）)
-- 通过 Dep 收集依赖，Watcher 监听数据变化
-- 数组通过重写原型方法实现响应式
-- **缺陷**：无法监听对象属性的添加删除，数组索引和长度变化
+- 使用 `Object.defineProperty()`在页面刚开始加载的时候，Vue会遍历data中的所有属性  使用 `Object.defineProperty()转化为 getter 和 setter，当用户访问或设置某个属性时会触发对应的getter 和 setter，随后通知每个组件实例对应的一个watch方法，最后实现视图的更新
+- **缺陷**：
+- 对于复杂对象需要深度监听，需要一次性监听到底，计算量是非常大的，性能不好
+- 对象的新增删除属性是无法监听到的，需要使用Vue.$set和Vue.$delete来辅助
+- 需要重写数组方法来实现数组的监听
 
-```javascript
-// Vue2 核心实现
-function defineReactive(obj, key, val) {
-  const dep = new Dep() // 依赖收集器
-  
-  Object.defineProperty(obj, key, {
-    get() {
-      if (Dep.target) {
-        dep.depend() // 收集依赖
-      }
-      return val
-    },
-    set(newVal) {
-      if (newVal === val) return
-      val = newVal
-      dep.notify() // 通知更新
-    }
-  })
-}
 ```
 
 **Vue 3.x 响应式原理：**
-- 使用 `Proxy` 代理整个对象，使用 `Reflect` 配合操作
-- 可以监听动态新增的属性、数组索引和 length 变化
-- 性能更好，内存占用更小
+- 使用 `Proxy` 代替了Object.defineProperty()，使用 `Reflect` 配合操作
+- **优势**：可以直接监听整个对象，而不需要遍历监听属性，性能会有所提升
+- Proxy可以直接监听数组的变化，而不需要去重写数组原生的方法，便利性会增加很多
+- Proxy有多达13种拦截方法，功能更加强大，
+- Proxy作为一个新标准，会受到浏览器厂商的重点持续的性能优化
 
-```javascript
-// Vue3 使用 Proxy 实现
-function reactive(target) {
-  return new Proxy(target, {
-    get(target, key, receiver) {
-      track(target, key) // 收集依赖
-      return Reflect.get(target, key, receiver)
-    },
-    set(target, key, value, receiver) {
-      const result = Reflect.set(target, key, value, receiver)
-      trigger(target, key) // 触发更新
-      return result
-    }
-  })
-}
-```
+
 
 ### 2. 发布订阅模式和观察者模式
 
