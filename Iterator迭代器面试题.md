@@ -20,9 +20,82 @@
 - 可迭代协议：定义了对象可被迭代的能力（实现 Symbol.iterator 方法）
 - 可迭代对象返回迭代器，迭代器执行迭代
 
+### 4. for...in 和 for...of 的区别是什么？
+**答案要点：**
+
+#### 主要区别
+1. **遍历内容不同**
+   - `for...in`：遍历对象的**可枚举属性键名**（包括原型链上的）
+   - `for...of`：遍历**可迭代对象的值**（不包括原型链）
+
+2. **适用对象不同**
+   - `for...in`：可用于任何对象
+   - `for...of`：只能用于可迭代对象（实现了 Symbol.iterator 的对象）
+
+#### 代码示例
+```javascript
+// 数组遍历
+const arr = ['a', 'b', 'c'];
+arr.customProp = 'custom';
+
+// for...in 遍历索引（键名）
+for (let key in arr) {
+  console.log(key); // '0', '1', '2', 'customProp'
+}
+
+// for...of 遍历值
+for (let value of arr) {
+  console.log(value); // 'a', 'b', 'c'
+}
+
+// 对象遍历
+const obj = { a: 1, b: 2, c: 3 };
+
+// for...in 可以遍历对象
+for (let key in obj) {
+  console.log(key, obj[key]); // 'a' 1, 'b' 2, 'c' 3
+}
+
+// for...of 不能直接遍历普通对象（会报错）
+// for (let value of obj) {} // TypeError: obj is not iterable
+
+// 字符串遍历
+const str = 'hello';
+
+// for...in 遍历索引
+for (let index in str) {
+  console.log(index); // '0', '1', '2', '3', '4'
+}
+
+// for...of 遍历字符
+for (let char of str) {
+  console.log(char); // 'h', 'e', 'l', 'l', 'o'
+}
+
+// 原型链差异
+Array.prototype.customMethod = function() {};
+const arr2 = [1, 2, 3];
+
+// for...in 会遍历原型链
+for (let key in arr2) {
+  console.log(key); // '0', '1', '2', 'customMethod'
+}
+
+// for...of 不会遍历原型链
+for (let value of arr2) {
+  console.log(value); // 1, 2, 3
+}
+```
+
+#### 总结
+- `for...in` 用于遍历对象属性，获取键名
+- `for...of` 用于遍历可迭代对象，获取值
+- 遍历数组时推荐用 `for...of`，遍历对象属性用 `for...in`
+- `for...in` 会遍历原型链上的可枚举属性，`for...of` 不会
+
 ## 二、代码实现题
 
-### 4. 手写一个简单的迭代器
+### 5. 手写一个简单的迭代器
 ```javascript
 // 实现一个数字范围迭代器
 function createRangeIterator(start, end) {
@@ -45,7 +118,7 @@ console.log(iterator.next()); // { value: 3, done: false }
 console.log(iterator.next()); // { value: undefined, done: true }
 ```
 
-### 5. 实现一个可迭代对象
+### 6. 实现一个可迭代对象
 ```javascript
 // 方式一：使用 Symbol.iterator
 const myIterable = {
@@ -80,7 +153,7 @@ for (let value of myIterable) {
 }
 ```
 
-### 6. 实现一个无限迭代器
+### 7. 实现一个无限迭代器
 ```javascript
 function createInfiniteIterator() {
   let value = 0;
@@ -101,7 +174,7 @@ for (let value of infinite) {
 }
 ```
 
-### 7. 实现链表的迭代器
+### 8. 实现链表的迭代器
 ```javascript
 class LinkedList {
   constructor() {
@@ -148,7 +221,7 @@ for (let value of list) {
 
 ## 三、生成器相关题
 
-### 8. 使用生成器实现迭代器
+### 9. 使用生成器实现迭代器
 ```javascript
 function* fibonacci(n) {
   let [a, b] = [0, 1];
@@ -164,7 +237,7 @@ for (let value of fib) {
 }
 ```
 
-### 9. 生成器委托（yield*）
+### 10. 生成器委托（yield*）
 ```javascript
 function* generator1() {
   yield 1;
@@ -181,7 +254,7 @@ const gen = generator2();
 console.log([...gen]); // [1, 2, 3, 4]
 ```
 
-### 10. 使用生成器实现异步迭代
+### 11. 使用生成器实现异步迭代
 ```javascript
 async function* asyncGenerator() {
   const urls = ['url1', 'url2', 'url3'];
@@ -201,7 +274,7 @@ async function* asyncGenerator() {
 
 ## 四、内置可迭代对象
 
-### 11. 哪些内置对象是可迭代的？
+### 12. 哪些内置对象是可迭代的？
 **答案：**
 - String
 - Array
@@ -232,7 +305,7 @@ for (let value of set) {
 }
 ```
 
-### 12. 实现类数组对象的迭代
+### 13. 实现类数组对象的迭代
 ```javascript
 const arrayLike = {
   0: 'a',
@@ -249,7 +322,7 @@ for (let item of arrayLike) {
 
 ## 五、高级应用题
 
-### 13. 实现可以同时支持 for...of 和展开运算符的对象
+### 14. 实现可以同时支持 for...of 和展开运算符的对象
 ```javascript
 class CustomCollection {
   constructor(...items) {
@@ -275,7 +348,7 @@ console.log([...collection]); // [1, 2, 3, 4, 5]
 console.log([...collection.reverse()]); // [5, 4, 3, 2, 1]
 ```
 
-### 14. 实现可中断和恢复的迭代器
+### 15. 实现可中断和恢复的迭代器
 ```javascript
 class PausableIterator {
   constructor(data) {
@@ -315,7 +388,7 @@ pausable.reset();
 console.log(pausable.next()); // { value: 1, done: false }
 ```
 
-### 15. 实现迭代器组合
+### 16. 实现迭代器组合
 ```javascript
 function* combineIterators(...iterators) {
   for (let iterator of iterators) {
@@ -333,7 +406,7 @@ console.log([...combined]); // [1, 2, 3, 4, 5, 6, 'a', 'b', 'c']
 
 ## 六、性能和优化题
 
-### 16. 迭代器的惰性求值
+### 17. 迭代器的惰性求值
 ```javascript
 class LazyRange {
   constructor(start, end) {
@@ -374,7 +447,7 @@ for (let value of result) {
 }
 ```
 
-### 17. 实现带缓存的迭代器
+### 18. 实现带缓存的迭代器
 ```javascript
 class CachedIterator {
   constructor(iterable) {
@@ -421,7 +494,7 @@ console.log([...cached]); // 直接从缓存返回 [0, 1, 4]
 
 ## 七、错误处理和边界情况
 
-### 18. 迭代器的 return 和 throw 方法
+### 19. 迭代器的 return 和 throw 方法
 ```javascript
 function* generatorWithCleanup() {
   try {
@@ -453,7 +526,7 @@ console.log(gen2.next()); // { value: 1, done: false }
 console.log(gen2.throw('error')); // Caught: error, { value: undefined, done: true }
 ```
 
-### 19. 防止迭代器被多次迭代
+### 20. 防止迭代器被多次迭代
 ```javascript
 class OneTimeIterator {
   constructor(data) {
@@ -487,7 +560,7 @@ console.log([...once]); // [1, 2, 3]
 
 ## 八、实际应用场景题
 
-### 20. 实现分页数据的迭代器
+### 21. 实现分页数据的迭代器
 ```javascript
 class PaginatedIterator {
   constructor(fetchPage, pageSize = 10) {
@@ -533,7 +606,7 @@ async function fetchPage(page, pageSize) {
 })();
 ```
 
-### 21. 实现树结构的深度优先和广度优先迭代
+### 22. 实现树结构的深度优先和广度优先迭代
 ```javascript
 class TreeNode {
   constructor(value, children = []) {
@@ -576,7 +649,7 @@ console.log([...tree.dfs()]); // [1, 2, 4, 5, 3, 6, 7]
 console.log([...tree.bfs()]); // [1, 2, 3, 4, 5, 6, 7]
 ```
 
-### 22. 实现可以 take、skip、filter 的迭代器工具链
+### 23. 实现可以 take、skip、filter 的迭代器工具链
 ```javascript
 class IteratorChain {
   constructor(iterable) {
@@ -651,7 +724,7 @@ console.log(result); // [8, 12]
 
 ## 九、与其他特性结合
 
-### 23. Iterator 与 Promise 结合
+### 24. Iterator 与 Promise 结合
 ```javascript
 async function* asyncIteratorFromPromises(promises) {
   for (let promise of promises) {
@@ -682,7 +755,7 @@ async function batchProcess(promises, batchSize = 3) {
 }
 ```
 
-### 24. 使用 Proxy 增强迭代器
+### 25. 使用 Proxy 增强迭代器
 ```javascript
 function createEnhancedIterator(iterable) {
   const iterator = iterable[Symbol.iterator]();
@@ -716,7 +789,7 @@ console.log(enhanced.count); // 2
 
 ## 十、面试常见陷阱题
 
-### 25. 迭代器的状态共享问题
+### 26. 迭代器的状态共享问题
 ```javascript
 // 错误示例：多个迭代共享状态
 const buggyIterable = {
@@ -758,7 +831,7 @@ console.log([...correctIterable]); // [1, 2, 3]
 console.log([...correctIterable]); // [1, 2, 3]
 ```
 
-### 26. 生成器函数 vs 普通函数返回迭代器
+### 27. 生成器函数 vs 普通函数返回迭代器
 ```javascript
 // 生成器函数方式
 function* generatorWay() {
