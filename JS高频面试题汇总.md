@@ -10,7 +10,7 @@ JavaScript有8种数据类型，分为两大类：
 - **基本数据类型（7种）**：Number、String、Boolean、Undefined、Null、Symbol、BigInt
 - **引用数据类型（1种）**：Object（包括Array、Function、Date、RegExp等）
 
-#### 题目2：如何检测数据类型？
+#### 题目2：如何检测数据类型？(怎么判断一个变量是都为数组)
 **答案：**
 1. **typeof**：返回一个字符串，表示未经计算的操作数的类型
 ```javascript
@@ -991,7 +991,6 @@ for (let item of obj) {
   console.log(item); // 'a', 'b', 'c'
 }
 ```
-
 ### 15. Promise
 
 #### 题目1：Promise的基本用法和状态？
@@ -1166,7 +1165,7 @@ Generator函数是ES6提供的一种异步编程解决方案，可以理解为�
 
 特征：
 1. function关键字与函数名之间有一个星号
-2. 函数体内部使用yield表达式定义不同的内部状态
+2. 函数体内部使用yield表达式 定义不同的内部状态
 
 ```javascript
 function* generator() {
@@ -1388,9 +1387,9 @@ document.body.removeChild(element);
 
 #### 题目1：如何检测内存泄漏？
 **答案：**
-1. **Chrome DevTools**
-   - Memory面板：查看内存快照，对比内存增长
-   - Performance面板：查看内存使用曲线
+1. **Chrome DevTools**（谷歌浏览器开发工具）
+   - Memory(记忆)面板：查看内存快照，对比内存增长
+   - Performance（性能）面板：查看内存使用曲线
 
 2. **代码层面**
    - 使用WeakMap、WeakSet存储对象引用
@@ -1610,7 +1609,7 @@ function throttle(fn, delay) {
       }, remaining);
     }
   };
-}
+}·  
 ```
 
 ### 23. Proxy代理
@@ -1682,16 +1681,21 @@ const array = new Proxy([1, 2, 3], {
 console.log(array[-1]); // 3
 ```
 
-### 24. Ajax
+### 24. Ajax（网络请求）
 
 #### 题目1：原生Ajax的实现步骤？
 **答案：**
+1.创建 Ajax的核心对象 XMLHttpRequest对象
+2.通过 XMLHttpRequest 对象的 open() 方法与服务端建立连接
+3.构建请求所需的数据内容，并通过XMLHttpRequest 对象的 send() 方法发送给服务器4.通过 XMLHttpRequest 对象提供的 onreadystatechange 事件监听服务器端你的通信状态
+6.接受并处理服务端向客户端响应的数据结果
+7.将处理结果更新到 HTML页面中
 ```javascript
 function ajax(options) {
   // 1. 创建XMLHttpRequest对象
   const xhr = new XMLHttpRequest();
   
-  // 2. 处理参数
+  // 2. 处理参数（给默认值）
   options = options || {};
   options.method = (options.method || 'GET').toUpperCase();
   options.dataType = options.dataType || 'json';
@@ -2057,13 +2061,25 @@ console.log(unique1(arr)); // [1, 2, 3, 4]
 
 #### 题目1：什么是协商缓存？协商缓存的实现原理？
 **答案：**
-协商缓存是HTTP缓存机制的一种，当强缓存失效时，浏览器会向服务器发送请求，服务器根据请求头中的缓存标识来决定是否使用缓存。
+协商缓存是浏览器与服务器通过通信协商，判断缓存资源是否过期，从而决定是否复用本地缓存的机制，核心是“二次确认”。
 
 **实现原理：**
-1. 浏览器发送请求时携带缓存标识（If-Modified-Since 或 If-None-Match）
-2. 服务器比较缓存标识与资源当前状态
-3. 如果资源未变化，返回304状态码，浏览器使用本地缓存
-4. 如果资源已变化，返回200状态码和新的资源内容
+协商缓存的实现依赖 HTTP 请求头和响应头的配合，分为以下两步：
+1. 首次请求：服务器返回资源并标记缓存标识
+当浏览器第一次请求资源时，服务器在返回资源的响应头中，会附带两个关键的缓存标识：
+- Last-Modified：资源在服务器上的最后修改时间。
+- ETag：资源的唯一标识（类似文件指纹，资源内容变化时会更新）。
+浏览器会将这些标识与资源一起保存在本地缓存中。
+ 
+2. 后续请求：浏览器携带标识与服务器协商
+当浏览器再次请求同一资源时，会在请求头中携带之前保存的标识，与服务器进行验证：
+- 若携带 Last-Modified，则请求头会包含 If-Modified-Since（值为上次的 Last-Modified），服务器对比资源当前修改时间与该值，判断是否更新。
+ 
+- 若携带 ETag，则请求头会包含 If-None-Match（值为上次的 ETag），服务器对比资源当前 ETag 与该值，判断内容是否变化。
+
+3 .协商结果:
+如果资源未变化，返回304状态码，浏览器使用本地缓存
+如果资源已变化，返回200状态码和新的资源内容
 
 **两种协商缓存方式：**
 

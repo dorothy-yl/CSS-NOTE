@@ -1,27 +1,12 @@
-# CSS面试总结大全
+# CSS面试题目版
 
 ## 一、CSS盒模型
 
-### 1. 盒模型组成部分
-CSS盒模型包含四个部分：
-- **content（内容）** - 元素的实际内容
-- **padding（内边距）** - 内容与边框之间的空间
-- **border（边框）** - 围绕内容和内边距的边框
-- **margin（外边距）** - 元素与其他元素之间的空间
+### 1. CSS盒模型包含哪些部分？
 
-### 2. 标准盒模型 vs IE盒模型
+### 2. 标准盒模型和IE盒模型有什么区别？
 
-**标准盒模型（content-box）：**
-- width/height只包含content
-- 总宽度 = width + padding + border + margin
-- 默认行为
-
-**IE盒模型（border-box）：**
-- width/height包含content + padding + border
-- 总宽度 = width + margin
-- 通过`box-sizing: border-box`设置
-
-### 3. 盒模型计算示例
+### 3. 请计算以下CSS代码在标准盒模型和IE盒模型下的总宽度
 ```css
 .box {
     width: 300px;
@@ -31,218 +16,49 @@ CSS盒模型包含四个部分：
 }
 ```
 
-**标准盒模型总宽度：** 300 + (30×2) + (5×2) + (20×2) = 410px
-**IE盒模型总宽度：** 300 + (20×2) = 340px
-
 ## 二、CSS选择器与优先级
 
-### 1. 选择器优先级规则
-优先级从高到低：
-1. `!important` - 最高优先级
-2. 内联样式 - 1000
-3. ID选择器 - 100
-4. 类选择器/属性选择器/伪类 - 10
-5. 标签选择器 - 1
-6. 通配符 - 0
+### 1. CSS选择器优先级规则是什么？
 
-### 2. 优先级计算示例
+### 2. 请计算以下选择器的优先级并排序
 ```css
-a) style="color: red;"                    = 1000
-b) #nav .menu li a:hover                  = 100 + 10 + 1 + 1 + 10 = 122
-c) .header .nav ul li                     = 10 + 10 + 1 + 1 = 22
-d) nav > ul > li > a                      = 1 + 1 + 1 + 1 = 4
-e) * { color: black; }                    = 0
-f) #content p.highlight                   = 100 + 1 + 10 = 111
+a) style="color: red;"
+b) #nav .menu li a:hover
+c) .header .nav ul li
+d) nav > ul > li > a
+e) * { color: black; }
+f) #content p.highlight
 ```
 
-**排序：** a > b > f > c > d > e
-
-### 3. 选择器类型
-- **基本选择器**：`*`, `E`, `#id`, `.class`
-- **组合选择器**：`E F`, `E>F`, `E+F`, `E~F`
-- **属性选择器**：`[attr]`, `[attr=value]`, `[attr^=value]`
-- **伪类选择器**：`:hover`, `:focus`, `:nth-child()`
-- **伪元素选择器**：`::before`, `::after`, `::first-line`
+### 3. CSS选择器有哪些类型？
 
 ## 三、CSS布局
 
-### 1. 水平垂直居中方法
+### 1. 请列举实现水平垂直居中的方法
 
-**方法1：Flexbox（推荐）**
-```css
-.parent {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-```
+### 2. 如何实现三列布局？
 
-**方法2：Grid**
-```css
-.parent {
-    display: grid;
-    place-items: center;
-}
-```
+### 3. 响应式布局有哪些实现方案？
 
-**方法3：绝对定位 + transform**
-```css
-.parent {
-    position: relative;
-}
-.child {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-```
 
-**方法4：绝对定位 + margin auto**
-```css
-.parent {
-    position: relative;
-}
-.child {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    width: 200px;
-    height: 100px;
-}
-```
-
-### 2. 三列布局实现
-
-**Flex布局实现：**
-```css
-.container {
-    display: flex;
-    min-height: 100vh;
-}
-.left {
-    width: 200px;
-    background: #f0f0f0;
-}
-.right {
-    width: 200px;
-    background: #f0f0f0;
-}
-.center {
-    flex: 1;
-    background: #fff;
-}
-```
-
-**Grid布局实现：**
-```css
-.container {
-    display: grid;
-    grid-template-columns: 200px 1fr 200px;
-    min-height: 100vh;
-}
-```
-
-### 3. 响应式布局方案
-
-**媒体查询：**
-```css
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-}
-```
-
-**Flexbox响应式：**
-```css
-.card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-.card {
-    flex: 1 1 calc(33.333% - 14px); /* 3列 */
-}
-@media (max-width: 1023px) {
-    .card {
-        flex: 1 1 calc(50% - 10px); /* 2列 */
-    }
-}
-@media (max-width: 767px) {
-    .card {
-        flex: 1 1 100%; /* 1列 */
-    }
-}
-```
 
 ## 四、BFC（块级格式化上下文）
 
-### 1. 什么是BFC
-BFC是一个独立的渲染区域，内部元素的布局不会影响外部元素。
+### 1. 什么是BFC？
 
-### 2. 触发BFC的条件
-- 根元素（`<html>`）
-- 浮动元素（`float`不为`none`）
-- 绝对定位元素（`position`为`absolute`或`fixed`）
-- `display`为`inline-block`、`table-cell`、`flex`、`grid`等
-- `overflow`不为`visible`
+### 2. 哪些条件可以触发BFC？
 
-### 3. BFC的应用场景
-- **清除浮动**：父元素创建BFC可以包含浮动子元素
-- **防止margin重叠**：相邻元素的垂直margin不会合并
-- **防止元素被浮动元素覆盖**：BFC元素不会被浮动元素覆盖
-- **自适应两栏布局**：利用BFC实现自适应宽度
+### 3. BFC有哪些应用场景？
 
-### 4. BFC应用示例
-```css
-/* 清除浮动 */
-.container {
-    overflow: hidden; /* 创建BFC */
-}
-
-/* 防止margin重叠 */
-.box {
-    overflow: hidden; /* 创建BFC */
-    margin: 20px 0;
-}
-```
+### 4. 请写出BFC清除浮动的代码示例
 
 ## 五、CSS单位
 
-### 1. 单位类型对比
+### 1. 请对比不同CSS单位的特点和使用场景
 
-| 单位 | 特点 | 使用场景 |
-|------|------|----------|
-| px | 绝对单位，固定像素值 | 边框、1px细线、小图标 |
-| em | 相对单位，相对于父元素字体大小 | 相对于父元素的场景 |
-| rem | 相对单位，相对于根元素字体大小 | 字体大小、布局尺寸 |
-| vw/vh | 视口宽度/高度的百分比 | 全屏布局 |
-| % | 相对于父元素的百分比 | 响应式布局 |
+### 2. rem是如何转换成px的？请写出一个rem适配方案
 
-### 2. rem适配方案
-```css
-/* 设置根元素字体大小 */
-html {
-    font-size: 625%; /* 1rem = 100px */
-}
-
-/* 使用rem单位 */
-.button {
-    width: 2.4rem;    /* 240px ÷ 100px */
-    height: 0.48rem;  /* 48px ÷ 100px */
-    font-size: 0.16rem; /* 16px ÷ 100px */
-}
-```
-
-### 3. 响应式单位使用场景
-- **使用px**：边框、1px细线、小图标、固定尺寸元素
-- **使用rem**：字体大小、布局尺寸、需要缩放的元素
-- **使用em**：相对于父元素字体大小的场景
-- **使用vw/vh**：全屏布局、视口相关尺寸
+### 3. 在响应式布局中，什么情况下使用px、rem、em、vw/vh？
 
 ## 六、CSS3新特性
 

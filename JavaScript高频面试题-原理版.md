@@ -40,15 +40,7 @@ this的指向在函数定义时无法确定，只有函数执行时才能确定�
 
 优先级：new绑定 > 显式绑定 > 隐式绑定 > 默认绑定
 
-#### 题目2：请举例说明不同场景下的this指向
-**答案：**
-- 默认绑定：普通函数调用，this指向全局对象或undefined
-- 隐式绑定：对象方法调用，this指向调用对象
-- 显式绑定：通过call、apply、bind强制改变this指向
-- new绑定：构造函数调用，this指向新实例
-- 箭头函数：继承外层作用域的this，无法被改变
-
-### 3. apply/call/bind 原理
+### 2. apply/call/bind 原理
 
 #### 题目1：call、apply、bind的区别？
 **答案：**
@@ -58,8 +50,7 @@ this的指向在函数定义时无法确定，只有函数执行时才能确定�
   - apply：立即执行，参数以数组形式传递
   - bind：返回改变this后的新函数，不立即执行
 
-
-### 4. 变量提升
+### 3. 变量提升
 
 #### 题目1：什么是变量提升？
 **答案：**
@@ -69,7 +60,7 @@ this的指向在函数定义时无法确定，只有函数执行时才能确定�
 - **函数声明**：整个函数提升，可以在声明前调用
 - **let/const**：存在暂时性死区，不能在声明前使用
 
-### 5. 执行上下文
+### 4. 执行上下文
 
 #### 题目1：什么是执行上下文？
 **答案：**
@@ -100,7 +91,7 @@ this的指向在函数定义时无法确定，只有函数执行时才能确定�
 3. **销毁阶段**：
    - 执行完毕后，执行上下文出栈，等待垃圾回收
 
-### 6. 作用域
+### 5. 作用域
 
 #### 题目1：什么是作用域？
 **答案：**
@@ -115,7 +106,7 @@ this的指向在函数定义时无法确定，只有函数执行时才能确定�
 **答案：**
 作用域链是多个作用域嵌套形成的链式结构。当查找变量时，会从当前作用域开始，逐级向上查找，直到全局作用域。
 
-### 7. 闭包
+### 6. 闭包
 
 #### 题目1：什么是闭包？
 **答案：**
@@ -138,7 +129,7 @@ this的指向在函数定义时无法确定，只有函数执行时才能确定�
 1. **内存泄漏**：闭包会使函数中的变量都保存在内存中，内存消耗大
 2. **性能问题**：闭包会导致作用域链变长，查找变量的时间增加
 
-### 8. New的原理
+### 7. New的原理
 
 #### 题目1：new操作符做了什么？
 **答案：**
@@ -148,7 +139,7 @@ new操作符执行时会进行以下步骤：
 3. 将构造函数的this指向新对象，执行构造函数
 4. 如果构造函数返回对象，则返回该对象；否则返回新创建的对象
 
-### 9. 原型/原型链
+### 8. 原型/原型链
 
 #### 题目1：什么是原型和原型链？
 **答案：**
@@ -156,8 +147,8 @@ new操作符执行时会进行以下步骤：
 - **原型链**：对象通过__proto__属性连接起来的链式结构
 
 **原型规则：**
-1. 所有对象都有__proto__属性，指向其构造函数的prototype
-2. 所有函数都有prototype属性，指向一个对象
+1. 所有实例对象都有__proto__属性，指向其构造函数的prototype
+2. 所有函数都有prototype属性，指向一个原型对象
 3. 所有函数都是Function的实例
 4. Object.prototype.__proto__ === null（原型链顶端）
 
@@ -165,13 +156,7 @@ new操作符执行时会进行以下步骤：
 **答案：**
 instanceof用于检测构造函数的prototype是否出现在对象的原型链上。
 
-实现原理：
-1. 获取对象的原型
-2. 获取构造函数的prototype
-3. 循环遍历原型链，比较是否相等
-4. 如果找到则返回true，否则返回false
-
-### 10. 继承
+### 9. 继承
 
 #### 题目1：JavaScript有哪些继承方式？
 **答案：**
@@ -186,8 +171,8 @@ Child.prototype=new Parent();
 let o1=new Child();
 console.log(o1);
 }
-
-1. **构造函数继承**：在子类构造函数中调用父类构造函数。缺点：无法继承原型上的方法。
+2. **原型式继承**：基于现有对象创建新对象，ES5的Object.create就是这个原理。
+3. **构造函数继承**：在子类构造函数中调用父类构造函数。缺点：无法继承原型上的方法。
 function Parent(){
   this.name="张三";
 }
@@ -197,27 +182,20 @@ function Child(){
 }
 let o2=new Child();
 console.log(o2);
-
-
-2. **组合继承**：结合原型链和构造函数继承。缺点：调用两次父构造函数。
-
-3. **原型式继承**：基于现有对象创建新对象，ES5的Object.create就是这个原理。
-
 4. **寄生式继承**：在原型式继承基础上增强对象。
-
+2. **组合继承**：结合原型链和构造函数继承。缺点：调用两次父构造函数。
 5. **寄生组合式继承**：最理想的继承方式，只调用一次父构造函数，避免了在子类原型上创建不必要的属性。
-
 6. **ES6 Class继承**：使用extends关键字，内部实现基于寄生组合式继承。
 
-### 11. 面向对象
 
-#### 题目1：JavaScript如何实现封装？
+
+#### 10. 题目1：JavaScript如何实现封装？
 **答案：**
 1. **使用闭包实现私有属性和方法**：通过函数作用域隐藏内部实现
 2. **使用Symbol实现私有属性**：Symbol值唯一，外部难以访问
 3. **使用WeakMap实现私有属性**：WeakMap的键只能是对象，实现真正的私有
 
-### 12. 事件机制
+### 11. 事件机制
 
 #### 题目1：什么是事件委托？
 **答案：**
@@ -227,28 +205,111 @@ console.log(o2);
 1. 减少内存消耗，不需要为每个子元素绑定事件
 2. 动态绑定，新增的子元素自动有事件处理
 
+**实现原理：**
+```javascript
+// 事件委托实现
+document.getElementById('list').addEventListener('click', function(e) {
+  if (e.target.tagName === 'LI') {
+    console.log('点击了：', e.target.textContent);
+  }
+});
+```
+
 #### 题目2：事件流的三个阶段？
 **答案：**
 1. **捕获阶段**：事件从window向目标元素传播
 2. **目标阶段**：事件到达目标元素
 3. **冒泡阶段**：事件从目标元素向window传播
 
+**执行顺序示例：**
+```javascript
+// 捕获阶段监听
+element.addEventListener('click', handler, true);
+// 冒泡阶段监听（默认）
+element.addEventListener('click', handler, false);
+```
+
 #### 题目3：如何阻止事件传播和默认行为？
 **答案：**
-- stopPropagation()：阻止事件冒泡
-- stopImmediatePropagation()：阻止事件捕获和冒泡
-- preventDefault()：阻止默认行为
-- return false：在onclick等属性绑定中阻止默认行为和冒泡
+- `stopPropagation()`：阻止事件冒泡
+- `stopImmediatePropagation()`：阻止事件捕获和冒泡
+- `preventDefault()`：阻止默认行为
+- `return false`：在onclick等属性绑定中阻止默认行为和冒泡
 
-### 13. 模块化
+#### 题目4：Vue和React的事件机制有什么区别？
+**答案：**
+
+**Vue事件机制：**
+- 直接绑定到目标元素上
+- 使用原生DOM事件对象
+- 提供丰富的事件修饰符（.stop、.prevent、.once等）
+- 支持自定义事件（$emit/$on）
+
+```vue
+<template>
+  <button @click.stop.prevent="handleClick">Vue按钮</button>
+  <input @keyup.enter="handleEnter">
+</template>
+```
+
+**React事件机制：**
+- 使用事件委托，所有事件委托到document
+- 使用合成事件对象（SyntheticEvent）
+- 自动处理跨浏览器兼容性
+```jsx
+const handleClick = (event) => {
+  // event是合成事件对象
+  event.stopPropagation();
+  event.preventDefault();
+  // 访问原生事件：event.nativeEvent
+};
+
+<button onClick={handleClick}>React按钮</button>
+```
+
+**主要区别对比：**
+| 特性 | Vue | React |
+|------|-----|-------|
+| 事件绑定 | 直接绑定到元素 | 委托到document |
+| 事件对象 | 原生事件对象 | 合成事件对象 |
+| 性能 | 元素多时内存占用高 | 统一委托，性能更好 |
+| 语法 | 声明式修饰符 | 手动处理 |
+| 调试 | 直观易调试 | 需要理解委托机制 |
+
+#### 题目5：React合成事件的原理是什么？
+**答案：**
+React合成事件是对原生事件的封装，主要特点：
+
+1. **事件委托**：所有事件都委托到document根节点
+2. **统一接口**：提供跨浏览器兼容的事件API
+3. **事件池**：复用事件对象提高性能（React 16及之前）
+4. **批量更新**：事件处理中的状态更新会被批处理
+
+**实现原理：**
+```javascript
+// 简化的React事件处理流程
+function handleEvent(nativeEvent) {
+  // 1. 创建合成事件对象
+  const syntheticEvent = createSyntheticEvent(nativeEvent);
+  
+  // 2. 收集事件路径上的处理器
+  const handlers = collectHandlers(nativeEvent.target);
+  
+  // 3. 执行事件处理器
+  executeHandlers(handlers, syntheticEvent);
+  
+  // 4. 清理事件对象（事件池）
+  releaseSyntheticEvent(syntheticEvent);
+}
+```
+
+### 12. 模块化
 
 #### 题目1：JavaScript的模块化方案有哪些？
 **答案：**
 
 1. **CommonJS**（Node.js）：使用require/module.exports，同步加载
-2. **AMD**（RequireJS）：异步模块定义，适合浏览器环境
-3. **UMD**（通用模块定义）：兼容多种模块化方案
-4. **ES6 Module**：使用import/export，静态加载
+2. **ES6 Module**：使用import/export，静态加载
 
 #### 题目2：CommonJS和ES6 Module的区别？
 **答案：**
@@ -268,8 +329,8 @@ console.log(o2);
    - CommonJS：需要开发者保证正确性
    - ES6 Module：自动处理循环依赖
 
-### 14. Iterator迭代器
-
+### 13. Iterator迭代器
+   
 #### 题目1：什么是Iterator？
 **答案：**
 Iterator是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署Iterator接口，就可以完成遍历操作。
@@ -283,7 +344,7 @@ Iterator是一种接口，为各种不同的数据结构提供统一的访问机
 **答案：**
 Iterator接口需要实现next方法，返回包含value和done属性的对象。可以通过Symbol.iterator为对象添加迭代器接口。
 
-### 15. Promise
+### 14. Promise
 
 #### 题目1：Promise的基本用法和状态？
 **答案：**
@@ -297,19 +358,11 @@ Promise有三种状态：
 #### 题目2：Promise的常用方法？
 **答案：**
 1. **Promise.all**：所有Promise都成功才成功，一个失败就失败
-2. **Promise.race**：返回最先改变状态的Promise
-3. **Promise.allSettled**：等待所有Promise都完成（无论成功失败）
-4. **Promise.any**：任意一个Promise成功就成功，全部失败才失败
+2. **Promise.any**：任意一个Promise成功就成功，全部失败才失败
+3. **Promise.race**：返回最先改变状态的Promise
+4. **Promise.allSettled**：等待所有Promise都完成（无论成功失败）
 
-#### 题目3：手写实现Promise
-**答案：**
-Promise实现需要考虑：
-- 状态管理（pending、fulfilled、rejected）
-- 回调函数队列（处理异步情况）
-- then方法的链式调用
-- 错误处理机制
-
-### 16. Generator
+### 15. Generator
 
 #### 题目1：什么是Generator函数？
 **答案：**
@@ -327,7 +380,7 @@ Generator函数是ES6提供的一种异步编程解决方案，可以理解为�
 3. **状态机**：管理复杂的状态变化
 4. **迭代器生成**：创建自定义的迭代器
 
-### 17. async/await
+### 16. async/await
 
 #### 题目1：async/await的原理？
 **答案：**
