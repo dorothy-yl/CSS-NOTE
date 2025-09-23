@@ -106,8 +106,6 @@
             border-left: 4px solid #ffc107;
         }
     </style>
-    <!-- 代码高亮样式 -->
-    <link rel="stylesheet" href="../shared/code-highlight.css">
 </head>
 <body>
     <div class="container">
@@ -1367,7 +1365,5 @@ const timer = createTimer();
                 `计时器状态：${running ? '运行中' : '已停止'}，已用时：${elapsed}秒`;
         }
     </script>
-    <!-- 代码高亮脚本 -->
-    <script src="../shared/code-highlight.js"></script>
 </body>
 </html>

@@ -299,8 +299,6 @@
             .stats { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
-    <!-- 代码高亮样式 -->
-    <link rel="stylesheet" href="../shared/code-highlight.css">
 </head>
 <body>
     <div class="container">
@@ -518,7 +516,5 @@
         console.log('4. 🏊‍♀️ 清除浮动技巧');
         console.log('5. 📝 HTML5表单验证');
     </script>
-    <!-- 代码高亮脚本 -->
-    <script src="../shared/code-highlight.js"></script>
 </body>
 </html>

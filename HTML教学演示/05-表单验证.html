@@ -3,188 +3,1421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML5表单验证教学</title>
+    <title>表单验证完整教学 - HTML5 + JavaScript</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
+
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.2);
             overflow: hidden;
         }
+
         header {
             background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
             color: white;
             padding: 3rem 2rem;
             text-align: center;
         }
-        main { padding: 2rem; }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #2d3748;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        nav button:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+        }
+
+        nav button.active {
+            background: #667eea;
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
         .form-demo {
             background: #f8f9fa;
             padding: 2rem;
             border-radius: 15px;
             margin: 2rem 0;
         }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
         .form-group {
             margin-bottom: 1.5rem;
         }
+
         label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: bold;
             color: #333;
         }
+
+        label span.required {
+            color: #dc3545;
+        }
+
         input, textarea, select {
             width: 100%;
-            padding: 1rem;
+            padding: 0.75rem;
             border: 2px solid #e9ecef;
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.3s ease;
         }
-        input:focus {
+
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
-        input:valid {
+
+        /* 验证状态样式 */
+        input:valid:not(:placeholder-shown) {
             border-color: #28a745;
-            background: #d4edda;
+            background: rgba(40, 167, 69, 0.1);
         }
+
         input:invalid:not(:focus):not(:placeholder-shown) {
             border-color: #dc3545;
-            background: #f8d7da;
+            background: rgba(220, 53, 69, 0.1);
         }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-group.error input {
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        .form-group.success input {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .form-group.success .success-message {
+            display: block;
+        }
+
         .code-demo {
-            background: #2d3748;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             color: #e2e8f0;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-            font-family: monospace;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
             overflow-x: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
+
+        .code-demo::before {
+            content: 'CODE';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 复制按钮样式 */
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e2e8f0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .copy-btn:hover {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .copy-btn.copied {
+            background: rgba(40, 167, 69, 0.3);
+            border-color: #28a745;
+        }
+
+        /* 代码语法高亮样式 */
+        .code-comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .code-keyword {
+            color: #f472b6;
+            font-weight: bold;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-number {
+            color: #fbbf24;
+        }
+
+        .code-function {
+            color: #60a5fa;
+        }
+
+        .code-property {
+            color: #c084fc;
+        }
+
+        .code-tag {
+            color: #fb923c;
+        }
+
+        .code-attribute {
+            color: #67e8f9;
+        }
+
+        /* 代码块滚动条美化 */
+        .code-demo::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .code-demo::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        .code-demo::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .code-demo::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
         .btn {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
-            padding: 1rem 2rem;
+            padding: 0.75rem 2rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: bold;
             transition: all 0.3s ease;
+            margin-right: 1rem;
         }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn.btn-secondary {
+            background: #6c757d;
+        }
+
+        .validation-rules {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .validation-rules h4 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .validation-rules ul {
+            margin-left: 1.5rem;
+            color: #856404;
+        }
+
+        .demo-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .demo-card h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .strength-meter {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .strength-meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+
+        .strength-weak { background: #dc3545; width: 33%; }
+        .strength-medium { background: #ffc107; width: 66%; }
+        .strength-strong { background: #28a745; width: 100%; }
+
+        .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📝 HTML5表单验证教学</h1>
-            <p>学习HTML5原生表单验证功能</p>
+            <h1>📝 表单验证完整教学</h1>
+            <p>HTML5原生验证 + JavaScript自定义验证 + 正则表达式</p>
         </header>
 
+        <nav>
+            <button class="nav-btn active" onclick="showSection('basic')">基础验证</button>
+            <button class="nav-btn" onclick="showSection('advanced')">高级验证</button>
+            <button class="nav-btn" onclick="showSection('custom')">自定义验证</button>
+            <button class="nav-btn" onclick="showSection('regex')">正则验证</button>
+            <button class="nav-btn" onclick="showSection('realworld')">实战案例</button>
+        </nav>
+
         <main>
-            <section>
-                <h2>🎯 HTML5新增输入类型</h2>
+            <!-- 基础验证 -->
+            <section id="basic" class="section active">
+                <h2>🎯 HTML5 基础验证</h2>
+
+                <div class="validation-rules">
+                    <h4>📋 HTML5 内置验证属性</h4>
+                    <ul>
+                        <li><strong>required</strong> - 必填字段</li>
+                        <li><strong>type</strong> - email, url, number, tel, date等</li>
+                        <li><strong>pattern</strong> - 正则表达式模式</li>
+                        <li><strong>min/max</strong> - 数值或日期范围</li>
+                        <li><strong>minlength/maxlength</strong> - 字符串长度限制</li>
+                        <li><strong>step</strong> - 数值步长</li>
+                    </ul>
+                </div>
+
                 <div class="form-demo">
-                    <form>
-                        <div class="form-group">
-                            <label for="email">邮箱 (type="email")</label>
-                            <input type="email" id="email" placeholder="输入邮箱地址" required>
+                    <form id="basicForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="basic-email">
+                                    邮箱地址 <span class="required">*</span>
+                                </label>
+                                <input type="email" id="basic-email"
+                                       placeholder="user@example.com"
+                                       required>
+                                <div class="error-message">请输入有效的邮箱地址</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="basic-url">网站地址</label>
+                                <input type="url" id="basic-url"
+                                       placeholder="https://example.com">
+                                <div class="error-message">请输入有效的URL</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="basic-number">
+                                    年龄 (18-100) <span class="required">*</span>
+                                </label>
+                                <input type="number" id="basic-number"
+                                       min="18" max="100"
+                                       placeholder="请输入年龄"
+                                       required>
+                                <div class="error-message">年龄必须在18到100之间</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="basic-tel">电话号码</label>
+                                <input type="tel" id="basic-tel"
+                                       pattern="1[3-9][0-9]{9}"
+                                       placeholder="13812345678"
+                                       title="请输入11位手机号码">
+                                <div class="error-message">请输入有效的手机号码</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="basic-date">
+                                    出生日期 <span class="required">*</span>
+                                </label>
+                                <input type="date" id="basic-date"
+                                       max="2006-01-01"
+                                       required>
+                                <div class="error-message">必须年满18岁</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="basic-time">预约时间</label>
+                                <input type="time" id="basic-time"
+                                       min="09:00" max="18:00">
+                                <div class="error-message">预约时间为9:00-18:00</div>
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="url">网址 (type="url")</label>
-                            <input type="url" id="url" placeholder="https://example.com">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="number">数字 (type="number", min="1", max="100")</label>
-                            <input type="number" id="number" min="1" max="100" placeholder="输入1-100的数字">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="tel">电话 (type="tel", pattern)</label>
-                            <input type="tel" id="tel" pattern="[0-9]{3}-[0-9]{4}" 
-                                   placeholder="格式：123-4567" title="请输入 xxx-xxxx 格式">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="date">日期 (type="date")</label>
-                            <input type="date" id="date">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">密码 (minlength="8")</label>
-                            <input type="password" id="password" minlength="8" 
-                                   placeholder="至少8位密码" required>
+                            <label for="basic-range">满意度评分 (1-10)</label>
+                            <input type="range" id="basic-range"
+                                   min="1" max="10" value="5"
+                                   oninput="this.nextElementSibling.textContent = this.value">
+                            <span>5</span>
                         </div>
 
                         <button type="submit" class="btn">提交表单</button>
+                        <button type="reset" class="btn btn-secondary">重置</button>
                     </form>
                 </div>
 
                 <div class="code-demo">
-&lt;!-- HTML5表单验证示例 --&gt;
+<!-- HTML5 基础验证示例 -->
+&lt;!-- 邮箱验证 --&gt;
 &lt;input type="email" required&gt;
-&lt;input type="url" placeholder="https://..."&gt;
-&lt;input type="number" min="1" max="100"&gt;
-&lt;input type="tel" pattern="[0-9]{3}-[0-9]{4}"&gt;
-&lt;input type="date"&gt;
-&lt;input type="password" minlength="8" required&gt;
+
+&lt;!-- 数值范围验证 --&gt;
+&lt;input type="number" min="18" max="100" required&gt;
+
+&lt;!-- 电话号码验证（使用正则） --&gt;
+&lt;input type="tel" pattern="1[3-9][0-9]{9}" title="请输入11位手机号"&gt;
+
+&lt;!-- 日期范围验证 --&gt;
+&lt;input type="date" max="2006-01-01" required&gt;
+
+&lt;!-- 时间范围验证 --&gt;
+&lt;input type="time" min="09:00" max="18:00"&gt;
                 </div>
             </section>
 
-            <section>
-                <h2>🔧 验证属性详解</h2>
-                <ul style="margin-left: 2rem; margin-top: 1rem;">
-                    <li><strong>required:</strong> 必填字段</li>
-                    <li><strong>pattern:</strong> 正则表达式验证</li>
-                    <li><strong>min/max:</strong> 数值范围限制</li>
-                    <li><strong>minlength/maxlength:</strong> 字符长度限制</li>
-                    <li><strong>step:</strong> 数值步长</li>
-                </ul>
+            <!-- 高级验证 -->
+            <section id="advanced" class="section">
+                <h2>🚀 高级验证技巧</h2>
+
+                <div class="demo-card">
+                    <h3>密码强度验证</h3>
+                    <form id="advancedForm">
+                        <div class="form-group">
+                            <label for="password">密码（至少8位，包含大小写字母和数字）</label>
+                            <input type="password" id="password"
+                                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$"
+                                   placeholder="输入密码"
+                                   required>
+                            <div class="strength-meter">
+                                <div class="strength-meter-fill"></div>
+                            </div>
+                            <div class="error-message">密码必须至少8位，包含大小写字母和数字</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm-password">确认密码</label>
+                            <input type="password" id="confirm-password"
+                                   placeholder="再次输入密码"
+                                   required>
+                            <div class="error-message">两次输入的密码不一致</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username">用户名（3-20位，字母开头）</label>
+                            <input type="text" id="username"
+                                   pattern="^[a-zA-Z][a-zA-Z0-9_]{2,19}$"
+                                   placeholder="输入用户名"
+                                   required>
+                            <div class="error-message">用户名必须3-20位，以字母开头</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="credit-card">信用卡号（16位数字）</label>
+                            <input type="text" id="credit-card"
+                                   pattern="^[0-9]{4}\s?[0-9]{4}\s?[0-9]{4}\s?[0-9]{4}$"
+                                   placeholder="1234 5678 9012 3456"
+                                   maxlength="19">
+                            <div class="error-message">请输入有效的16位信用卡号</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cvv">CVV（3位数字）</label>
+                            <input type="text" id="cvv"
+                                   pattern="^[0-9]{3}$"
+                                   placeholder="123"
+                                   maxlength="3">
+                            <div class="error-message">CVV必须是3位数字</div>
+                        </div>
+
+                        <button type="submit" class="btn">验证并提交</button>
+                    </form>
+                </div>
 
                 <div class="code-demo">
-/* CSS伪类样式 */
-input:valid {
-    border-color: #28a745;
-    background: #d4edda;
+// JavaScript 密码强度检测
+function checkPasswordStrength(password) {
+    let strength = 0;
+
+    // 长度检查
+    if (password.length >= 8) strength++;
+    if (password.length >= 12) strength++;
+
+    // 包含字符类型检查
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+    // 返回强度等级
+    if (strength < 3) return 'weak';
+    if (strength < 5) return 'medium';
+    return 'strong';
+}
+                </div>
+            </section>
+
+            <!-- 自定义验证 -->
+            <section id="custom" class="section">
+                <h2>⚙️ JavaScript 自定义验证</h2>
+
+                <div class="demo-card">
+                    <h3>自定义验证函数</h3>
+                    <form id="customForm">
+                        <div class="form-group">
+                            <label for="custom-email">邮箱（禁止QQ邮箱）</label>
+                            <input type="email" id="custom-email"
+                                   placeholder="user@example.com">
+                            <div class="error-message">不允许使用QQ邮箱</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id-card">身份证号码</label>
+                            <input type="text" id="id-card"
+                                   placeholder="输入18位身份证号"
+                                   maxlength="18">
+                            <div class="error-message">请输入有效的身份证号码</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="custom-file">文件上传（仅限图片，最大2MB）</label>
+                            <input type="file" id="custom-file"
+                                   accept="image/*">
+                            <div class="error-message">请上传小于2MB的图片文件</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>兴趣爱好（至少选择2项）</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="hobbies" value="reading"> 阅读</label>
+                                <label><input type="checkbox" name="hobbies" value="sports"> 运动</label>
+                                <label><input type="checkbox" name="hobbies" value="music"> 音乐</label>
+                                <label><input type="checkbox" name="hobbies" value="travel"> 旅行</label>
+                                <label><input type="checkbox" name="hobbies" value="cooking"> 烹饪</label>
+                            </div>
+                            <div class="error-message">请至少选择2个兴趣爱好</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="custom-date">预约日期（仅限工作日）</label>
+                            <input type="date" id="custom-date">
+                            <div class="error-message">只能选择工作日（周一至周五）</div>
+                        </div>
+
+                        <button type="submit" class="btn">提交</button>
+                    </form>
+                </div>
+
+                <div class="code-demo">
+// 自定义验证函数示例
+
+// 1. 身份证号验证
+function validateIDCard(idCard) {
+    const reg = /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+    if (!reg.test(idCard)) return false;
+
+    // 校验码验证
+    const weights = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+    const codes = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'];
+    let sum = 0;
+    for (let i = 0; i < 17; i++) {
+        sum += parseInt(idCard[i]) * weights[i];
+    }
+    const checkCode = codes[sum % 11];
+    return idCard[17].toUpperCase() === checkCode;
 }
 
-input:invalid:not(:focus):not(:placeholder-shown) {
-    border-color: #dc3545;
-    background: #f8d7da;
+// 2. 文件大小验证
+function validateFileSize(file, maxSize) {
+    return file.size <= maxSize * 1024 * 1024; // maxSize in MB
 }
 
-input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+// 3. 工作日验证
+function isWeekday(date) {
+    const day = date.getDay();
+    return day !== 0 && day !== 6; // 0是周日，6是周六
 }
+
+// 4. 设置自定义错误信息
+input.setCustomValidity('自定义错误信息');
+                </div>
+            </section>
+
+            <!-- 正则验证 -->
+            <section id="regex" class="section">
+                <h2>🔍 正则表达式验证</h2>
+
+                <div class="validation-rules">
+                    <h4>📚 常用正则表达式模式</h4>
+                </div>
+
+                <div class="demo-card">
+                    <h3>常用正则验证示例</h3>
+                    <form id="regexForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regex-chinese">中文姓名（2-10个汉字）</label>
+                                <input type="text" id="regex-chinese"
+                                       pattern="^[\u4e00-\u9fa5]{2,10}$"
+                                       placeholder="张三">
+                                <div class="error-message">请输入2-10个中文字符</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regex-email-domain">企业邮箱（指定域名）</label>
+                                <input type="email" id="regex-email-domain"
+                                       pattern="^[a-zA-Z0-9._%+-]+@company\.com$"
+                                       placeholder="user@company.com">
+                                <div class="error-message">必须使用@company.com邮箱</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regex-ip">IP地址</label>
+                                <input type="text" id="regex-ip"
+                                       pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+                                       placeholder="192.168.1.1">
+                                <div class="error-message">请输入有效的IP地址</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regex-mac">MAC地址</label>
+                                <input type="text" id="regex-mac"
+                                       pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
+                                       placeholder="00:1B:44:11:3A:B7">
+                                <div class="error-message">请输入有效的MAC地址</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regex-postcode">邮政编码</label>
+                                <input type="text" id="regex-postcode"
+                                       pattern="^[0-9]{6}$"
+                                       placeholder="100000"
+                                       maxlength="6">
+                                <div class="error-message">请输入6位邮政编码</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regex-hex">十六进制颜色值</label>
+                                <input type="text" id="regex-hex"
+                                       pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                                       placeholder="#FF5733 或 #F57">
+                                <div class="error-message">请输入有效的十六进制颜色值</div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn">验证</button>
+                    </form>
+                </div>
+
+                <div class="code-demo">
+// 常用正则表达式集合
+
+const patterns = {
+    // 基础类型
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    url: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
+
+    // 中国手机号
+    cnPhone: /^1[3-9]\d{9}$/,
+
+    // 中文姓名
+    cnName: /^[\u4e00-\u9fa5]{2,10}$/,
+
+    // 身份证号
+    cnIdCard: /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
+
+    // 银行卡号
+    bankCard: /^[0-9]{16,19}$/,
+
+    // 邮政编码
+    postCode: /^[0-9]{6}$/,
+
+    // IP地址
+    ipv4: /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+
+    // 十六进制颜色
+    hexColor: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
+
+    // 日期格式 YYYY-MM-DD
+    date: /^\d{4}-\d{2}-\d{2}$/,
+
+    // 时间格式 HH:MM:SS
+    time: /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/,
+
+    // 密码强度（至少8位，包含大小写字母、数字）
+    strongPassword: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/
+};
+
+// 使用示例
+function validate(value, type) {
+    return patterns[type].test(value);
+}
+                </div>
+            </section>
+
+            <!-- 实战案例 -->
+            <section id="realworld" class="section">
+                <h2>💼 实战案例：完整注册表单</h2>
+
+                <div class="demo-card">
+                    <h3>用户注册表单</h3>
+                    <form id="registrationForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-username">
+                                    用户名 <span class="required">*</span>
+                                </label>
+                                <input type="text" id="reg-username"
+                                       placeholder="3-20位，字母开头"
+                                       required>
+                                <div class="error-message"></div>
+                                <div class="success-message">用户名可用</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reg-email">
+                                    邮箱 <span class="required">*</span>
+                                </label>
+                                <input type="email" id="reg-email"
+                                       placeholder="user@example.com"
+                                       required>
+                                <div class="error-message"></div>
+                                <div class="success-message">邮箱格式正确</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-password">
+                                    密码 <span class="required">*</span>
+                                </label>
+                                <input type="password" id="reg-password"
+                                       placeholder="至少8位，包含大小写字母和数字"
+                                       required>
+                                <div class="strength-meter">
+                                    <div class="strength-meter-fill"></div>
+                                </div>
+                                <div class="error-message"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reg-confirm-password">
+                                    确认密码 <span class="required">*</span>
+                                </label>
+                                <input type="password" id="reg-confirm-password"
+                                       placeholder="再次输入密码"
+                                       required>
+                                <div class="error-message"></div>
+                                <div class="success-message">密码匹配</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-phone">
+                                    手机号 <span class="required">*</span>
+                                </label>
+                                <input type="tel" id="reg-phone"
+                                       placeholder="输入11位手机号"
+                                       required>
+                                <div class="error-message"></div>
+                                <div class="success-message">手机号格式正确</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reg-code">
+                                    验证码 <span class="required">*</span>
+                                </label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" id="reg-code"
+                                           placeholder="输入验证码"
+                                           style="flex: 1;"
+                                           required>
+                                    <button type="button" class="btn" onclick="sendCode()" style="width: auto;">
+                                        获取验证码
+                                    </button>
+                                </div>
+                                <div class="error-message"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-idcard">身份证号</label>
+                            <input type="text" id="reg-idcard"
+                                   placeholder="输入18位身份证号（选填）">
+                            <div class="error-message"></div>
+                            <div class="success-message">身份证号格式正确</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-address">详细地址</label>
+                            <textarea id="reg-address"
+                                      rows="3"
+                                      placeholder="请输入详细地址"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="reg-agree" required>
+                                我已阅读并同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn" id="submitBtn">立即注册</button>
+                        <button type="reset" class="btn btn-secondary">重置表单</button>
+                    </form>
+                </div>
+
+                <div class="validation-rules">
+                    <h4>✅ 验证规则说明</h4>
+                    <ul>
+                        <li>用户名：3-20位，必须字母开头，可包含字母、数字、下划线</li>
+                        <li>密码：至少8位，必须包含大写字母、小写字母和数字</li>
+                        <li>手机号：中国大陆11位手机号</li>
+                        <li>身份证：18位身份证号，带校验位验证</li>
+                        <li>实时验证：输入时立即验证并给出反馈</li>
+                    </ul>
                 </div>
             </section>
         </main>
     </div>
 
     <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('表单验证通过！（演示用途，未实际提交）');
+        // 代码高亮格式化函数
+        function highlightCode(code) {
+            // HTML标签
+            code = code.replace(/(&lt;\/?[\w\s="':\-\/]+&gt;)/g, '<span class="code-tag">$1</span>');
+
+            // 注释
+            code = code.replace(/(\/\/[^\n]*)/g, '<span class="code-comment">$1</span>');
+            code = code.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="code-comment">$1</span>');
+            code = code.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="code-comment">$1</span>');
+
+            // 关键字
+            const keywords = ['function', 'const', 'let', 'var', 'if', 'else', 'return', 'for', 'while', 'new', 'this', 'typeof', 'instanceof', 'true', 'false', 'null', 'undefined'];
+            keywords.forEach(keyword => {
+                const regex = new RegExp(`\\b(${keyword})\\b`, 'g');
+                code = code.replace(regex, '<span class="code-keyword">$1</span>');
+            });
+
+            // 字符串
+            code = code.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, '<span class="code-string">$&</span>');
+
+            // 数字
+            code = code.replace(/\b(\d+)\b/g, '<span class="code-number">$1</span>');
+
+            // 函数名
+            code = code.replace(/(\w+)(?=\()/g, '<span class="code-function">$1</span>');
+
+            // 属性
+            code = code.replace(/\.(\w+)/g, '.<span class="code-property">$1</span>');
+
+            return code;
+        }
+
+        // 应用代码高亮到所有代码块
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.code-demo').forEach((block, index) => {
+                // 保存原始内容
+                const originalContent = block.innerHTML;
+                // 如果不包含span标签（未高亮），则应用高亮
+                if (!originalContent.includes('<span')) {
+                    block.innerHTML = highlightCode(originalContent);
+                }
+
+                // 添加复制按钮
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.textContent = '复制';
+                copyBtn.setAttribute('data-code-index', index);
+
+                // 保存原始代码文本（去除HTML标签）
+                const codeText = block.textContent || block.innerText;
+                copyBtn.setAttribute('data-code', codeText);
+
+                copyBtn.addEventListener('click', function() {
+                    copyCode(this, codeText);
+                });
+
+                block.appendChild(copyBtn);
+            });
         });
-        console.log('📝 HTML5表单验证教学页面加载完成！');
+
+        // 复制代码函数
+        function copyCode(button, code) {
+            navigator.clipboard.writeText(code).then(() => {
+                // 更改按钮文本和样式
+                button.textContent = '已复制！';
+                button.classList.add('copied');
+
+                // 2秒后恢复
+                setTimeout(() => {
+                    button.textContent = '复制';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                // 降级方案
+                const textarea = document.createElement('textarea');
+                textarea.value = code;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+
+                button.textContent = '已复制！';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = '复制';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // 切换导航
+        function showSection(sectionId) {
+            // 隐藏所有section
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 显示选中的section
+            document.getElementById(sectionId).classList.add('active');
+
+            // 更新导航按钮状态
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // 基础表单验证
+        document.getElementById('basicForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('基础表单验证通过！');
+        });
+
+        // 密码强度检测
+        document.getElementById('password')?.addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthMeter = document.querySelector('.strength-meter-fill');
+
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            strengthMeter.className = 'strength-meter-fill';
+            if (strength < 3) {
+                strengthMeter.classList.add('strength-weak');
+            } else if (strength < 5) {
+                strengthMeter.classList.add('strength-medium');
+            } else {
+                strengthMeter.classList.add('strength-strong');
+            }
+        });
+
+        // 密码确认验证
+        document.getElementById('confirm-password')?.addEventListener('input', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = e.target.value;
+            const formGroup = e.target.closest('.form-group');
+
+            if (confirmPassword && password !== confirmPassword) {
+                formGroup.classList.add('error');
+                formGroup.classList.remove('success');
+            } else if (confirmPassword && password === confirmPassword) {
+                formGroup.classList.remove('error');
+                formGroup.classList.add('success');
+            }
+        });
+
+        // 自定义验证 - 禁止QQ邮箱
+        document.getElementById('custom-email')?.addEventListener('input', function(e) {
+            const email = e.target.value;
+            const formGroup = e.target.closest('.form-group');
+
+            if (email.includes('@qq.com')) {
+                e.target.setCustomValidity('不允许使用QQ邮箱');
+                formGroup.classList.add('error');
+            } else {
+                e.target.setCustomValidity('');
+                formGroup.classList.remove('error');
+            }
+        });
+
+        // 身份证号验证
+        function validateIDCard(idCard) {
+            const reg = /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+            if (!reg.test(idCard)) return false;
+
+            const weights = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+            const codes = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'];
+            let sum = 0;
+            for (let i = 0; i < 17; i++) {
+                sum += parseInt(idCard[i]) * weights[i];
+            }
+            const checkCode = codes[sum % 11];
+            return idCard[17].toUpperCase() === checkCode;
+        }
+
+        document.getElementById('id-card')?.addEventListener('input', function(e) {
+            const idCard = e.target.value;
+            const formGroup = e.target.closest('.form-group');
+
+            if (idCard.length === 18) {
+                if (validateIDCard(idCard)) {
+                    formGroup.classList.remove('error');
+                    formGroup.classList.add('success');
+                } else {
+                    formGroup.classList.add('error');
+                    formGroup.classList.remove('success');
+                }
+            } else {
+                formGroup.classList.remove('error', 'success');
+            }
+        });
+
+        // 文件上传验证
+        document.getElementById('custom-file')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const formGroup = e.target.closest('.form-group');
+
+            if (file) {
+                // 检查文件类型
+                if (!file.type.startsWith('image/')) {
+                    formGroup.classList.add('error');
+                    e.target.setCustomValidity('请上传图片文件');
+                    return;
+                }
+
+                // 检查文件大小（2MB）
+                if (file.size > 2 * 1024 * 1024) {
+                    formGroup.classList.add('error');
+                    e.target.setCustomValidity('文件大小不能超过2MB');
+                    return;
+                }
+
+                formGroup.classList.remove('error');
+                e.target.setCustomValidity('');
+            }
+        });
+
+        // 兴趣爱好至少选择2项
+        document.querySelectorAll('input[name="hobbies"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkedCount = document.querySelectorAll('input[name="hobbies"]:checked').length;
+                const formGroup = checkbox.closest('.form-group');
+
+                if (checkedCount < 2) {
+                    formGroup.classList.add('error');
+                } else {
+                    formGroup.classList.remove('error');
+                }
+            });
+        });
+
+        // 工作日验证
+        document.getElementById('custom-date')?.addEventListener('change', function(e) {
+            const date = new Date(e.target.value);
+            const day = date.getDay();
+            const formGroup = e.target.closest('.form-group');
+
+            if (day === 0 || day === 6) {
+                formGroup.classList.add('error');
+                e.target.setCustomValidity('只能选择工作日');
+            } else {
+                formGroup.classList.remove('error');
+                e.target.setCustomValidity('');
+            }
+        });
+
+        // 信用卡号格式化
+        document.getElementById('credit-card')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        // 实战案例 - 注册表单验证
+        const validators = {
+            username: (value) => {
+                if (value.length < 3 || value.length > 20) {
+                    return '用户名长度必须在3-20位之间';
+                }
+                if (!/^[a-zA-Z]/.test(value)) {
+                    return '用户名必须以字母开头';
+                }
+                if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(value)) {
+                    return '用户名只能包含字母、数字和下划线';
+                }
+                return null;
+            },
+            email: (value) => {
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    return '请输入有效的邮箱地址';
+                }
+                return null;
+            },
+            password: (value) => {
+                if (value.length < 8) {
+                    return '密码长度至少8位';
+                }
+                if (!/(?=.*[a-z])/.test(value)) {
+                    return '密码必须包含小写字母';
+                }
+                if (!/(?=.*[A-Z])/.test(value)) {
+                    return '密码必须包含大写字母';
+                }
+                if (!/(?=.*\d)/.test(value)) {
+                    return '密码必须包含数字';
+                }
+                return null;
+            },
+            phone: (value) => {
+                if (!/^1[3-9]\d{9}$/.test(value)) {
+                    return '请输入有效的11位手机号';
+                }
+                return null;
+            },
+            idCard: (value) => {
+                if (value && !validateIDCard(value)) {
+                    return '请输入有效的身份证号';
+                }
+                return null;
+            }
+        };
+
+        // 实时验证
+        document.getElementById('reg-username')?.addEventListener('input', function(e) {
+            const formGroup = e.target.closest('.form-group');
+            const error = validators.username(e.target.value);
+
+            if (error) {
+                formGroup.classList.add('error');
+                formGroup.classList.remove('success');
+                formGroup.querySelector('.error-message').textContent = error;
+            } else {
+                formGroup.classList.remove('error');
+                formGroup.classList.add('success');
+            }
+        });
+
+        document.getElementById('reg-email')?.addEventListener('input', function(e) {
+            const formGroup = e.target.closest('.form-group');
+            const error = validators.email(e.target.value);
+
+            if (error) {
+                formGroup.classList.add('error');
+                formGroup.classList.remove('success');
+                formGroup.querySelector('.error-message').textContent = error;
+            } else {
+                formGroup.classList.remove('error');
+                formGroup.classList.add('success');
+            }
+        });
+
+        document.getElementById('reg-password')?.addEventListener('input', function(e) {
+            const password = e.target.value;
+            const formGroup = e.target.closest('.form-group');
+            const error = validators.password(password);
+            const strengthMeter = formGroup.querySelector('.strength-meter-fill');
+
+            if (error) {
+                formGroup.classList.add('error');
+                formGroup.querySelector('.error-message').textContent = error;
+            } else {
+                formGroup.classList.remove('error');
+            }
+
+            // 更新密码强度指示器
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            strengthMeter.className = 'strength-meter-fill';
+            if (strength < 3) {
+                strengthMeter.classList.add('strength-weak');
+            } else if (strength < 5) {
+                strengthMeter.classList.add('strength-medium');
+            } else {
+                strengthMeter.classList.add('strength-strong');
+            }
+
+            // 检查确认密码
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            if (confirmPassword) {
+                checkPasswordMatch();
+            }
+        });
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const formGroup = document.getElementById('reg-confirm-password').closest('.form-group');
+
+            if (confirmPassword && password !== confirmPassword) {
+                formGroup.classList.add('error');
+                formGroup.classList.remove('success');
+                formGroup.querySelector('.error-message').textContent = '两次输入的密码不一致';
+            } else if (confirmPassword && password === confirmPassword) {
+                formGroup.classList.remove('error');
+                formGroup.classList.add('success');
+            }
+        }
+
+        document.getElementById('reg-confirm-password')?.addEventListener('input', checkPasswordMatch);
+
+        document.getElementById('reg-phone')?.addEventListener('input', function(e) {
+            const formGroup = e.target.closest('.form-group');
+            const error = validators.phone(e.target.value);
+
+            if (error) {
+                formGroup.classList.add('error');
+                formGroup.classList.remove('success');
+                formGroup.querySelector('.error-message').textContent = error;
+            } else {
+                formGroup.classList.remove('error');
+                formGroup.classList.add('success');
+            }
+        });
+
+        document.getElementById('reg-idcard')?.addEventListener('input', function(e) {
+            const value = e.target.value;
+            const formGroup = e.target.closest('.form-group');
+
+            if (value) {
+                const error = validators.idCard(value);
+                if (error) {
+                    formGroup.classList.add('error');
+                    formGroup.classList.remove('success');
+                    formGroup.querySelector('.error-message').textContent = error;
+                } else {
+                    formGroup.classList.remove('error');
+                    formGroup.classList.add('success');
+                }
+            } else {
+                formGroup.classList.remove('error', 'success');
+            }
+        });
+
+        // 发送验证码
+        let codeTimer = null;
+        function sendCode() {
+            const phone = document.getElementById('reg-phone').value;
+            if (!validators.phone(phone)) {
+                const btn = event.target;
+                btn.disabled = true;
+                let seconds = 60;
+
+                btn.textContent = `${seconds}秒后重发`;
+                codeTimer = setInterval(() => {
+                    seconds--;
+                    if (seconds <= 0) {
+                        clearInterval(codeTimer);
+                        btn.disabled = false;
+                        btn.textContent = '获取验证码';
+                    } else {
+                        btn.textContent = `${seconds}秒后重发`;
+                    }
+                }, 1000);
+
+                // 模拟发送验证码
+                alert('验证码已发送到您的手机！（模拟：123456）');
+            } else {
+                alert('请先输入正确的手机号');
+            }
+        }
+
+        // 注册表单提交
+        document.getElementById('registrationForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 验证所有必填字段
+            const requiredFields = [
+                'reg-username', 'reg-email', 'reg-password',
+                'reg-confirm-password', 'reg-phone', 'reg-code'
+            ];
+
+            let isValid = true;
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value) {
+                    field.closest('.form-group').classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            // 检查是否同意条款
+            if (!document.getElementById('reg-agree').checked) {
+                alert('请先同意用户协议和隐私政策');
+                return;
+            }
+
+            // 验证验证码（模拟）
+            const code = document.getElementById('reg-code').value;
+            if (code !== '123456') {
+                alert('验证码错误！（正确验证码：123456）');
+                return;
+            }
+
+            if (isValid) {
+                alert('注册成功！🎉\n\n' +
+                      '用户名：' + document.getElementById('reg-username').value + '\n' +
+                      '邮箱：' + document.getElementById('reg-email').value + '\n' +
+                      '手机：' + document.getElementById('reg-phone').value);
+            }
+        });
+
+        // 表单重置时清除验证状态
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('reset', function() {
+                form.querySelectorAll('.form-group').forEach(group => {
+                    group.classList.remove('error', 'success');
+                });
+            });
+        });
+
+        console.log('📝 表单验证教学页面加载完成！');
     </script>
 </body>
 </html>
