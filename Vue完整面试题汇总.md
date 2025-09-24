@@ -42,7 +42,7 @@
 
 **在Vue中的具体体现：**
 
-1. **响应式系统（观察者模式）：**
+1. **Vue2响应式系统（观察者模式）：**
 ```javascript
 // Vue2中的实现简化示例
 class Dep {  // 依赖收集器（主题）
@@ -76,9 +76,9 @@ class Watcher {  // 观察者
 }
 ```
 
-2. **事件系统（发布订阅模式）：**
+2. **事件系统（发布订阅模式）- Vue2/Vue3通用：**
 ```javascript
-// Vue事件系统简化示例
+// Vue2/Vue3都支持的事件系统简化示例
 class EventBus {  // 事件中心
   constructor() {
     this.events = {}  // 事件中心
@@ -110,14 +110,71 @@ bus.$on('update', (data) => console.log(data))
 bus.$emit('update', 'hello')
 ```
 
-3. **两种模式在Vue中的区别：**
-   - **观察者模式（响应式）：** Dep和Watcher直接关联，用于数据响应式
-   - **发布订阅模式（事件）：** 通过EventBus解耦，用于组件通信
+3. **Vue3响应式系统（观察者模式）：**
+```javascript
+// Vue3中的实现简化示例
+const targetMap = new WeakMap()  // 存储所有响应式对象的依赖
+let activeEffect = null
 
-4. **Vue3的优化：**
-   - 使用Proxy替代Object.defineProperty
-   - 响应式系统仍基于观察者模式，但实现更高效
-   - 引入了effect和track/trigger机制
+// 依赖收集
+function track(target, key) {
+  if (activeEffect) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) {
+      targetMap.set(target, (depsMap = new Map()))
+    }
+    let dep = depsMap.get(key)
+    if (!dep) {
+      depsMap.set(key, (dep = new Set()))
+    }
+    dep.add(activeEffect)  // 收集依赖
+  }
+}
+
+// 触发更新
+function trigger(target, key) {
+  const depsMap = targetMap.get(target)
+  if (!depsMap) return
+  const dep = depsMap.get(key)
+  if (dep) {
+    dep.forEach(effect => effect())  // 通知所有观察者
+  }
+}
+
+// reactive实现
+function reactive(target) {
+  return new Proxy(target, {
+    get(target, key) {
+      track(target, key)  // 收集依赖
+      return target[key]
+    },
+    set(target, key, value) {
+      target[key] = value
+      trigger(target, key)  // 触发更新
+      return true
+    }
+  })
+}
+
+// effect副作用函数（相当于Vue2的Watcher）
+function effect(fn) {
+  activeEffect = fn
+  fn()  // 执行函数，触发依赖收集
+  activeEffect = null
+}
+```
+
+4. **两种模式在Vue中的区别：**
+   - **观察者模式（响应式）：**
+     - Vue2: Dep和Watcher直接关联
+     - Vue3: targetMap、track、trigger和effect机制
+   - **发布订阅模式（事件）：** 通过EventBus解耦，用于组件通信（Vue2/3通用）
+
+5. **Vue2 vs Vue3 响应式对比：**
+   - **Vue2:** Object.defineProperty + Dep + Watcher
+   - **Vue3:** Proxy + WeakMap + effect函数
+   - **相同点:** 都基于观察者模式实现响应式
+   - **不同点:** Vue3性能更好，支持数组和对象新增属性的响应式
 
 ### 3. 为什么使用 Virtual DOM
 
