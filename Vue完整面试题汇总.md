@@ -27,11 +27,97 @@
 **观察者模式：**
 - 观察者直接订阅主题，主题状态变化时通知观察者
 - 耦合度较高
+- **Vue中的应用：响应式系统核心**
+  - Dep（依赖收集器）作为Subject（主题）
+  - Watcher（观察者）直接订阅Dep
+  - 数据变化时，Dep直接通知所有Watcher更新
 
 **发布订阅模式：**
 - 发布者和订阅者通过事件中心进行通信
 - 解耦程度更高
-- Vue 的响应式系统使用观察者模式，事件系统使用发布订阅模式
+- **Vue中的应用：事件系统**
+  - $on/$emit/$off 等事件API
+  - EventBus事件总线
+  - 组件通信时的自定义事件
+
+**在Vue中的具体体现：**
+
+1. **响应式系统（观察者模式）：**
+```javascript
+// Vue2中的实现简化示例
+class Dep {  // 依赖收集器（主题）
+  constructor() {
+    this.subs = []  // 存储所有观察者
+  }
+
+  addSub(watcher) {  // 添加观察者
+    this.subs.push(watcher)
+  }
+
+  notify() {  // 通知所有观察者
+    this.subs.forEach(watcher => watcher.update())
+  }
+}
+
+class Watcher {  // 观察者
+  constructor(vm, key, cb) {
+    this.vm = vm
+    this.key = key
+    this.cb = cb
+    // 触发getter，收集依赖
+    Dep.target = this
+    this.vm[this.key]  // 触发getter
+    Dep.target = null
+  }
+
+  update() {  // 数据更新时执行
+    this.cb.call(this.vm, this.vm[this.key])
+  }
+}
+```
+
+2. **事件系统（发布订阅模式）：**
+```javascript
+// Vue事件系统简化示例
+class EventBus {  // 事件中心
+  constructor() {
+    this.events = {}  // 事件中心
+  }
+
+  $on(event, callback) {  // 订阅
+    if (!this.events[event]) {
+      this.events[event] = []
+    }
+    this.events[event].push(callback)
+  }
+
+  $emit(event, ...args) {  // 发布
+    if (this.events[event]) {
+      this.events[event].forEach(callback => callback(...args))
+    }
+  }
+
+  $off(event, callback) {  // 取消订阅
+    if (this.events[event]) {
+      this.events[event] = this.events[event].filter(cb => cb !== callback)
+    }
+  }
+}
+
+// 使用示例
+const bus = new EventBus()
+bus.$on('update', (data) => console.log(data))
+bus.$emit('update', 'hello')
+```
+
+3. **两种模式在Vue中的区别：**
+   - **观察者模式（响应式）：** Dep和Watcher直接关联，用于数据响应式
+   - **发布订阅模式（事件）：** 通过EventBus解耦，用于组件通信
+
+4. **Vue3的优化：**
+   - 使用Proxy替代Object.defineProperty
+   - 响应式系统仍基于观察者模式，但实现更高效
+   - 引入了effect和track/trigger机制
 
 ### 3. 为什么使用 Virtual DOM
 
