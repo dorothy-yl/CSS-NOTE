@@ -563,41 +563,88 @@ const modifierHandlers = {
 ### 4. Vue自定义事件原理
 
 📝 **面试背诵版：**
+
+**核心API：**
 - **$emit** - 子组件触发事件，向父组件传递数据
 - **$on** - 监听事件（Vue3已移除）
 - **$off** - 移除监听（Vue3已移除）
 - **$once** - 一次性监听（Vue3已移除）
-- **实现原理**：基于发布订阅模式，维护事件名和回调函数的映射关系
-- **命名规范**：kebab-case命名，如 @custom-event
+
+**实现原理详解：**
+
+1. **数据结构**：
+   - 每个Vue实例有一个`_events`对象
+   - 结构：`{ eventName: [callback1, callback2, ...] }`
+   - 使用`Object.create(null)`创建纯净对象，避免原型污染
+
+2. **$on监听过程**：
+   - 检查事件是否已存在
+   - 不存在则创建空数组
+   - 将回调函数push到数组末尾
+   - 支持同一事件多个监听器
+
+3. **$emit触发过程**：
+   - 根据事件名找到回调数组
+   - 复制数组避免遍历时修改
+   - 依次执行所有回调
+   - 使用apply保证this指向和参数传递
+
+4. **$off移除过程**：
+   - 无参数：清空所有事件
+   - 只有事件名：清空该事件所有监听
+   - 有回调函数：精确移除特定监听
+   - 从后向前遍历避免索引错乱
+
+5. **$once实现技巧**：
+   - 包装原回调函数
+   - 执行时先$off再调用
+   - 保存原函数引用用于$off匹配
+
+**与响应式系统的区别**：
+- 事件系统：发布订阅模式，通过事件名解耦
+- 响应式系统：观察者模式，Watcher直接依赖Dep
+- 事件系统用于组件通信，响应式用于数据变化追踪
+
+**命名规范**：kebab-case命名，如 @custom-event
 
 ```javascript
-// Vue组件事件发射器实现
+// Vue组件事件发射器实现（简化版源码解析）
 class ComponentEventEmitter {
   constructor() {
-    this._events = Object.create(null)
+    // 使用 Object.create(null) 创建纯净对象，没有原型链
+    this._events = Object.create(null)  // { eventName: [callbacks] }
   }
-  
-  // 监听事件
+
+  // 监听事件 - 订阅
   $on(event, fn) {
     const vm = this
+    // 支持数组形式，同时监听多个事件
     if (Array.isArray(event)) {
       for (let i = 0; i < event.length; i++) {
         vm.$on(event[i], fn)
       }
     } else {
+      // 核心：将回调函数添加到事件数组中
+      // 如果事件不存在，先创建空数组
       (vm._events[event] || (vm._events[event] = [])).push(fn)
     }
-    return vm
+    return vm  // 支持链式调用
   }
-  
-  // 触发事件
+
+  // 触发事件 - 发布
   $emit(event, ...args) {
     const vm = this
+    // 从_events对象中找到对应事件的回调数组
     let cbs = vm._events[event]
+
     if (cbs) {
+      // 复制数组，避免在遍历时修改原数组（如果回调中有$off操作）
       cbs = cbs.length > 1 ? [...cbs] : cbs
+
+      // 遍历执行所有回调函数
       for (let i = 0; i < cbs.length; i++) {
         try {
+          // 使用apply确保this指向和参数传递
           cbs[i].apply(vm, args)
         } catch (e) {
           console.error(`Error in event handler for "${event}":`, e)
@@ -606,31 +653,52 @@ class ComponentEventEmitter {
     }
     return vm
   }
-  
-  // 移除事件监听
+
+  // 移除事件监听 - 取消订阅
   $off(event, fn) {
     const vm = this
+
+    // 情况1：没有参数，移除所有事件监听
     if (!arguments.length) {
       vm._events = Object.create(null)
       return vm
     }
-    
+
+    // 情况2：事件不存在，直接返回
     const cbs = vm._events[event]
     if (!cbs) return vm
-    
+
+    // 情况3：只提供事件名，移除该事件的所有监听器
     if (!fn) {
       vm._events[event] = null
       return vm
     }
-    
+
+    // 情况4：移除特定的回调函数
     let cb, i = cbs.length
-    while (i--) {
+    while (i--) {  // 从后向前遍历，避免索引问题
       cb = cbs[i]
+      // cb.fn 是为了支持 $once 的实现（包装后的函数）
       if (cb === fn || cb.fn === fn) {
-        cbs.splice(i, 1)
+        cbs.splice(i, 1)  // 从数组中移除
         break
       }
     }
+    return vm
+  }
+
+  // 一次性监听 - 执行后自动移除
+  $once(event, fn) {
+    const vm = this
+
+    // 包装函数：执行后自动移除
+    function on() {
+      vm.$off(event, on)  // 先移除监听
+      fn.apply(vm, arguments)  // 再执行回调
+    }
+
+    on.fn = fn  // 保存原函数引用，用于$off时的比较
+    vm.$on(event, on)
     return vm
   }
 }
@@ -1002,17 +1070,6 @@ const ChildComponent = ({ onCustomEvent }) => {
 
 ## 四、性能对比分析
 
-📝 **面试背诵版：**
-- **内存占用**：
-  - Vue：每个元素都有监听器，元素多时占用高
-  - React：事件委托，监听器数量固定
-- **事件性能**：
-  - Vue：直接调用，路径短
-  - React：需要委托分发，路径长
-- **批量更新**：
-  - Vue：需要nextTick手动批处理
-  - React：自动批处理setState
-
 ### 1. 内存使用
 
 **Vue:**
@@ -1057,19 +1114,6 @@ const handleClick = () => {
 ```
 
 ## 五、最佳实践建议
-
-📝 **面试背诵版：**
-**Vue最佳实践：**
-- 充分利用事件修饰符简化代码
-- 合理使用事件委托处理列表
-- 避免在模板中写复杂逻辑
-- 事件命名使用kebab-case
-
-**React最佳实践：**
-- 使用useCallback优化事件处理函数
-- 避免在render中创建新函数
-- 合理利用事件委托机制
-- 注意this绑定问题
 
 ### 1. Vue事件最佳实践
 
