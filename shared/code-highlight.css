@@ -1,0 +1,206 @@
+/* 代码展示区域通用样式 */
+.code-demo, .demo-code, pre, .code-block, .code-example {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #e2e8f0;
+    padding: 2rem;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* CODE标签 */
+.code-demo::before, .demo-code::before, pre::before, .code-block::before {
+    content: attr(data-language) 'CODE';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 复制按钮样式 */
+.copy-btn {
+    position: absolute;
+    top: 1rem;
+    right: 5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e2e8f0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.copy-btn:hover {
+    background: rgba(102, 126, 234, 0.3);
+    border-color: #667eea;
+    transform: translateY(-1px);
+}
+
+.copy-btn.copied {
+    background: rgba(40, 167, 69, 0.3);
+    border-color: #28a745;
+}
+
+/* 代码语法高亮样式 */
+.code-comment, .comment {
+    color: #94a3b8 !important;
+    font-style: italic;
+}
+
+.code-keyword, .keyword {
+    color: #f472b6 !important;
+    font-weight: bold;
+}
+
+.code-string, .string {
+    color: #86efac !important;
+}
+
+.code-number, .number {
+    color: #fbbf24 !important;
+}
+
+.code-function, .function {
+    color: #60a5fa !important;
+}
+
+.code-property, .property {
+    color: #c084fc !important;
+}
+
+.code-tag, .tag {
+    color: #fb923c !important;
+}
+
+.code-attribute, .attribute {
+    color: #67e8f9 !important;
+}
+
+.code-value, .value {
+    color: #a5f3fc !important;
+}
+
+.code-selector, .selector {
+    color: #fde047 !important;
+}
+
+.code-variable, .variable {
+    color: #e879f9 !important;
+}
+
+.code-operator, .operator {
+    color: #cbd5e1 !important;
+}
+
+/* 行号样式 */
+.line-numbers {
+    counter-reset: line;
+    padding-left: 3.5rem !important;
+}
+
+.line-numbers > span {
+    position: relative;
+    display: block;
+    counter-increment: line;
+}
+
+.line-numbers > span::before {
+    content: counter(line);
+    position: absolute;
+    left: -3rem;
+    width: 2.5rem;
+    text-align: right;
+    color: #64748b;
+    font-size: 0.85em;
+    user-select: none;
+}
+
+/* 滚动条美化 */
+.code-demo::-webkit-scrollbar,
+.demo-code::-webkit-scrollbar,
+pre::-webkit-scrollbar,
+.code-block::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.code-demo::-webkit-scrollbar-track,
+.demo-code::-webkit-scrollbar-track,
+pre::-webkit-scrollbar-track,
+.code-block::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.code-demo::-webkit-scrollbar-thumb,
+.demo-code::-webkit-scrollbar-thumb,
+pre::-webkit-scrollbar-thumb,
+.code-block::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+}
+
+.code-demo::-webkit-scrollbar-thumb:hover,
+.demo-code::-webkit-scrollbar-thumb:hover,
+pre::-webkit-scrollbar-thumb:hover,
+.code-block::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .code-demo, .demo-code, pre, .code-block {
+        padding: 1.5rem;
+        font-size: 0.85rem;
+    }
+
+    .copy-btn {
+        top: 0.5rem;
+        right: 4rem;
+    }
+
+    .code-demo::before, .demo-code::before, pre::before, .code-block::before {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+}
+
+/* 暗色主题支持 */
+@media (prefers-color-scheme: dark) {
+    .code-demo, .demo-code, pre, .code-block {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .code-demo, .demo-code, pre, .code-block {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+
+    .copy-btn {
+        display: none !important;
+    }
+}

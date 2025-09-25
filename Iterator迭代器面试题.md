@@ -27,10 +27,12 @@
 1. **遍历内容不同**
    - `for...in`：遍历对象的**可枚举属性键名**（包括原型链上的）
    - `for...of`：遍历**可迭代对象的值**（不包括原型链）
+   - **扩展运算符（...）**：和 `for...of` 一样，只能用于可迭代对象，用于展开其值
 
 2. **适用对象不同**
    - `for...in`：可用于任何对象
    - `for...of`：只能用于可迭代对象（实现了 Symbol.iterator 的对象）
+   - **扩展运算符**：只能用于可迭代对象，在数组字面量和函数调用中展开
 
 #### 代码示例
 ```javascript
@@ -92,6 +94,262 @@ for (let value of arr2) {
 - `for...of` 用于遍历可迭代对象，获取值
 - 遍历数组时推荐用 `for...of`，遍历对象属性用 `for...in`
 - `for...in` 会遍历原型链上的可枚举属性，`for...of` 不会
+
+### 4.1 扩展运算符（...）与迭代器的关系
+**答案要点：**
+
+#### 核心概念
+扩展运算符（spread operator）内部使用了迭代器协议，它会调用对象的 `Symbol.iterator` 方法来展开元素。
+
+#### 使用场景和示例
+
+1. **数组展开**
+```javascript
+// 基础使用
+const arr1 = [1, 2, 3];
+const arr2 = [...arr1]; // 相当于 Array.from(arr1) 或使用 for...of
+console.log(arr2); // [1, 2, 3]
+
+// 合并数组
+const merged = [...arr1, 4, 5, ...[6, 7]];
+console.log(merged); // [1, 2, 3, 4, 5, 6, 7]
+
+// 扩展运算符内部实现原理（简化版）
+function spread(iterable) {
+  const result = [];
+  for (const item of iterable) { // 使用迭代器
+    result.push(item);
+  }
+  return result;
+}
+```
+
+2. **字符串展开**
+```javascript
+const str = 'hello';
+const chars = [...str]; // 使用字符串的迭代器
+console.log(chars); // ['h', 'e', 'l', 'l', 'o']
+
+// 对比 split
+console.log(str.split('')); // ['h', 'e', 'l', 'l', 'o']
+
+// 处理 Unicode 字符的优势
+const emoji = '👨‍👩‍👧‍👦';
+console.log([...emoji]); // ['👨', '‍', '👩', '‍', '👧', '‍', '👦']
+console.log(emoji.split('')); // 可能会错误分割
+```
+
+3. **Set 和 Map 展开**
+```javascript
+// Set 展开
+const set = new Set([1, 2, 3, 3, 4]);
+const arrFromSet = [...set]; // 使用 Set 的迭代器
+console.log(arrFromSet); // [1, 2, 3, 4]
+
+// Map 展开
+const map = new Map([['a', 1], ['b', 2]]);
+const arrFromMap = [...map]; // 使用 Map 的迭代器
+console.log(arrFromMap); // [['a', 1], ['b', 2]]
+
+// 获取 Map 的键或值
+const keys = [...map.keys()];
+const values = [...map.values()];
+console.log(keys); // ['a', 'b']
+console.log(values); // [1, 2]
+```
+
+4. **函数参数展开**
+```javascript
+function sum(...args) { // rest 参数（收集）
+  return args.reduce((a, b) => a + b, 0);
+}
+
+const numbers = [1, 2, 3, 4, 5];
+console.log(sum(...numbers)); // spread（展开）: 15
+
+// 相当于
+console.log(sum(1, 2, 3, 4, 5)); // 15
+
+// 代替 apply
+const max = Math.max(...numbers); // 比 Math.max.apply(null, numbers) 更简洁
+```
+
+5. **自定义可迭代对象的展开**
+```javascript
+const range = {
+  start: 1,
+  end: 5,
+  *[Symbol.iterator]() {
+    for (let i = this.start; i <= this.end; i++) {
+      yield i;
+    }
+  }
+};
+
+// 扩展运算符可以展开任何可迭代对象
+const rangeArray = [...range];
+console.log(rangeArray); // [1, 2, 3, 4, 5]
+
+// 生成器函数
+function* fibonacci(n) {
+  let [a, b] = [0, 1];
+  for (let i = 0; i < n; i++) {
+    yield a;
+    [a, b] = [b, a + b];
+  }
+}
+
+const fibArray = [...fibonacci(7)];
+console.log(fibArray); // [0, 1, 1, 2, 3, 5, 8]
+```
+
+6. **对象展开（不使用迭代器）**
+```javascript
+// 注意：对象展开不使用迭代器协议，而是使用自己的机制
+const obj1 = { a: 1, b: 2 };
+const obj2 = { ...obj1, c: 3 }; // 这不是迭代器操作
+console.log(obj2); // { a: 1, b: 2, c: 3 }
+
+// 对象不是可迭代的
+// const arr = [...obj1]; // TypeError: obj1 is not iterable
+```
+
+7. **NodeList 和 HTMLCollection 转换**
+```javascript
+// DOM 操作中的应用
+const nodeList = document.querySelectorAll('div');
+const divArray = [...nodeList]; // NodeList 是可迭代的
+
+// 老方法对比
+const divArray2 = Array.prototype.slice.call(nodeList);
+const divArray3 = Array.from(nodeList);
+```
+
+#### 性能考虑
+
+```javascript
+// 性能测试示例
+const largeArray = Array(1000000).fill(1);
+
+// 扩展运算符
+console.time('spread');
+const copy1 = [...largeArray];
+console.timeEnd('spread');
+
+// for...of
+console.time('for...of');
+const copy2 = [];
+for (const item of largeArray) {
+  copy2.push(item);
+}
+console.timeEnd('for...of');
+
+// 注意：扩展运算符在大数据量时可能导致调用栈溢出
+// const hugeArray = Array(10000000).fill(1);
+// const copy = [...hugeArray]; // 可能报错：Maximum call stack size exceeded
+```
+
+#### 扩展运算符与迭代器的高级应用
+
+```javascript
+// 1. 限制展开数量
+function* take(n, iterable) {
+  let i = 0;
+  for (const item of iterable) {
+    if (i >= n) break;
+    yield item;
+    i++;
+  }
+}
+
+const first5 = [...take(5, fibonacci(100))];
+console.log(first5); // [0, 1, 1, 2, 3]
+
+// 2. 链式操作
+function* filter(predicate, iterable) {
+  for (const item of iterable) {
+    if (predicate(item)) yield item;
+  }
+}
+
+function* map(fn, iterable) {
+  for (const item of iterable) {
+    yield fn(item);
+  }
+}
+
+const result = [...map(x => x * 2, filter(x => x % 2 === 0, range))];
+console.log(result); // [4, 8]
+
+// 3. 扁平化嵌套结构
+function* flatten(arr) {
+  for (const item of arr) {
+    if (Array.isArray(item)) {
+      yield* flatten(item);
+    } else {
+      yield item;
+    }
+  }
+}
+
+const nested = [1, [2, [3, [4, 5]]], 6];
+const flat = [...flatten(nested)];
+console.log(flat); // [1, 2, 3, 4, 5, 6]
+```
+
+#### 常见错误和陷阱
+
+```javascript
+// 1. 尝试展开非可迭代对象
+const num = 123;
+// const arr = [...num]; // TypeError: num is not iterable
+
+// 2. 展开 null 或 undefined
+const nothing = null;
+// const arr = [...nothing]; // TypeError: nothing is not iterable
+
+// 3. 循环引用
+const circular = [1, 2];
+circular.push(circular);
+// const copy = [...circular]; // 不会报错，但会包含循环引用
+
+// 4. 大数据量展开
+function* infiniteGenerator() {
+  let i = 0;
+  while (true) yield i++;
+}
+// const arr = [...infiniteGenerator()]; // 会导致内存溢出！
+
+// 正确做法：限制数量
+const limited = [...take(100, infiniteGenerator())];
+```
+
+#### 扩展运算符 vs Array.from vs for...of
+
+```javascript
+const set = new Set([1, 2, 3]);
+
+// 扩展运算符 - 最简洁
+const arr1 = [...set];
+
+// Array.from - 可以传递映射函数
+const arr2 = Array.from(set, x => x * 2); // [2, 4, 6]
+
+// for...of - 最灵活，可以添加逻辑
+const arr3 = [];
+for (const item of set) {
+  if (item > 1) {
+    arr3.push(item);
+  }
+}
+```
+
+#### 总结要点
+1. **扩展运算符内部使用迭代器协议**，通过调用 `Symbol.iterator` 方法工作
+2. **只能用于可迭代对象**，不能用于普通对象（对象字面量的展开是特殊语法）
+3. **性能优秀**但要注意大数据量可能导致栈溢出
+4. **语法简洁**，是处理可迭代对象的首选方式
+5. **与 for...of 原理相同**，都是基于迭代器协议
 
 ## 二、代码实现题
 
