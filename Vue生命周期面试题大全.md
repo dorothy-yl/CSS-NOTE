@@ -49,6 +49,28 @@ destroyed       →   onUnmounted
 
 **答案：** beforeDestroy（Vue2）/ onBeforeUnmount（Vue3）
 
+**补充说明：**
+- **destroyed/onUnmounted 可以吗？** 可以，但不推荐
+  - 时机过晚：组件实例已被销毁，DOM已被移除
+  - 无法访问DOM：如果需要操作DOM元素进行清理，已经无法访问
+  - 最佳实践：beforeDestroy/onBeforeUnmount是专门设计用于清理工作的钩子
+
+**推荐做法：**
+```javascript
+// Vue2
+beforeDestroy() {
+  clearInterval(this.timer);
+  this.$off('custom-event');
+  document.removeEventListener('click', this.handler);
+}
+
+// Vue3
+onBeforeUnmount(() => {
+  clearInterval(timer.value);
+  document.removeEventListener('click', handler);
+})
+```
+
 ## 组件交互类
 
 ### 7. 父子组件生命周期执行顺序

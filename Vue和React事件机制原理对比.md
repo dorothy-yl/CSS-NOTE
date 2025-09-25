@@ -4,6 +4,12 @@
 
 ### 1. Vue事件系统概述
 
+> 📚 **相关文档**：
+> - [Vue 3 事件处理完整指南](https://cn.vuejs.org/guide/essentials/event-handling.html)
+> - [Vue 2 事件处理文档](https://v2.cn.vuejs.org/v2/guide/events.html)
+> - [Vue 3 表单输入绑定](https://cn.vuejs.org/guide/essentials/forms.html)
+> - [Vue 3 组件事件](https://cn.vuejs.org/guide/components/events.html)
+
 Vue的事件系统基于原生DOM事件，但在此基础上增加了许多便利的功能：
 - **事件修饰符**：简化常见事件处理逻辑
 - **v-on指令**：声明式事件绑定
@@ -15,6 +21,15 @@ Vue的事件系统基于原生DOM事件，但在此基础上增加了许多便�
 Vue提供了丰富的事件修饰符，让开发者能够以声明式的方式处理常见的事件操作：
 
 **1. 事件修饰符（Event Modifiers）**
+
+📝 **面试背诵版：**
+- **.stop** - 阻止事件冒泡 = event.stopPropagation()
+- **.prevent** - 阻止默认行为 = event.preventDefault()
+- **.capture** - 使用捕获模式，从外到内触发
+- **.self** - 只在事件目标是元素自身时触发
+- **.once** - 只触发一次，自动移除监听器
+- **.passive** - 告诉浏览器不会阻止默认行为，优化滚动性能
+- **串联使用** - @click.stop.prevent 可同时阻止冒泡和默认行为
 
 ```vue
 <!-- .stop - 阻止事件冒泡 -->
@@ -50,6 +65,19 @@ Vue提供了丰富的事件修饰符，让开发者能够以声明式的方式�
 
 **2. 按键修饰符（Key Modifiers）**
 
+> 📖 **官方文档**：[Vue 3 事件处理](https://cn.vuejs.org/guide/essentials/event-handling.html) | [Vue 2 事件处理](https://v2.cn.vuejs.org/v2/guide/events.html)
+
+📝 **面试背诵版：**
+- **常用按键**：.enter .tab .delete .esc .space .up .down .left .right
+- **系统修饰键**：.ctrl .alt .shift .meta（Mac的Cmd键）
+- **精确匹配**：.exact 确保只有指定修饰键被按下
+- **组合键**：@keyup.ctrl.enter = Ctrl+Enter
+- **事件类型**：
+  - keydown - 按下时立即触发（可捕获所有键）
+  - keyup - 松开时触发（常用于输入完成后）
+  - input - 内容改变时实时触发
+  - change - 失焦且内容改变时触发
+
 ```vue
 <!-- 常用按键修饰符 -->
 <input @keyup.enter="handleEnter" placeholder="按回车键" />
@@ -62,19 +90,44 @@ Vue提供了丰富的事件修饰符，让开发者能够以声明式的方式�
 <input @keyup.left="handleLeft" placeholder="按左箭头" />
 <input @keyup.right="handleRight" placeholder="按右箭头" />
 
-<!-- 使用keyCode（不推荐，已废弃） -->
-<input @keyup.13="handleEnter" />
+<!-- 更多按键事件 -->
+<input @keydown.enter="handleKeyDown" placeholder="按下回车键" />
+<input @keypress.enter="handleKeyPress" placeholder="按键时触发" />
 
-<!-- 自定义按键修饰符 -->
-<input @keyup.f1="handleF1" />
+<!-- 特殊按键修饰符 -->
+<input @keyup.page-down="handlePageDown" placeholder="Page Down" />
+<input @keyup.page-up="handlePageUp" placeholder="Page Up" />
+<input @keyup.home="handleHome" placeholder="Home键" />
+<input @keyup.end="handleEnd" placeholder="End键" />
+
+<!-- 功能键修饰符 -->
+<input @keyup.f1="handleF1" placeholder="F1键" />
+<input @keyup.f2="handleF2" placeholder="F2键" />
+<input @keyup.f12="handleF12" placeholder="F12键" />
+
+<!-- 使用keyCode（不推荐，Vue3已移除） -->
+<input @keyup.13="handleEnter" />
 
 <!-- 组合按键 -->
 <input @keyup.ctrl.enter="handleCtrlEnter" />
 <input @keyup.alt.67="handleAltC" />
 <input @keyup.shift.delete="handleShiftDelete" />
+<input @keyup.cmd.s="handleCmdS" placeholder="Mac的Cmd+S" />
+<input @keyup.ctrl.alt.delete="handleCtrlAltDelete" />
+
+<!-- 精确匹配修饰符 -->
+<input @keyup.ctrl.exact="handleOnlyCtrl" placeholder="只有Ctrl键" />
+<input @keyup.exact="handleNoModifier" placeholder="没有任何修饰键" />
 ```
 
 **3. 系统修饰键（System Modifier Keys）**
+
+📝 **面试背诵版：**
+- **.ctrl** - Ctrl键组合
+- **.alt** - Alt键组合
+- **.shift** - Shift键组合
+- **.meta** - Mac的Cmd键/Windows的Win键
+- **.exact** - 精确匹配，只有指定键被按下
 
 ```vue
 <!-- Ctrl -->
@@ -97,6 +150,12 @@ Vue提供了丰富的事件修饰符，让开发者能够以声明式的方式�
 
 **4. 鼠标按钮修饰符（Mouse Button Modifiers）**
 
+📝 **面试背诵版：**
+- **.left** - 左键点击
+- **.right** - 右键点击
+- **.middle** - 中键点击
+- 可与系统修饰键组合使用
+
 ```vue
 <!-- 左键点击 -->
 <div @click.left="handleLeftClick">左键点击</div>
@@ -116,14 +175,35 @@ Vue提供了丰富的事件修饰符，让开发者能够以声明式的方式�
 ```vue
 <template>
   <div class="event-demo">
+    <!-- 键盘事件的不同触发时机 -->
+    <div class="keyboard-events">
+      <h4>键盘事件触发时机对比：</h4>
+      <!-- @keydown: 按下键时立即触发 -->
+      <input @keydown="onKeyDown" placeholder="keydown: 按下时触发" />
+
+      <!-- @keyup: 松开键时触发 -->
+      <input @keyup="onKeyUp" placeholder="keyup: 松开时触发" />
+
+      <!-- @keypress: 按下字符键时触发（已废弃，不推荐） -->
+      <input @keypress="onKeyPress" placeholder="keypress: 字符键触发（已废弃）" />
+
+      <!-- @input: 输入内容改变时触发 -->
+      <input @input="onInput" placeholder="input: 内容改变时触发" />
+
+      <!-- @change: 失去焦点且内容改变时触发 -->
+      <input @change="onChange" placeholder="change: 失焦且改变时触发" />
+    </div>
+
     <!-- 表单提交示例 -->
     <form @submit.prevent="handleSubmit">
-      <input 
+      <input
         v-model="username"
         @keyup.enter="handleSubmit"
+        @focus="onFocus"
+        @blur="onBlur"
         placeholder="用户名，按回车提交"
       />
-      <input 
+      <input
         v-model="password"
         type="password"
         @keyup.enter="handleSubmit"
@@ -235,6 +315,35 @@ export default {
     
     deleteSelected() {
       this.todoList = this.todoList.filter(item => !item.selected)
+    },
+
+    // 键盘事件处理方法
+    onKeyDown(event) {
+      console.log('keydown:', event.key, '- 按下键时触发')
+    },
+
+    onKeyUp(event) {
+      console.log('keyup:', event.key, '- 松开键时触发')
+    },
+
+    onKeyPress(event) {
+      console.log('keypress:', event.key, '- 字符键触发（已废弃）')
+    },
+
+    onInput(event) {
+      console.log('input:', event.target.value, '- 输入内容改变')
+    },
+
+    onChange(event) {
+      console.log('change:', event.target.value, '- 失焦且内容改变')
+    },
+
+    onFocus(event) {
+      console.log('focus: 输入框获得焦点')
+    },
+
+    onBlur(event) {
+      console.log('blur: 输入框失去焦点')
     }
   }
 }
@@ -262,7 +371,35 @@ Vue.config.keyCodes = {
 <input @keyup.f1="handleF1" />
 ```
 
-**7. 修饰符的执行顺序**
+**7. 键盘事件触发顺序和区别**
+
+```javascript
+// 键盘事件触发顺序示例
+export default {
+  methods: {
+    handleKeyEvents(event) {
+      // 事件触发顺序：keydown → keypress（已废弃）→ input → keyup → change（失焦时）
+
+      // 1. keydown - 按下任何键时触发（包括功能键）
+      // 特点：可以捕获所有按键，包括 Ctrl、Alt、Shift、F1-F12 等
+
+      // 2. keypress - 按下字符键时触发（Vue3已移除，不推荐使用）
+      // 特点：只响应字符键，不响应功能键
+
+      // 3. input - 输入框内容改变时触发
+      // 特点：实时响应输入变化，包括粘贴、拖放等操作
+
+      // 4. keyup - 松开键时触发
+      // 特点：在按键释放后触发，常用于输入完成后的验证
+
+      // 5. change - 输入框失去焦点且内容改变时触发
+      // 特点：不是实时的，适合做最终验证
+    }
+  }
+}
+```
+
+**8. 修饰符的执行顺序**
 
 ```vue
 <!-- 修饰符的顺序很重要 -->
@@ -275,7 +412,13 @@ Vue.config.keyCodes = {
 </button>
 ```
 
-**8. 性能优化建议**
+**9. 性能优化建议**
+
+📝 **面试背诵版：**
+- 使用事件修饰符代替手动处理（性能更好）
+- .passive提升移动端滚动性能
+- 合理使用事件委托减少监听器数量
+- 避免在模板中使用复杂表达式
 
 ```vue
 <!-- 好的做法：使用修饰符 -->
@@ -306,6 +449,15 @@ methods: {
 Vue的事件修饰符大大简化了事件处理的代码，让开发者能够以声明式的方式处理常见的事件操作，提高了代码的可读性和维护性。
 
 ### 2. Vue事件绑定原理
+
+📝 **面试背诵版：**
+1. **编译阶段**：模板中的@click被编译成addEventListener
+2. **事件注册**：直接在目标DOM元素上注册事件监听器
+3. **事件对象**：使用原生DOM事件对象，无额外封装
+4. **修饰符处理**：编译时识别修饰符，生成对应处理代码
+5. **性能特点**：
+   - 优点：事件路径短，调试直观
+   - 缺点：元素多时内存占用高
 
 #### 模板编译阶段
 ```vue
@@ -373,6 +525,15 @@ function createInvoker(initialValue) {
 
 ### 3. Vue事件修饰符实现
 
+📝 **面试背诵版：**
+- **实现原理**：编译时转换为对应的JavaScript代码
+- **.stop** → stopPropagation()
+- **.prevent** → preventDefault()
+- **.capture** → addEventListener第三参数true
+- **.once** → 执行后移除监听器
+- **.passive** → {passive: true}选项
+- **.self** → target === currentTarget判断
+
 ```javascript
 // 事件修饰符的实现原理
 const modifierHandlers = {
@@ -396,6 +557,14 @@ const modifierHandlers = {
 ```
 
 ### 4. Vue自定义事件原理
+
+📝 **面试背诵版：**
+- **$emit** - 子组件触发事件，向父组件传递数据
+- **$on** - 监听事件（Vue3已移除）
+- **$off** - 移除监听（Vue3已移除）
+- **$once** - 一次性监听（Vue3已移除）
+- **实现原理**：基于发布订阅模式，维护事件名和回调函数的映射关系
+- **命名规范**：kebab-case命名，如 @custom-event
 
 ```javascript
 // Vue组件事件发射器实现
@@ -467,6 +636,23 @@ class ComponentEventEmitter {
 
 ### 1. React合成事件系统（SyntheticEvent）
 
+> 📚 **相关文档**：
+> - [React 事件处理](https://zh-hans.react.dev/learn/responding-to-events)
+> - [React 合成事件](https://zh-hans.react.dev/reference/react-dom/components/common#react-event-object)
+> - [React 表单处理](https://zh-hans.react.dev/learn/reacting-to-input-with-state)
+
+📝 **面试背诵版：**
+- **定义**：React对原生事件的封装，提供统一跨浏览器API
+- **目的**：
+  1. 解决浏览器兼容性问题
+  2. 通过事件委托优化性能
+  3. 与React批量更新机制集成
+- **特点**：
+  - 事件委托到根节点（React 17改为应用根节点）
+  - 事件池复用（React 17已移除）
+  - 访问原生事件：event.nativeEvent
+  - 自动批处理setState更新
+
 React使用合成事件系统来统一处理所有事件，主要特点：
 - **事件委托**：所有事件都委托到document根节点
 - **事件池**：复用事件对象以提高性能
@@ -474,6 +660,18 @@ React使用合成事件系统来统一处理所有事件，主要特点：
 - **异步更新**：事件处理中的状态更新会被批处理
 
 ### 2. React事件委托原理
+
+📝 **面试背诵版：**
+- **委托位置**：document根节点（React 17改为应用根节点）
+- **工作流程**：
+  1. 在根节点监听所有事件类型
+  2. 事件触发时从target向上收集事件处理器
+  3. 创建合成事件对象
+  4. 按正确顺序执行事件处理器
+- **优势**：
+  - 减少内存占用（事件监听器数量固定）
+  - 统一管理所有事件
+  - 便于实现事件批处理
 
 ```javascript
 // React事件委托实现（简化版）
@@ -545,6 +743,13 @@ class ReactEventDelegator {
 
 ### 3. React合成事件对象
 
+📝 **面试背诵版：**
+- **作用**：封装原生事件，提供统一API
+- **属性**：与原生事件相同（target、type等）
+- **方法**：preventDefault()、stopPropagation()
+- **访问原生**：event.nativeEvent
+- **持久化**：event.persist()（React 17前需要）
+
 ```javascript
 // React合成事件对象实现
 function createSyntheticEvent(nativeEvent) {
@@ -608,6 +813,12 @@ function createSyntheticEvent(nativeEvent) {
 
 ### 4. React事件池机制
 
+📝 **面试背诵版：**
+- **目的**：复用事件对象，减少内存分配
+- **工作原理**：事件处理后清空并回收对象
+- **注意事项**：异步访问需要event.persist()
+- **版本变化**：React 17已移除事件池
+
 ```javascript
 // React事件池实现（React 16及之前版本）
 class SyntheticEventPool {
@@ -650,6 +861,23 @@ class SyntheticEventPool {
 ```
 
 ## 三、Vue vs React 事件机制对比
+
+📝 **面试背诵版 - 核心差异：**
+1. **事件绑定**：
+   - Vue：直接绑定到目标元素
+   - React：委托到根节点
+2. **事件对象**：
+   - Vue：原生DOM事件
+   - React：合成事件SyntheticEvent
+3. **事件修饰符**：
+   - Vue：内置丰富修饰符（.stop .prevent等）
+   - React：需手动处理
+4. **组件通信**：
+   - Vue：$emit事件系统
+   - React：props回调函数
+5. **性能特点**：
+   - Vue：路径短但内存占用高
+   - React：内存低但路径长
 
 ### 1. 事件委托策略
 
@@ -770,6 +998,17 @@ const ChildComponent = ({ onCustomEvent }) => {
 
 ## 四、性能对比分析
 
+📝 **面试背诵版：**
+- **内存占用**：
+  - Vue：每个元素都有监听器，元素多时占用高
+  - React：事件委托，监听器数量固定
+- **事件性能**：
+  - Vue：直接调用，路径短
+  - React：需要委托分发，路径长
+- **批量更新**：
+  - Vue：需要nextTick手动批处理
+  - React：自动批处理setState
+
 ### 1. 内存使用
 
 **Vue:**
@@ -814,6 +1053,19 @@ const handleClick = () => {
 ```
 
 ## 五、最佳实践建议
+
+📝 **面试背诵版：**
+**Vue最佳实践：**
+- 充分利用事件修饰符简化代码
+- 合理使用事件委托处理列表
+- 避免在模板中写复杂逻辑
+- 事件命名使用kebab-case
+
+**React最佳实践：**
+- 使用useCallback优化事件处理函数
+- 避免在render中创建新函数
+- 合理利用事件委托机制
+- 注意this绑定问题
 
 ### 1. Vue事件最佳实践
 
@@ -958,7 +1210,112 @@ const handleClick = (syntheticEvent) => {
 }
 ```
 
-## 七、总结
+## 七、面试速记版
+
+### Vue事件机制核心要点
+
+#### 1. Vue事件修饰符（必背）
+- **.stop** - 阻止事件冒泡，相当于 event.stopPropagation()
+- **.prevent** - 阻止默认行为，相当于 event.preventDefault()
+- **.capture** - 使用事件捕获模式，从外到内触发
+- **.self** - 只在事件目标是元素自身时触发，不包括子元素
+- **.once** - 事件只触发一次，触发后自动移除监听器
+- **.passive** - 告诉浏览器不会阻止默认行为，提升滚动性能
+
+#### 2. 键盘事件修饰符（高频考点）
+- **常用按键**：.enter、.tab、.delete、.esc、.space、.up、.down、.left、.right
+- **系统修饰键**：.ctrl、.alt、.shift、.meta（Mac的Cmd键）
+- **精确匹配**：.exact 确保只有指定的修饰键被按下
+- **组合使用**：@keyup.ctrl.enter 表示Ctrl+Enter组合键
+
+#### 3. 键盘事件触发顺序（重要）
+1. **keydown** → 按下键时立即触发，可捕获所有按键包括功能键
+2. **keypress** → 按下字符键时触发（已废弃，Vue3已移除）
+3. **input** → 输入内容改变时实时触发
+4. **keyup** → 松开键时触发，常用于输入完成后的处理
+5. **change** → 失去焦点且内容改变时触发，适合最终验证
+
+#### 4. Vue事件绑定原理
+- **直接绑定**：事件直接绑定到目标DOM元素上
+- **编译过程**：模板编译时将@click转换为addEventListener
+- **事件对象**：使用原生DOM事件对象，无额外封装
+- **性能特点**：元素多时内存占用高，但调用路径短
+
+#### 5. Vue自定义事件系统
+- **$emit** - 子组件触发事件，向父组件传递数据
+- **$on** - 监听事件（Vue3中已移除，使用@代替）
+- **$off** - 移除事件监听（Vue3中已移除）
+- **$once** - 监听一次性事件（Vue3中已移除）
+- **命名规范**：kebab-case命名，如 @custom-event
+
+### React事件机制核心要点
+
+#### 1. 合成事件系统（SyntheticEvent）
+- **定义**：React对原生事件的封装，提供统一的跨浏览器API
+- **目的**：解决浏览器兼容性问题，优化性能
+- **访问原生事件**：通过 event.nativeEvent 属性访问
+- **事件池**：React 16及之前版本使用事件池复用事件对象，React 17已移除
+
+#### 2. 事件委托机制
+- **委托位置**：所有事件统一委托到document根节点（React 17改为应用根节点）
+- **工作原理**：
+  1. 在根节点监听所有事件类型
+  2. 事件触发时，从target向上收集React组件的事件处理器
+  3. 创建合成事件对象
+  4. 按正确顺序执行事件处理器
+- **优势**：减少内存占用，无论多少元素，事件监听器数量固定
+
+#### 3. React事件处理特点
+- **命名规范**：驼峰命名法，如 onClick、onChange
+- **事件传递**：通过props传递回调函数实现组件通信
+- **this绑定**：需要手动绑定this或使用箭头函数
+- **批量更新**：事件处理中的setState会自动批处理
+
+### Vue vs React 事件机制对比（必背）
+
+#### 1. 事件绑定方式
+- **Vue**：@click="handler" 声明式绑定，支持修饰符
+- **React**：onClick={handler} JSX属性绑定，需手动处理
+
+#### 2. 事件委托策略
+- **Vue**：直接绑定到目标元素，无委托机制
+- **React**：统一委托到根节点，通过冒泡处理
+
+#### 3. 事件对象
+- **Vue**：原生DOM事件对象，直接使用
+- **React**：合成事件对象，跨浏览器兼容
+
+#### 4. 性能特点
+- **Vue**：
+  - 优点：事件处理路径短，调试直观
+  - 缺点：元素多时内存占用高
+- **React**：
+  - 优点：内存占用低，事件管理统一
+  - 缺点：调试复杂，事件处理路径长
+
+#### 5. 组件通信
+- **Vue**：$emit/$on 事件系统，支持事件冒泡
+- **React**：props回调函数，单向数据流
+
+### 高频面试题答案模板
+
+**Q1: Vue的事件修饰符原理是什么？**
+答：Vue在编译模板时识别修饰符语法，生成相应的事件处理代码。比如.stop会在事件处理函数中自动调用event.stopPropagation()，.prevent会调用event.preventDefault()。这种声明式的方式让代码更简洁易读。
+
+**Q2: React为什么要使用合成事件？**
+答：主要有三个原因：
+1. 解决跨浏览器兼容性问题，提供统一的事件API
+2. 通过事件委托优化性能，减少内存占用
+3. 与React的批量更新机制集成，自动批处理setState
+
+**Q3: Vue和React事件机制的主要区别？**
+答：最主要的区别在于事件委托策略：
+- Vue直接将事件绑定到目标元素，使用原生DOM事件
+- React使用事件委托，将所有事件委托到根节点，使用合成事件
+- Vue提供丰富的事件修饰符，React需要手动处理
+- Vue用$emit实现组件通信，React用props回调
+
+## 八、总结
 
 ### Vue事件机制特点：
 ✅ **简单直观** - 直接绑定，易于理解和调试  
