@@ -852,6 +852,7 @@ router.push({ path: "/user", query: { id: 123 } });
 // 接收
 const route = useRoute();
 console.log(route.query.id);
+// URL: /user?id=123
 ```
 
 **params 参数：**
@@ -861,45 +862,133 @@ console.log(route.query.id);
 router.push({ name: "User", params: { id: 123 } });
 // 接收
 console.log(route.params.id);
+// URL: /user/123
 ```
 
-## 第四部分：Pinia 状态管理
+**query vs params 区别对比：**
 
-### 17. Pinia vs Vuex
-
-| 特性       | Pinia            | Vuex         |
-| ---------- | ---------------- | ------------ |
-| 设计理念   | 简洁直观         | 严格规范     |
-| TypeScript | 完美支持         | 需要额外配置 |
-| Mutations  | 无               | 必须         |
-| 模块化     | 天然支持多 Store | 需要 modules |
-| 代码体积   | ~2KB             | ~10KB        |
-
-### 18. Pinia 使用示例
+| 特性 | query | params |
+|------|-------|--------|
+| **URL显示** | 显示在URL中 `?id=123` | 作为路径一部分 `/user/123` |
+| **路由配置** | 不需要配置 | 需要在路由中配置 `path: '/user/:id'` |
+| **传递方式** | 可用path或name | 只能用name |
+| **刷新页面** | 参数不会丢失 | 参数不会丢失（动态路由）|
+| **参数类型** | 会转为字符串 | 保持原类型（内存中） |
+| **使用场景** | 可选参数、过滤条件 | 必要参数、RESTful风格 |
 
 ```javascript
-// store/counter.js
-import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-
-export const useCounterStore = defineStore("counter", () => {
-  // state
-  const count = ref(0);
-
-  // getters
-  const doubled = computed(() => count.value * 2);
-
-  // actions
-  function increment() {
-    count.value++;
+// 路由配置示例
+const routes = [
+  {
+    path: '/user/:id',  // params需要在路径中声明
+    name: 'User',
+    component: UserDetail,
+    props: true  // 可以将params作为props传递给组件
+  },
+  {
+    path: '/search',  // query不需要声明
+    name: 'Search',
+    component: SearchPage
   }
+]
 
-  return { count, doubled, increment };
-});
+// 组合使用
+router.push({
+  name: 'User',
+  params: { id: 123 },
+  query: { tab: 'profile' }
+})
+// URL: /user/123?tab=profile
 
-// 组件中使用
-const counter = useCounterStore();
-counter.increment();
+// 编程式导航的注意事项
+// ✅ 正确：path配query
+router.push({ path: '/user', query: { id: 123 } })
+
+// ❌ 错误：path配params（params会被忽略）
+router.push({ path: '/user', params: { id: 123 } })
+
+// ✅ 正确：name配params
+router.push({ name: 'User', params: { id: 123 } })
+
+// Vue Router 4.x 中params传递对象的限制
+// ❌ Vue Router 4不再支持params传递对象
+router.push({
+  name: 'User',
+  params: {
+    id: 123,
+    userInfo: { name: 'John' }  // 对象会被忽略
+  }
+})
+
+// ✅ 解决方案：使用query或state
+router.push({
+  name: 'User',
+  params: { id: 123 },
+  query: { info: JSON.stringify({ name: 'John' }) }
+})
+
+// 或使用history.state
+router.push({
+  name: 'User',
+  params: { id: 123 },
+  state: { userInfo: { name: 'John' } }
+})
+```
+
+## 第四部分：状态管理
+
+### 17. 状态管理概述
+
+**什么是状态管理？**
+状态管理是在应用中集中管理共享状态的模式和工具，解决多个组件间的数据共享和同步问题。
+
+**Vue生态的状态管理方案：**
+- **Vuex**：Vue官方的状态管理库，基于Flux架构
+- **Pinia**：新一代状态管理库，Vue官方推荐
+- **详细内容请参考**：[Vuex和Pinia面试题详解.md](./Vuex和Pinia面试题详解.md)
+
+### 18. 简单状态管理（不使用Vuex/Pinia）
+
+对于小型应用，可以使用简单的状态管理模式：
+
+```javascript
+// 简单的响应式store
+import { reactive, readonly } from 'vue'
+
+const state = reactive({
+  count: 0,
+  user: null
+})
+
+const methods = {
+  increment() {
+    state.count++
+  },
+  setUser(user) {
+    state.user = user
+  }
+}
+
+export default {
+  state: readonly(state), // 只读状态，防止直接修改
+  ...methods
+}
+
+// 在组件中使用
+import store from '@/store/simple-store'
+
+export default {
+  computed: {
+    count() {
+      return store.state.count
+    }
+  },
+  methods: {
+    increment() {
+      store.increment()
+    }
+  }
+}
 ```
 
 ## 第五部分：组件通信
@@ -963,9 +1052,127 @@ const user = inject("user");
 
 **编译优化：**
 
-1. 路由懒加载
-2. 组件懒加载
-3. Tree-shaking
+1. **路由懒加载** - 路由组件按需加载，减少首屏加载体积
+```javascript
+// 普通导入（会打包到主bundle）
+import Home from './views/Home.vue'
+
+// 懒加载（单独打包，访问时才加载）
+const Home = () => import('./views/Home.vue')
+
+// 带预加载提示
+const About = () => import(/* webpackChunkName: "about" */ './views/About.vue')
+
+// 路由配置
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: () => import('./views/Home.vue')
+  },
+  {
+    path: '/about',
+    name: 'About',
+    // 路由级别的代码分割
+    component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+  }
+]
+```
+
+2. **组件懒加载** - 异步组件按需加载，优化性能
+```javascript
+// Vue3 异步组件
+import { defineAsyncComponent } from 'vue'
+
+// 基础用法
+const AsyncComp = defineAsyncComponent(() =>
+  import('./components/AsyncComponent.vue')
+)
+
+// 带配置选项
+const AsyncComp = defineAsyncComponent({
+  loader: () => import('./components/AsyncComponent.vue'),
+  loadingComponent: LoadingComponent, // 加载时显示的组件
+  errorComponent: ErrorComponent,      // 错误时显示的组件
+  delay: 200,    // 显示加载组件前的延迟，默认200ms
+  timeout: 3000  // 超时时间，默认Infinity
+})
+
+// 在组件中使用
+export default {
+  components: {
+    AsyncComp: defineAsyncComponent(() =>
+      import('./components/HeavyComponent.vue')
+    )
+  }
+}
+
+// Vue2 写法
+const AsyncComp = () => ({
+  component: import('./components/AsyncComponent.vue'),
+  loading: LoadingComponent,
+  error: ErrorComponent,
+  delay: 200,
+  timeout: 3000
+})
+```
+
+3. **Tree-shaking** - 移除未使用的代码，减少打包体积
+```javascript
+// utils.js
+export function used() { /* 会被打包 */ }
+export function unused() { /* 不会被打包 */ }
+
+// main.js
+import { used } from './utils' // 只导入used，unused会被tree-shaking
+
+// package.json配置
+{
+  "sideEffects": false, // 标记无副作用，允许tree-shaking
+  // 或指定有副作用的文件
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "./src/some-side-effectful-file.js"
+  ]
+}
+
+// webpack配置（生产模式自动开启）
+module.exports = {
+  mode: 'production', // 自动启用tree-shaking
+  optimization: {
+    usedExports: true,     // 标记未使用的导出
+    minimize: true,        // 压缩代码
+    sideEffects: false     // 根据package.json的sideEffects配置
+  }
+}
+
+// Vite默认支持tree-shaking
+// vite.config.js
+export default {
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // 手动分包策略
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          'ui-vendor': ['element-plus']
+        }
+      }
+    }
+  }
+}
+
+// 注意事项：
+// 1. 必须使用ES6模块语法（import/export）
+// 2. 确保没有副作用代码
+// 3. 生产环境构建才会生效
+```
+
+**效果对比：**
+- **路由懒加载**：首屏加载从2MB降到500KB，其他路由按需加载
+- **组件懒加载**：大型组件（如图表、编辑器）使用时才加载，减少初始渲染时间
+- **Tree-shaking**：自动移除未使用的代码，打包体积减少30-60%
 
 **运行时优化：**
 
