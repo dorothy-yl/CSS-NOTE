@@ -26,12 +26,19 @@
 ### 2. 发布订阅模式和观察者模式
 
 **观察者模式：**
-- 观察者直接订阅主题，主题状态变化时通知观察者
+- 观察者直接依赖主题，主题状态变化时通知观察者
 - 耦合度较高
 - **Vue中的应用：响应式系统核心**
-  - Dep（依赖收集器）作为Subject（主题）
-  - Watcher（观察者）直接订阅Dep
-  - 数据变化时，Dep直接通知所有Watcher更新
+  - Dep（Dependency依赖管理器）作为Subject（被观察的主题/目标）
+    - **Subject理解**：被多个观察者关注的数据源，状态改变时需要通知观察者
+    - 每个响应式属性都有一个Dep实例（每个数据都是一个被观察的主题）
+    - **收集的是"谁依赖这个数据"**（即收集使用该数据的Watcher）
+    - 当数据被读取时（getter触发），将当前活跃的Watcher添加到Dep中
+  - Watcher（观察者）被添加到Dep的依赖列表中
+    - **渲染Watcher**：组件渲染时创建，负责更新视图
+    - **计算属性Watcher**：computed属性创建，负责缓存计算结果
+    - **侦听器Watcher**：watch选项创建，负责执行回调
+  - 数据变化时（setter触发），Dep通知所有收集到的Watcher更新
 
 **发布订阅模式：**
 - 发布者和订阅者通过事件中心进行通信
@@ -41,37 +48,50 @@
   - EventBus事件总线
   - 组件通信时的自定义事件
 
+**Dep依赖收集的通俗理解：**
+- **Dep = 数据的"联系人名单"**
+  - 每个响应式数据都有一个Dep，记录"谁在用我"
+  - 比如data.message被3个地方使用（模板、computed、watch），Dep就收集这3个Watcher
+- **收集时机**：数据被读取时（getter）
+- **通知时机**：数据被修改时（setter）
+
 **在Vue中的具体体现：**
 
 1. **Vue2响应式系统（观察者模式）：**
 ```javascript
 // Vue2中的实现简化示例
-class Dep {  // 依赖收集器（主题）
+
+// Dep = Subject（被观察的主题）
+// 举例：data中的message属性就是一个Subject，多个地方使用它
+class Dep {  // 依赖管理器 - "Dependency"的缩写
   constructor() {
-    this.subs = []  // 存储所有观察者
+    this.subs = []  // 存储所有观察这个数据的Watcher（观察者列表）
   }
 
   addSub(watcher) {  // 添加观察者
     this.subs.push(watcher)
   }
 
-  notify() {  // 通知所有观察者
+  notify() {  // 数据变化时，通知所有观察者
     this.subs.forEach(watcher => watcher.update())
   }
 }
 
+// Watcher = Observer（观察者）
+// 举例：模板中的{{ message }}会创建一个Watcher来观察message的变化
 class Watcher {  // 观察者
   constructor(vm, key, cb) {
     this.vm = vm
-    this.key = key
-    this.cb = cb
-    // 触发getter，收集依赖
-    Dep.target = this
-    this.vm[this.key]  // 触发getter
-    Dep.target = null
+    this.key = key  // 要观察的数据key，如"message"
+    this.cb = cb     // 数据变化时的回调（如更新视图）
+
+    // 初始化时触发依赖收集
+    Dep.target = this  // 将自己设为当前活跃的Watcher
+    this.vm[this.key]  // 读取数据，触发getter，此时Dep会收集这个Watcher
+    Dep.target = null  // 清空
   }
 
-  update() {  // 数据更新时执行
+  update() {  // 被Dep通知更新时执行
     this.cb.call(this.vm, this.vm[this.key])
   }
 }
@@ -249,6 +269,18 @@ Diff算法是Virtual DOM的核心算法，用于比较新旧虚拟DOM树的差�
    - 只比较同一层级的节点，不跨层级比较
    - 如果节点类型变了，直接销毁重建
    - 大大降低算法复杂度从O(n³)到O(n)
+
+   **为什么传统算法是O(n³)？**
+   - 传统的完整树diff算法需要找到两棵树的最小编辑距离
+   - 第1步：遍历tree1中每个节点 - O(n)
+   - 第2步：对每个节点，遍历tree2中所有节点寻找匹配 - O(n)
+   - 第3步：找到所有可能的转换方式后，计算最优解 - O(n)
+   - 总复杂度：O(n) × O(n) × O(n) = O(n³)
+
+   **Vue/React优化到O(n)的策略：**
+   - 只比较同层节点，不考虑跨层移动（实际开发中跨层移动很少）
+   - 通过key和组件类型快速判断是否为相同节点
+   - 不求最优解，只求可用解
 
 2. **组件比较（Component Diff）**
    - 同类型组件按原策略比较Virtual DOM树
@@ -1800,6 +1832,18 @@ onUnmounted(() => {
    - 只比较同一层级的节点，不跨层级比较
    - 如果节点类型变了，直接销毁重建
    - 大大降低算法复杂度从O(n³)到O(n)
+
+   **为什么传统算法是O(n³)？**
+   - 传统的完整树diff算法需要找到两棵树的最小编辑距离
+   - 第1步：遍历tree1中每个节点 - O(n)
+   - 第2步：对每个节点，遍历tree2中所有节点寻找匹配 - O(n)
+   - 第3步：找到所有可能的转换方式后，计算最优解 - O(n)
+   - 总复杂度：O(n) × O(n) × O(n) = O(n³)
+
+   **Vue/React优化到O(n)的策略：**
+   - 只比较同层节点，不考虑跨层移动（实际开发中跨层移动很少）
+   - 通过key和组件类型快速判断是否为相同节点
+   - 不求最优解，只求可用解
 
 2. **组件比较（Component Diff）**
    - 同类型组件按原策略比较Virtual DOM树
