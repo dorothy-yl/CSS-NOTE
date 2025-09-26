@@ -15,7 +15,7 @@
 ````
 
 **Vue 3.x 响应式原理：**
-- 使用 `Proxy` 代替了Object.defineProperty()，使用 `Reflect` 配合操作
+- 使用 `Proxy` 代替了Object.defineProperty()，使用 `Reflect` 配合操作，当我们读写数据、新增属性时，都会经过Proxy的拦截器。在拦截器里，，Vue3会做依赖收集和触发更新，这样就能实现数据变化时自动更新试图了。
 - **优势**：可以直接监听整个对象，而不需要遍历监听属性，性能会有所提升
 - Proxy可以直接监听数组的变化，而不需要去重写数组原生的方法，便利性会增加很多
 - Proxy有多达13种拦截方法，功能更加强大，
@@ -206,7 +206,7 @@ function effect(fn) {
 | ---------------- | --------------------- | ---------------------- | ------------ |
 | **数据劫持技术** | Object.defineProperty | Proxy                  | 技术实现手段 |
 | **设计模式**     | 观察者模式            | 观察者模式             | 架构设计思想 |
-| **依赖管理**     | Dep + Watcher         | effect + track/trigger | 具体实现机制 |
+| **依赖管理**     | Dep + Watcher         | effect + track跟踪/trigger 触发| 具体实现机制 |
 
 **Vue3 使用 Proxy 的优势：**
 
