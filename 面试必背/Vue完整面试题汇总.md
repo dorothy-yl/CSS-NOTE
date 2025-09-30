@@ -1,71 +1,176 @@
 # Vue 完整面试题汇总（含 Vue3 最新特性）
 
+## 📋 快速导航 - 重要级别标注
+
+| 序号 | 知识点 | 重要级别 | 记忆口诀 | 分类 |
+|------|--------|----------|----------|------|
+| 1 | Vue 响应式原理 | ⭐⭐⭐⭐⭐ 🔥 ⚠️ | **依赖收集触发更新** | 核心原理 |
+| 2 | 发布订阅与观察者模式 | ⭐⭐⭐⭐ | **观察者直接通知，发布订阅解耦** | 设计模式 |
+| 3 | Virtual DOM 原理 | ⭐⭐⭐⭐⭐ 🔥 | **JS对象描述DOM** | 核心原理 |
+| 5 | Diff 算法 | ⭐⭐⭐⭐⭐ 🔥 ⚠️ | **同层比较、双端对比、最长递增** | 核心原理 |
+| 6 | Vue3 新特性 | ⭐⭐⭐⭐⭐ 🔥 | **性能更快、体积更小、TS支持** | Vue3 |
+| 8 | ref vs reactive | ⭐⭐⭐⭐ 🔥 | **ref需value，reactive不需** | Vue3 |
+| 10 | watch vs watchEffect | ⭐⭐⭐⭐ 🔥 | **watch指定源、watchEffect自动追踪** | Vue3 |
+| 11 | Vue3 生命周期 | ⭐⭐⭐⭐⭐ ⚠️ | **创建挂载更新销毁** | 生命周期 |
+| 16 | 路由传参 | ⭐⭐⭐⭐ 🔥 | **query显示params隐藏** | 路由 |
+| 19 | 组件通信 | ⭐⭐⭐⭐⭐ 🔥 ⚠️ | **父子props、兄弟bus、跨级provide** | 组件通信 |
+| 22 | 性能优化 | ⭐⭐⭐⭐⭐ 🔥 ⚠️ | **懒加载、缓存、虚拟列表** | 性能优化 |
+| 23 | keep-alive | ⭐⭐⭐⭐ | **缓存组件不销毁** | 性能优化 |
+| 32 | nextTick 原理 | ⭐⭐⭐⭐⭐ 🔥 ⚠️ | **微任务异步更新DOM** | 核心原理 |
+| 35 | Vue2 vs Vue3 对比 | ⭐⭐⭐⭐⭐ 🔥 ⚠️ | **Proxy替Object、组合替选项** | 对比 |
+
+**图例说明：**
+- ⭐⭐⭐⭐⭐ 🔥 ⚠️ = 核心必背（面试必问）
+- ⭐⭐⭐⭐ 🔥 = 高频考点
+- ⭐⭐⭐⭐ = 重要知识
+- ⭐⭐⭐ = 基础知识
+
+---
+
+## 🔥 核心对比表格速查
+
+### Vue2 vs Vue3 核心差异对比
+
+| 特性 | Vue2 | Vue3 | 记忆口诀 |
+|------|------|------|----------|
+| **响应式原理** | Object.defineProperty | Proxy + Reflect | **Proxy替Object** |
+| **API 风格** | Options API | Composition API | **组合替选项** |
+| **生命周期** | destroyed | unmounted | **销毁改卸载** |
+| **TypeScript** | 部分支持 | 完全支持 | **类型更友好** |
+| **性能** | 基准 | 快1.3-2倍 | **更快更小** |
+| **包体积** | 23KB | 13.5KB | **体积减半** |
+| **Diff 算法** | 双端比较 | 最长递增子序列 | **算法更优** |
+| **多根节点** | 不支持 | 支持Fragment | **无需包裹** |
+
+### computed vs watch 对比
+
+| 特性 | computed | watch | 记忆口诀 |
+|------|----------|-------|----------|
+| **缓存** | 有缓存，依赖不变不重算 | 无缓存，每次都执行 | **计算缓存** |
+| **依赖追踪** | 自动追踪依赖 | 需明确指定监听源 | **computed自动** |
+| **返回值** | 必须有返回值 | 无返回值 | **computed必返** |
+| **异步** | 不支持异步 | 支持异步操作 | **watch可异步** |
+| **使用场景** | 派生数据、多对一 | 副作用、一对多 | **计算派生侦听副作用** |
+| **执行时机** | 惰性求值 | 可立即执行(immediate) | **侦听可立即** |
+
+### v-if vs v-show 对比
+
+| 特性 | v-if | v-show | 记忆口诀 |
+|------|------|--------|----------|
+| **DOM 操作** | 销毁/重建 | 切换 display | **if销毁show隐藏** |
+| **编译** | 条件渲染 | 始终渲染 | **if条件渲染** |
+| **初始成本** | 低(条件为false不渲染) | 高(始终渲染) | **if初始低** |
+| **切换成本** | 高(销毁重建) | 低(CSS切换) | **show切换低** |
+| **使用场景** | 条件很少改变 | 频繁切换 | **少变if频繁show** |
+| **生命周期** | 触发生命周期 | 不触发 | **if触发周期** |
+
+### props vs data vs computed 对比
+
+| 特性 | props | data | computed | 记忆口诀 |
+|------|-------|------|----------|----------|
+| **数据来源** | 父组件传入 | 组件内部定义 | 依赖其他响应式数据 | **props外data内computed算** |
+| **可修改性** | 单向数据流，不可修改 | 可直接修改 | 只读(除非定义setter) | **props只读** |
+| **响应式** | 响应式 | 响应式 | 响应式+缓存 | **computed有缓存** |
+| **使用场景** | 父子通信 | 组件状态 | 派生状态 | **props传data存computed算** |
+
+### ref vs reactive 对比
+
+| 特性 | ref | reactive | 记忆口诀 |
+|------|-----|----------|----------|
+| **数据类型** | 基本类型 + 对象 | 仅对象类型 | **ref全reactive对象** |
+| **访问方式** | 需要 .value | 直接访问 | **ref需value** |
+| **重新赋值** | 可整体替换 | 不可整体替换 | **ref可替** |
+| **解构** | 可直接解构(丢失响应式) | 需 toRefs 解构 | **解构需toRefs** |
+| **使用场景** | 简单值、需重新赋值 | 复杂对象、表单数据 | **简单ref复杂reactive** |
+
+### query vs params 路由传参对比
+
+| 特性 | query | params | 记忆口诀 |
+|------|-------|--------|----------|
+| **URL 显示** | 显示 ?id=123 | 隐藏在路径 /user/123 | **query显params隐** |
+| **路由配置** | 不需要配置 | 需配置动态路由 :id | **params需配置** |
+| **传递方式** | path 或 name | 仅 name | **params只用name** |
+| **刷新保留** | 保留 | 保留(动态路由) | **都能保留** |
+| **使用场景** | 可选参数、搜索条件 | 必要参数、RESTful | **query可选params必要** |
+
+---
+
 ## 第一部分：Vue 基础原理
 
-### 1. Vue 响应式原理
+### 1. Vue 响应式原理 ⭐⭐⭐⭐⭐ 🔥 ⚠️
+
+**💡 记忆口诀：依赖收集触发更新**
 
 **Vue 2.x 响应式原理：**
 
-- 使用 `Object.defineProperty()`在页面刚开始加载的时候，Vue 会遍历 data 中的所有属性 使用 `Object.defineProperty()转化为 getter 和 setter，当用户访问或设置某个属性时会触发对应的 getter 和 setter，随后通知每个组件实例对应的一个 watch 方法，最后实现视图的更新
-- **缺陷**：
-- 对于复杂对象需要深度监听，需要一次性监听到底，计算量是非常大的，性能不好
-- 对象的新增删除属性是无法监听到的，需要使用 Vue.$set和Vue.$delete 来辅助
-- 需要重写数组方法来实现数组的监听
+- 使用 `Object.defineProperty()` 在页面刚开始加载的时候，Vue 会遍历 data 中的所有属性，使用 `Object.defineProperty()` 转化为 getter 和 setter，当用户访问或设置某个属性时会触发对应的 getter 和 setter，随后通知每个组件实例对应的一个 watcher 方法，最后实现视图的更新
 
-````
+**Vue2 的缺陷：**
+1. 对于复杂对象需要深度监听，需要一次性监听到底，计算量大，性能不好
+2. 对象的新增删除属性无法监听，需要使用 `Vue.$set` 和 `Vue.$delete` 来辅助
+3. 需要重写数组方法来实现数组的监听
 
 **Vue 3.x 响应式原理：**
-- 使用 `Proxy` 代替了Object.defineProperty()，使用 `Reflect` 配合操作，当我们读写数据、新增属性时，都会经过Proxy的拦截器。在拦截器里，，Vue3会做依赖收集和触发更新，这样就能实现数据变化时自动更新试图了。
-- **优势**：可以直接监听整个对象，而不需要遍历监听属性，性能会有所提升
-- Proxy可以直接监听数组的变化，而不需要去重写数组原生的方法，便利性会增加很多
-- Proxy有多达13种拦截方法，功能更加强大，
-- Proxy作为一个新标准，会受到浏览器厂商的重点持续的性能优化
+- 使用 `Proxy` 代替了 Object.defineProperty()，使用 `Reflect` 配合操作。当我们读写数据、新增属性时，都会经过 Proxy 的拦截器。在拦截器里，Vue3 会做依赖收集和触发更新，这样就能实现数据变化时自动更新视图了。
 
+**Vue3 的优势：**
+1. 可以直接监听整个对象，而不需要遍历监听属性，性能会有所提升
+2. Proxy 可以直接监听数组的变化，而不需要去重写数组原生的方法，便利性会增加很多
+3. Proxy 有多达 13 种拦截方法，功能更加强大
+4. Proxy 作为一个新标准，会受到浏览器厂商的重点持续的性能优化
 
+**🎯 面试要点：**
+- Vue2 使用 Object.defineProperty，Vue3 使用 Proxy
+- Proxy 可以监听动态新增的属性和数组变化
+- 性能更好，不需要递归遍历所有属性
 
-### 2. 发布订阅模式和观察者模式
+---
+
+### 2. 发布订阅模式和观察者模式 ⭐⭐⭐⭐
+
+**💡 记忆口诀：观察者直接通知，发布订阅解耦**
 
 **观察者模式：**
 - 观察者直接依赖主题，主题状态变化时通知观察者
 - 耦合度较高
 - **Vue中的应用：响应式系统核心**
-  - Dep（Dependency依赖管理器）作为Subject（被观察的主题/目标）
+  - Dep（Dependency依赖管理器）作为 Subject（被观察的主题/目标）
     - **Subject理解**：被多个观察者关注的数据源，状态改变时需要通知观察者
-    - 每个响应式属性都有一个Dep实例（每个数据都是一个被观察的主题）
-    - **收集的是"谁依赖这个数据"**（即收集使用该数据的Watcher）
-    - 当数据被读取时（getter触发），将当前活跃的Watcher添加到Dep中
-  - Watcher（观察者）被添加到Dep的依赖列表中
+    - 每个响应式属性都有一个 Dep 实例（每个数据都是一个被观察的主题）
+    - **收集的是"谁依赖这个数据"**（即收集使用该数据的 Watcher）
+    - 当数据被读取时（getter触发），将当前活跃的 Watcher 添加到 Dep 中
+  - Watcher（观察者）被添加到 Dep 的依赖列表中
     - **渲染Watcher**：组件渲染时创建，负责更新视图
-    - **计算属性Watcher**：computed属性创建，负责缓存计算结果
-    - **侦听器Watcher**：watch选项创建，负责执行回调
-  - 数据变化时（setter触发），Dep通知所有收集到的Watcher更新
+    - **计算属性Watcher**：computed 属性创建，负责缓存计算结果
+    - **侦听器Watcher**：watch 选项创建，负责执行回调
+  - 数据变化时（setter触发），Dep 通知所有收集到的 Watcher 更新
 
 **发布订阅模式：**
 - 发布者和订阅者通过事件中心进行通信
 - 解耦程度更高
 - **Vue中的应用：事件系统**
   - $on/$emit/$off 等事件API
-  - EventBus事件总线
+  - EventBus 事件总线
   - 组件通信时的自定义事件
 
-**Dep依赖收集的通俗理解：**
+**Dep 依赖收集的通俗理解：**
 - **Dep = 数据的"联系人名单"**
-  - 每个响应式数据都有一个Dep，记录"谁在用我"
-  - 比如data.message被3个地方使用（模板、computed、watch），Dep就收集这3个Watcher
+  - 每个响应式数据都有一个 Dep，记录"谁在用我"
+  - 比如 data.message 被3个地方使用（模板、computed、watch），Dep 就收集这3个 Watcher
 - **收集时机**：数据被读取时（getter）
 - **通知时机**：数据被修改时（setter）
 
-**在Vue中的具体体现：**
+**在 Vue 中的具体体现：**
 
-1. **Vue2响应式系统（观察者模式）：**
+1. **Vue2 响应式系统（观察者模式）：**
 ```javascript
-// Vue2中的实现简化示例
+// Vue2 中的实现简化示例
 
 // Dep = Subject（被观察的主题）
-// 举例：data中的message属性就是一个Subject，多个地方使用它
+// 举例：data 中的 message 属性就是一个 Subject，多个地方使用它
 class Dep {  // 依赖管理器 - "Dependency"的缩写
   constructor() {
-    this.subs = []  // 存储所有观察这个数据的Watcher（观察者列表）
+    this.subs = []  // 存储所有观察这个数据的 Watcher（观察者列表）
   }
 
   addSub(watcher) {  // 添加观察者
@@ -78,29 +183,29 @@ class Dep {  // 依赖管理器 - "Dependency"的缩写
 }
 
 // Watcher = Observer（观察者）
-// 举例：模板中的{{ message }}会创建一个Watcher来观察message的变化
+// 举例：模板中的 {{ message }} 会创建一个 Watcher 来观察 message 的变化
 class Watcher {  // 观察者
   constructor(vm, key, cb) {
     this.vm = vm
-    this.key = key  // 要观察的数据key，如"message"
+    this.key = key  // 要观察的数据 key，如 "message"
     this.cb = cb     // 数据变化时的回调（如更新视图）
 
     // 初始化时触发依赖收集
-    Dep.target = this  // 将自己设为当前活跃的Watcher
-    this.vm[this.key]  // 读取数据，触发getter，此时Dep会收集这个Watcher
+    Dep.target = this  // 将自己设为当前活跃的 Watcher
+    this.vm[this.key]  // 读取数据，触发 getter，此时 Dep 会收集这个 Watcher
     Dep.target = null  // 清空
   }
 
-  update() {  // 被Dep通知更新时执行
+  update() {  // 被 Dep 通知更新时执行
     this.cb.call(this.vm, this.vm[this.key])
   }
 }
-````
+```
 
 2. **事件系统（发布订阅模式）- Vue2/Vue3 通用：**
 
 ```javascript
-// Vue2/Vue3都支持的事件系统简化示例
+// Vue2/Vue3 都支持的事件系统简化示例
 class EventBus {
   // 事件中心
   constructor() {
@@ -139,7 +244,7 @@ bus.$emit("update", "hello");
 3. **Vue3 响应式系统（观察者模式）：**
 
 ```javascript
-// Vue3中的实现简化示例
+// Vue3 中的实现简化示例
 const targetMap = new WeakMap(); // 存储所有响应式对象的依赖
 let activeEffect = null;
 
@@ -168,7 +273,7 @@ function trigger(target, key) {
   }
 }
 
-// reactive实现
+// reactive 实现
 function reactive(target) {
   return new Proxy(target, {
     get(target, key) {
@@ -183,7 +288,7 @@ function reactive(target) {
   });
 }
 
-// effect副作用函数（相当于Vue2的Watcher）
+// effect 副作用函数（相当于 Vue2 的 Watcher）
 function effect(fn) {
   activeEffect = fn;
   fn(); // 执行函数，触发依赖收集
@@ -211,16 +316,16 @@ function effect(fn) {
 **Vue3 使用 Proxy 的优势：**
 
 ```javascript
-// Vue2的限制
+// Vue2 的限制
 const vm = new Vue({
   data: {
     obj: { a: 1 },
   },
 });
-vm.obj.b = 2; // 新增属性不是响应式的，需要Vue.set
+vm.obj.b = 2; // 新增属性不是响应式的，需要 Vue.set
 vm.arr[0] = 100; // 数组索引赋值不触发更新
 
-// Vue3自动处理
+// Vue3 自动处理
 const state = reactive({
   obj: { a: 1 },
 });
@@ -238,7 +343,11 @@ state.arr[0] = 100; // 自动触发更新
 
 **总结：Vue3 仍使用观察者模式，Proxy 只是更好的实现手段**
 
-### 3. 为什么使用 Virtual DOM
+---
+
+### 3. 为什么使用 Virtual DOM ⭐⭐⭐⭐⭐ 🔥
+
+**💡 记忆口诀：JS对象描述DOM**
 
 **原因：**
 
@@ -247,53 +356,61 @@ state.arr[0] = 100; // 自动触发更新
 3. **声明式编程**：开发者只需关心数据变化，无需手动操作 DOM
 4. **diff 算法优化**：通过 diff 算法找出最小变化，精确更新
 
-### 4. Virtual DOM 的三个组成部分
+---
+
+### 4. Virtual DOM 的三个组成部分 ⭐⭐⭐⭐
+
+**💡 记忆口诀：VNode、Diff、Patch**
 
 1. **VNode（虚拟节点）**：用 JS 对象描述 DOM 结构
 2. **diff 算法**：对比新旧虚拟 DOM 树，找出差异
 3. **patch（打补丁）**：将差异应用到真实 DOM
 
-### 5. Vue Diff 算法完整解析
+---
 
-**什么是Diff算法？**
-Diff算法是Virtual DOM的核心算法，用于比较新旧虚拟DOM树的差异，计算出最小的更新操作，然后批量更新真实DOM。
+### 5. Vue Diff 算法完整解析 ⭐⭐⭐⭐⭐ 🔥 ⚠️
 
-**为什么需要Diff算法？**
-1. 直接操作DOM性能差，需要减少DOM操作次数
+**💡 记忆口诀：同层比较、双端对比、最长递增**
+
+**什么是 Diff 算法？**
+Diff 算法是 Virtual DOM 的核心算法，用于比较新旧虚拟 DOM 树的差异，计算出最小的更新操作，然后批量更新真实 DOM。
+
+**为什么需要 Diff 算法？**
+1. 直接操作 DOM 性能差，需要减少 DOM 操作次数
 2. 找出真正变化的部分，精准更新
-3. 复用已有DOM节点，避免重复创建
+3. 复用已有 DOM 节点，避免重复创建
 
-**Diff算法的三个核心策略：**
+**Diff 算法的三个核心策略：**
 
 1. **同层比较（Tree Diff）**
    - 只比较同一层级的节点，不跨层级比较
    - 如果节点类型变了，直接销毁重建
-   - 大大降低算法复杂度从O(n³)到O(n)
+   - 大大降低算法复杂度从 O(n³) 到 O(n)
 
-   **为什么传统算法是O(n³)？**
-   - 传统的完整树diff算法需要找到两棵树的最小编辑距离
-   - 第1步：遍历tree1中每个节点 - O(n)
-   - 第2步：对每个节点，遍历tree2中所有节点寻找匹配 - O(n)
+   **为什么传统算法是 O(n³)？**
+   - 传统的完整树 diff 算法需要找到两棵树的最小编辑距离
+   - 第1步：遍历 tree1 中每个节点 - O(n)
+   - 第2步：对每个节点，遍历 tree2 中所有节点寻找匹配 - O(n)
    - 第3步：找到所有可能的转换方式后，计算最优解 - O(n)
    - 总复杂度：O(n) × O(n) × O(n) = O(n³)
 
-   **Vue/React优化到O(n)的策略：**
+   **Vue/React 优化到 O(n) 的策略：**
    - 只比较同层节点，不考虑跨层移动（实际开发中跨层移动很少）
-   - 通过key和组件类型快速判断是否为相同节点
+   - 通过 key 和组件类型快速判断是否为相同节点
    - 不求最优解，只求可用解
 
 2. **组件比较（Component Diff）**
-   - 同类型组件按原策略比较Virtual DOM树
+   - 同类型组件按原策略比较 Virtual DOM 树
    - 不同类型组件直接替换整个组件
 
 3. **元素比较（Element Diff）**
-   - 同层级子节点通过key优化
-   - Vue2使用双端比较，Vue3使用最长递增子序列
+   - 同层级子节点通过 key 优化
+   - Vue2 使用双端比较，Vue3 使用最长递增子序列
 
-**Vue2 双端Diff算法详解：**
+**Vue2 双端 Diff 算法详解：**
 
 ```javascript
-// Vue2 双端Diff算法实现
+// Vue2 双端 Diff 算法实现
 function patchChildren(oldChildren, newChildren) {
   let oldStartIdx = 0;                           // 旧节点开始索引
   let oldEndIdx = oldChildren.length - 1;        // 旧节点结束索引
@@ -306,7 +423,7 @@ function patchChildren(oldChildren, newChildren) {
   let newEndVNode = newChildren[newEndIdx];
 
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-    // 跳过undefined节点
+    // 跳过 undefined 节点
     if (!oldStartVNode) {
       oldStartVNode = oldChildren[++oldStartIdx];
     } else if (!oldEndVNode) {
@@ -327,7 +444,7 @@ function patchChildren(oldChildren, newChildren) {
     // 3. 头尾比较（旧头新尾）
     else if (sameVNode(oldStartVNode, newEndVNode)) {
       patchVNode(oldStartVNode, newEndVNode);
-      // 把oldStart移动到最后
+      // 把 oldStart 移动到最后
       nodeOps.insertBefore(parentElm, oldStartVNode.elm, nodeOps.nextSibling(oldEndVNode.elm));
       oldStartVNode = oldChildren[++oldStartIdx];
       newEndVNode = newChildren[--newEndIdx];
@@ -335,18 +452,18 @@ function patchChildren(oldChildren, newChildren) {
     // 4. 尾头比较（旧尾新头）
     else if (sameVNode(oldEndVNode, newStartVNode)) {
       patchVNode(oldEndVNode, newStartVNode);
-      // 把oldEnd移动到最前
+      // 把 oldEnd 移动到最前
       nodeOps.insertBefore(parentElm, oldEndVNode.elm, oldStartVNode.elm);
       oldEndVNode = oldChildren[--oldEndIdx];
       newStartVNode = newChildren[++newStartIdx];
     }
-    // 5. 都不相同，使用key查找
+    // 5. 都不相同，使用 key 查找
     else {
-      // 建立key到index的映射
+      // 建立 key 到 index 的映射
       if (!oldKeyToIdx) {
         oldKeyToIdx = createKeyToOldIdx(oldChildren, oldStartIdx, oldEndIdx);
       }
-      // 通过key查找对应的旧节点
+      // 通过 key 查找对应的旧节点
       idxInOld = newStartVNode.key ? oldKeyToIdx[newStartVNode.key] : null;
 
       if (!idxInOld) {
@@ -374,10 +491,10 @@ function patchChildren(oldChildren, newChildren) {
 }
 ```
 
-**Vue3 快速Diff算法（最长递增子序列）：**
+**Vue3 快速 Diff 算法（最长递增子序列）：**
 
 ```javascript
-// Vue3 Diff算法核心实现
+// Vue3 Diff 算法核心实现
 function patchKeyedChildren(oldChildren, newChildren) {
   let i = 0;
   const l2 = newChildren.length;
@@ -440,7 +557,7 @@ function patchKeyedChildren(oldChildren, newChildren) {
     const s1 = i; // 旧子序列开始索引
     const s2 = i; // 新子序列开始索引
 
-    // 5.1 构建新节点的key:index映射
+    // 5.1 构建新节点的 key:index 映射
     const keyToNewIndexMap = new Map();
     for (i = s2; i <= e2; i++) {
       const nextChild = newChildren[i];
@@ -465,7 +582,7 @@ function patchKeyedChildren(oldChildren, newChildren) {
       if (prevChild.key != null) {
         newIndex = keyToNewIndexMap.get(prevChild.key);
       } else {
-        // key不存在，尝试找相同类型的节点
+        // key 不存在，尝试找相同类型的节点
         for (j = s2; j <= e2; j++) {
           if (isSameVNodeType(prevChild, newChildren[j])) {
             newIndex = j;
@@ -564,34 +681,36 @@ function getSequence(arr) {
 }
 ```
 
-**key的作用和重要性：**
+**key 的作用和重要性：**
+
+**💡 记忆口诀：标识复用、优化diff**
 
 ```javascript
-// 为什么需要key？
-// 没有key的情况
+// 为什么需要 key？
+// 没有 key 的情况
 <li>A</li>    =>    <li>B</li>
 <li>B</li>    =>    <li>A</li>
-// Vue会复用DOM，只更新内容：
-// li元素1的内容从A改为B
-// li元素2的内容从B改为A
+// Vue 会复用 DOM，只更新内容：
+// li 元素1的内容从 A 改为 B
+// li 元素2的内容从 B 改为 A
 
-// 有key的情况
+// 有 key 的情况
 <li key="a">A</li>    =>    <li key="b">B</li>
 <li key="b">B</li>    =>    <li key="a">A</li>
-// Vue会识别出是同一个节点，只需要移动位置
+// Vue 会识别出是同一个节点，只需要移动位置
 
-// key的最佳实践
+// key 的最佳实践
 // ✅ 正确：使用唯一且稳定的值
 <li v-for="item in list" :key="item.id">{{ item.name }}</li>
 
-// ❌ 错误：使用index作为key（列表会变动时）
+// ❌ 错误：使用 index 作为 key（列表会变动时）
 <li v-for="(item, index) in list" :key="index">{{ item.name }}</li>
 
 // ❌ 错误：使用随机数
 <li v-for="item in list" :key="Math.random()">{{ item.name }}</li>
 ```
 
-**Vue2 vs Vue3 Diff算法对比：**
+**Vue2 vs Vue3 Diff 算法对比：**
 
 | 特性 | Vue2 | Vue3 |
 |------|------|------|
@@ -602,25 +721,29 @@ function getSequence(arr) {
 | 静态标记 | 无 | PatchFlag静态标记 |
 | 性能 | 良好 | 更优，特别是大列表 |
 
-**Diff算法性能优化技巧：**
+**Diff 算法性能优化技巧：**
 
-1. **合理使用key**
-   - 使用唯一且稳定的key
-   - 避免使用index作为key
+1. **合理使用 key**
+   - 使用唯一且稳定的 key
+   - 避免使用 index 作为 key
    - 不要使用随机数或时间戳
 
 2. **避免不必要的节点移动**
    - 保持列表项的相对顺序
-   - 使用v-show替代频繁的v-if
+   - 使用 v-show 替代频繁的 v-if
 
-3. **利用Vue3的优化特性**
+3. **利用 Vue3 的优化特性**
    - 静态提升
    - PatchFlag
    - 缓存事件处理函数
 
+---
+
 ## 第二部分：Vue 3 核心语法
 
-### 6. Vue3 新特性亮点
+### 6. Vue3 新特性亮点 ⭐⭐⭐⭐⭐ 🔥
+
+**💡 记忆口诀：性能更快、体积更小、TS支持**
 
 **性能提升：**
 
@@ -636,7 +759,11 @@ function getSequence(arr) {
 - Suspense（异步组件）
 - 更好的 TypeScript 支持
 
-### 7. setup 函数详解
+---
+
+### 7. setup 函数详解 ⭐⭐⭐⭐
+
+**💡 记忆口诀：组合API舞台**
 
 **特点：**
 
@@ -675,7 +802,11 @@ const increment = () => {
 </script>
 ```
 
-### 8. ref 与 reactive 的区别
+---
+
+### 8. ref 与 reactive 的区别 ⭐⭐⭐⭐ 🔥
+
+**💡 记忆口诀：ref需value，reactive不需**
 
 **ref：**
 
@@ -699,7 +830,11 @@ const state = reactive({ count: 0 });
 state.count++; // 不需要 .value
 ```
 
-### 9. computed 计算属性
+---
+
+### 9. computed 计算属性 ⭐⭐⭐⭐
+
+**💡 记忆口诀：缓存依赖自动更新**
 
 ```vue
 <script setup>
@@ -725,7 +860,11 @@ const fullName2 = computed({
 </script>
 ```
 
-### 10. watch 与 watchEffect
+---
+
+### 10. watch 与 watchEffect ⭐⭐⭐⭐ 🔥
+
+**💡 记忆口诀：watch指定源、watchEffect自动追踪**
 
 **watch：**
 
@@ -769,7 +908,11 @@ watchEffect(() => {
 });
 ```
 
-### 11. Vue3 生命周期
+---
+
+### 11. Vue3 生命周期 ⭐⭐⭐⭐⭐ ⚠️
+
+**💡 记忆口诀：创建挂载更新销毁**
 
 **Composition API 生命周期：**
 
@@ -794,7 +937,11 @@ onUnmounted(() => {
 });
 ```
 
-### 12. Composition API 优势
+---
+
+### 12. Composition API 优势 ⭐⭐⭐⭐
+
+**💡 记忆口诀：逻辑聚合易复用**
 
 **Options API 的问题：**
 
@@ -808,7 +955,11 @@ onUnmounted(() => {
 - 更好的类型推导
 - 更小的打包体积
 
-### 13. toRefs 与 toRef
+---
+
+### 13. toRefs 与 toRef ⭐⭐⭐
+
+**💡 记忆口诀：解构保持响应式**
 
 将响应式对象的属性转换为 ref：
 
@@ -827,9 +978,13 @@ const { name, age } = toRefs(state);
 const nameRef = toRef(state, "name");
 ```
 
+---
+
 ## 第三部分：Vue Router
 
-### 14. Vue Router 4.x 新特性
+### 14. Vue Router 4.x 新特性 ⭐⭐⭐⭐
+
+**💡 记忆口诀：history模式、懒加载**
 
 ```javascript
 import { createRouter, createWebHistory } from "vue-router";
@@ -853,7 +1008,11 @@ const router = createRouter({
 });
 ```
 
-### 15. 路由导航守卫
+---
+
+### 15. 路由导航守卫 ⭐⭐⭐⭐
+
+**💡 记忆口诀：全局组件独享**
 
 ```javascript
 // 全局前置守卫
@@ -874,7 +1033,11 @@ onBeforeRouteLeave((to, from) => {
 });
 ```
 
-### 16. 路由传参方式
+---
+
+### 16. 路由传参方式 ⭐⭐⭐⭐ 🔥
+
+**💡 记忆口诀：query显示params隐藏**
 
 **query 参数：**
 
@@ -967,9 +1130,13 @@ router.push({
 })
 ```
 
+---
+
 ## 第四部分：状态管理
 
-### 17. 状态管理概述
+### 17. 状态管理概述 ⭐⭐⭐⭐
+
+**💡 记忆口诀：Vuex到Pinia**
 
 **什么是状态管理？**
 状态管理是在应用中集中管理共享状态的模式和工具，解决多个组件间的数据共享和同步问题。
@@ -979,7 +1146,9 @@ router.push({
 - **Pinia**：新一代状态管理库，Vue官方推荐
 - **详细内容请参考**：[Vuex和Pinia面试题详解.md](./Vuex和Pinia面试题详解.md)
 
-### 18. 简单状态管理（不使用Vuex/Pinia）
+---
+
+### 18. 简单状态管理（不使用Vuex/Pinia） ⭐⭐⭐
 
 对于小型应用，可以使用简单的状态管理模式：
 
@@ -1023,9 +1192,13 @@ export default {
 }
 ```
 
+---
+
 ## 第五部分：组件通信
 
-### 19. Vue3 组件通信方式总结
+### 19. Vue3 组件通信方式总结 ⭐⭐⭐⭐⭐ 🔥 ⚠️
+
+**💡 记忆口诀：父子props、兄弟bus、跨级provide**
 
 1. **props / emit**：父子组件通信
 2. **provide / inject**：跨级组件通信
@@ -1035,7 +1208,11 @@ export default {
 6. **mitt**：事件总线（替代 Vue2 的 EventBus）
 7. **Pinia**：全局状态管理
 
-### 20. v-model 在组件中的使用
+---
+
+### 20. v-model 在组件中的使用 ⭐⭐⭐⭐
+
+**💡 记忆口诀：语法糖双向绑定**
 
 ```vue
 <!-- 父组件 -->
@@ -1060,7 +1237,11 @@ const emit = defineEmits(["update:modelValue"]);
 </template>
 ```
 
-### 21. provide / inject 跨级通信
+---
+
+### 21. provide / inject 跨级通信 ⭐⭐⭐⭐
+
+**💡 记忆口诀：依赖注入跨级传**
 
 ```javascript
 // 祖先组件
@@ -1078,9 +1259,13 @@ import { inject } from "vue";
 const user = inject("user");
 ```
 
+---
+
 ## 第六部分：性能优化
 
-### 22. Vue 性能优化方案
+### 22. Vue 性能优化方案 ⭐⭐⭐⭐⭐ 🔥 ⚠️
+
+**💡 记忆口诀：懒加载、缓存、虚拟列表**
 
 **编译优化：**
 
@@ -1229,7 +1414,11 @@ const expensive = computed(() => {
 import { VirtualList } from '@tanstack/vue-virtual'
 ```
 
-### 23. keep-alive 缓存组件
+---
+
+### 23. keep-alive 缓存组件 ⭐⭐⭐⭐
+
+**💡 记忆口诀：缓存组件不销毁**
 
 ```vue
 <template>
@@ -1250,7 +1439,11 @@ onDeactivated(() => {
 </script>
 ```
 
-### 24. Vue3 编译优化
+---
+
+### 24. Vue3 编译优化 ⭐⭐⭐⭐
+
+**💡 记忆口诀：静态提升、PatchFlag**
 
 **优化技术：**
 
@@ -1271,9 +1464,13 @@ const PatchFlags = {
 };
 ```
 
+---
+
 ## 第七部分：TypeScript 支持
 
-### 25. Vue3 + TypeScript 最佳实践
+### 25. Vue3 + TypeScript 最佳实践 ⭐⭐⭐
+
+**💡 记忆口诀：类型安全开发体验**
 
 ```typescript
 // 使用 defineComponent（Options API）
@@ -1314,9 +1511,13 @@ const input = ref<string>("");
 const list = ref<User[]>([]);
 ```
 
+---
+
 ## 第八部分：Vue3 新组件
 
-### 26. Teleport 传送门
+### 26. Teleport 传送门 ⭐⭐⭐
+
+**💡 记忆口诀：内容传送到任意DOM**
 
 ```vue
 <template>
@@ -1331,7 +1532,11 @@ const list = ref<User[]>([]);
 </template>
 ```
 
-### 27. Suspense 异步组件
+---
+
+### 27. Suspense 异步组件 ⭐⭐⭐
+
+**💡 记忆口诀：异步组件加载态**
 
 ```vue
 <template>
@@ -1354,7 +1559,11 @@ const AsyncComponent = defineAsyncComponent(() =>
 </script>
 ```
 
-### 28. Fragment 多根节点
+---
+
+### 28. Fragment 多根节点 ⭐⭐⭐
+
+**💡 记忆口诀：无需单根节点包裹**
 
 Vue3 支持组件有多个根节点：
 
@@ -1366,9 +1575,13 @@ Vue3 支持组件有多个根节点：
 </template>
 ```
 
+---
+
 ## 第九部分：其他 API
 
-### 29. 自定义 Hook
+### 29. 自定义 Hook ⭐⭐⭐⭐
+
+**💡 记忆口诀：逻辑复用组合式**
 
 ```javascript
 // hooks/useCounter.js
@@ -1398,7 +1611,11 @@ export function useCounter(initialValue = 0) {
 const { count, doubled, increment } = useCounter(10);
 ```
 
-### 30. customRef 自定义 ref
+---
+
+### 30. customRef 自定义 ref ⭐⭐⭐
+
+**💡 记忆口诀：自定义响应式逻辑**
 
 实现防抖 ref：
 
@@ -1428,7 +1645,11 @@ function debounceRef(value, delay = 200) {
 const text = debounceRef("", 500);
 ```
 
-### 31. 响应式 API 进阶
+---
+
+### 31. 响应式 API 进阶 ⭐⭐⭐
+
+**💡 记忆口诀：浅层响应、只读、标记**
 
 ```javascript
 // shallowRef - 浅层响应式
@@ -1450,9 +1671,13 @@ const raw = toRaw(reactive(obj));
 const marked = markRaw(obj);
 ```
 
+---
+
 ## 第十部分：实战问题
 
-### 32. nextTick 的使用场景
+### 32. nextTick 的使用场景 ⭐⭐⭐⭐⭐ 🔥 ⚠️
+
+**💡 记忆口诀：微任务异步更新DOM**
 
 ```javascript
 import { nextTick } from "vue";
@@ -1466,7 +1691,17 @@ async function updateAndScroll() {
 }
 ```
 
-### 33. Vue3 中的 v-model 修饰符
+**nextTick 原理：**
+- Vue 的数据更新是异步的，多次修改数据会被合并到一次更新
+- nextTick 将回调延迟到下次 DOM 更新循环之后执行
+- 使用微任务（Promise.then 或 MutationObserver）实现
+- 如果微任务不可用，降级使用宏任务（setImmediate 或 setTimeout）
+
+---
+
+### 33. Vue3 中的 v-model 修饰符 ⭐⭐⭐
+
+**💡 记忆口诀：lazy、number、trim**
 
 ```vue
 <!-- .lazy - 在 change 事件后同步 -->
@@ -1482,7 +1717,11 @@ async function updateAndScroll() {
 <CustomInput v-model.capitalize="text" />
 ```
 
-### 34. 插槽（Slots）的使用
+---
+
+### 34. 插槽（Slots）的使用 ⭐⭐⭐⭐
+
+**💡 记忆口诀：默认具名作用域**
 
 ```vue
 <!-- 默认插槽 -->
@@ -1506,7 +1745,11 @@ async function updateAndScroll() {
 </template>
 ```
 
-### 35. Vue3 与 Vue2 的主要区别总结
+---
+
+### 35. Vue3 与 Vue2 的主要区别总结 ⭐⭐⭐⭐⭐ 🔥 ⚠️
+
+**💡 记忆口诀：Proxy替Object、组合替选项**
 
 | 特性       | Vue 2.x               | Vue 3.x                       |
 | ---------- | --------------------- | ----------------------------- |
@@ -1520,7 +1763,11 @@ async function updateAndScroll() {
 | Suspense   | 不支持                | 内置支持                      |
 | 生命周期   | destroyed 等          | unmounted 等                  |
 
-### 36. Vite 相比 Webpack 的优势
+---
+
+### 36. Vite 相比 Webpack 的优势 ⭐⭐⭐⭐
+
+**💡 记忆口诀：开发快、HMR秒级**
 
 **核心差异：**
 
@@ -1548,40 +1795,11 @@ export default defineConfig({
 });
 ```
 
-## 面试技巧总结
-
-### 回答问题的思路
-
-1. **是什么**：概念理解
-2. **为什么**：设计初衷和解决的问题
-3. **怎么做**：实现原理
-4. **优缺点**：对比分析
-5. **应用场景**：实际使用
-
-### 高频考点
-
-- Vue3 响应式原理（Proxy vs Object.defineProperty）
-- Composition API 的优势和使用
-- Vue3 性能优化措施
-- 组件通信的各种方式
-- Pinia 与 Vuex 的区别
-- TypeScript 在 Vue3 中的应用
-- 虚拟 DOM 和 diff 算法
-- 生命周期的变化
-- 路由和状态管理
-- 新特性（Teleport、Suspense、Fragment 等）
-
-### 准备建议
-
-- 深入理解原理，不要死记硬背
-- 准备实际项目经验案例
-- 熟悉 Vue3 生态系统（Vite、Pinia、VueRouter 4 等）
-- 关注最新特性和发展趋势
-- 多写代码练习，理论结合实践
+---
 
 ## 第十一部分：高频面试题
 
-### 37. 操作 DOM 元素在哪个生命周期函数执行？
+### 37. 操作 DOM 元素在哪个生命周期函数执行？ ⭐⭐⭐⭐
 
 **Vue 2.x：**
 
@@ -1622,7 +1840,9 @@ onUpdated(() => {
 });
 ```
 
-### 38. 网络请求后端 API 写在哪个生命周期函数里面？
+---
+
+### 38. 网络请求后端 API 写在哪个生命周期函数里面？ ⭐⭐⭐⭐
 
 **推荐位置：**
 
@@ -1666,7 +1886,9 @@ onMounted(async () => {
 });
 ```
 
-### 39. 移除定时器、移除监听函数在哪个生命周期执行？
+---
+
+### 39. 移除定时器、移除监听函数在哪个生命周期执行？ ⭐⭐⭐⭐
 
 **Vue 2.x：**
 
@@ -1742,7 +1964,9 @@ onBeforeUnmount(() => {
 });
 ```
 
-### 40. Vue2 和 Vue3 方法名称有哪些变动？
+---
+
+### 40. Vue2 和 Vue3 方法名称有哪些变动？ ⭐⭐⭐⭐
 
 | Vue 2.x         | Vue 3.x           | 说明                                      |
 | --------------- | ----------------- | ----------------------------------------- |
@@ -1817,371 +2041,9 @@ onUnmounted(() => {
 });
 ```
 
-### 41. Diff 算法是如何做比较的？（3点核心）
+---
 
-参见上文第5节：Vue Diff 算法完整解析
-
-**为什么需要Diff算法？**
-1. 直接操作DOM性能差，需要减少DOM操作次数
-2. 找出真正变化的部分，精准更新
-3. 复用已有DOM节点，避免重复创建
-
-**Diff算法的三个核心策略：**
-
-1. **同层比较（Tree Diff）**
-   - 只比较同一层级的节点，不跨层级比较
-   - 如果节点类型变了，直接销毁重建
-   - 大大降低算法复杂度从O(n³)到O(n)
-
-   **为什么传统算法是O(n³)？**
-   - 传统的完整树diff算法需要找到两棵树的最小编辑距离
-   - 第1步：遍历tree1中每个节点 - O(n)
-   - 第2步：对每个节点，遍历tree2中所有节点寻找匹配 - O(n)
-   - 第3步：找到所有可能的转换方式后，计算最优解 - O(n)
-   - 总复杂度：O(n) × O(n) × O(n) = O(n³)
-
-   **Vue/React优化到O(n)的策略：**
-   - 只比较同层节点，不考虑跨层移动（实际开发中跨层移动很少）
-   - 通过key和组件类型快速判断是否为相同节点
-   - 不求最优解，只求可用解
-
-2. **组件比较（Component Diff）**
-   - 同类型组件按原策略比较Virtual DOM树
-   - 不同类型组件直接替换整个组件
-
-3. **元素比较（Element Diff）**
-   - 同层级子节点通过key优化
-   - Vue2使用双端比较，Vue3使用最长递增子序列
-
-**Vue2 双端Diff算法详解：**
-
-```javascript
-// Vue2 双端Diff算法实现
-function patchChildren(oldChildren, newChildren) {
-  let oldStartIdx = 0;                           // 旧节点开始索引
-  let oldEndIdx = oldChildren.length - 1;        // 旧节点结束索引
-  let newStartIdx = 0;                           // 新节点开始索引
-  let newEndIdx = newChildren.length - 1;        // 新节点结束索引
-
-  let oldStartVNode = oldChildren[oldStartIdx];
-  let oldEndVNode = oldChildren[oldEndIdx];
-  let newStartVNode = newChildren[newStartIdx];
-  let newEndVNode = newChildren[newEndIdx];
-
-  while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-    // 跳过undefined节点
-    if (!oldStartVNode) {
-      oldStartVNode = oldChildren[++oldStartIdx];
-    } else if (!oldEndVNode) {
-      oldEndVNode = oldChildren[--oldEndIdx];
-    }
-    // 1. 头头比较
-    else if (sameVNode(oldStartVNode, newStartVNode)) {
-      patchVNode(oldStartVNode, newStartVNode);
-      oldStartVNode = oldChildren[++oldStartIdx];
-      newStartVNode = newChildren[++newStartIdx];
-    }
-    // 2. 尾尾比较
-    else if (sameVNode(oldEndVNode, newEndVNode)) {
-      patchVNode(oldEndVNode, newEndVNode);
-      oldEndVNode = oldChildren[--oldEndIdx];
-      newEndVNode = newChildren[--newEndIdx];
-    }
-    // 3. 头尾比较（旧头新尾）
-    else if (sameVNode(oldStartVNode, newEndVNode)) {
-      patchVNode(oldStartVNode, newEndVNode);
-      // 把oldStart移动到最后
-      nodeOps.insertBefore(parentElm, oldStartVNode.elm, nodeOps.nextSibling(oldEndVNode.elm));
-      oldStartVNode = oldChildren[++oldStartIdx];
-      newEndVNode = newChildren[--newEndIdx];
-    }
-    // 4. 尾头比较（旧尾新头）
-    else if (sameVNode(oldEndVNode, newStartVNode)) {
-      patchVNode(oldEndVNode, newStartVNode);
-      // 把oldEnd移动到最前
-      nodeOps.insertBefore(parentElm, oldEndVNode.elm, oldStartVNode.elm);
-      oldEndVNode = oldChildren[--oldEndIdx];
-      newStartVNode = newChildren[++newStartIdx];
-    }
-    // 5. 都不相同，使用key查找
-    else {
-      // 建立key到index的映射
-      if (!oldKeyToIdx) {
-        oldKeyToIdx = createKeyToOldIdx(oldChildren, oldStartIdx, oldEndIdx);
-      }
-      // 通过key查找对应的旧节点
-      idxInOld = newStartVNode.key ? oldKeyToIdx[newStartVNode.key] : null;
-
-      if (!idxInOld) {
-        // 没找到，创建新节点
-        createElm(newStartVNode, parentElm, oldStartVNode.elm);
-      } else {
-        // 找到了，移动复用
-        vnodeToMove = oldChildren[idxInOld];
-        patchVNode(vnodeToMove, newStartVNode);
-        oldChildren[idxInOld] = undefined; // 标记已处理
-        nodeOps.insertBefore(parentElm, vnodeToMove.elm, oldStartVNode.elm);
-      }
-      newStartVNode = newChildren[++newStartIdx];
-    }
-  }
-
-  // 处理剩余节点
-  if (oldStartIdx > oldEndIdx) {
-    // 添加新节点
-    addVnodes(parentElm, newChildren, newStartIdx, newEndIdx);
-  } else if (newStartIdx > newEndIdx) {
-    // 删除旧节点
-    removeVnodes(oldChildren, oldStartIdx, oldEndIdx);
-  }
-}
-```
-
-**Vue3 快速Diff算法（最长递增子序列）：**
-
-```javascript
-// Vue3 Diff算法核心实现
-function patchKeyedChildren(oldChildren, newChildren) {
-  let i = 0;
-  const l2 = newChildren.length;
-  let e1 = oldChildren.length - 1; // 旧节点的结束索引
-  let e2 = l2 - 1; // 新节点的结束索引
-
-  // 1. 从头部开始同步
-  // (a b) c
-  // (a b) d e
-  while (i <= e1 && i <= e2) {
-    const n1 = oldChildren[i];
-    const n2 = newChildren[i];
-    if (isSameVNodeType(n1, n2)) {
-      patch(n1, n2);
-    } else {
-      break;
-    }
-    i++;
-  }
-
-  // 2. 从尾部开始同步
-  // a (b c)
-  // d e (b c)
-  while (i <= e1 && i <= e2) {
-    const n1 = oldChildren[e1];
-    const n2 = newChildren[e2];
-    if (isSameVNodeType(n1, n2)) {
-      patch(n1, n2);
-    } else {
-      break;
-    }
-    e1--;
-    e2--;
-  }
-
-  // 3. 新节点多于旧节点，需要挂载
-  // (a b)
-  // (a b) c
-  if (i > e1) {
-    if (i <= e2) {
-      const nextPos = e2 + 1;
-      const anchor = nextPos < l2 ? newChildren[nextPos].el : null;
-      while (i <= e2) {
-        mount(newChildren[i], container, anchor);
-        i++;
-      }
-    }
-  }
-  // 4. 旧节点多于新节点，需要卸载
-  // (a b) c
-  // (a b)
-  else if (i > e2) {
-    while (i <= e1) {
-      unmount(oldChildren[i]);
-      i++;
-    }
-  }
-  // 5. 乱序情况，需要移动、删除、新增
-  else {
-    const s1 = i; // 旧子序列开始索引
-    const s2 = i; // 新子序列开始索引
-
-    // 5.1 构建新节点的key:index映射
-    const keyToNewIndexMap = new Map();
-    for (i = s2; i <= e2; i++) {
-      const nextChild = newChildren[i];
-      if (nextChild.key != null) {
-        keyToNewIndexMap.set(nextChild.key, i);
-      }
-    }
-
-    // 5.2 遍历旧节点，更新和移动节点
-    const toBePatched = e2 - s2 + 1;
-    const newIndexToOldIndexMap = new Array(toBePatched);
-    // 初始化为0，0表示新增节点
-    for (i = 0; i < toBePatched; i++) newIndexToOldIndexMap[i] = 0;
-
-    let moved = false;
-    let maxNewIndexSoFar = 0;
-
-    for (i = s1; i <= e1; i++) {
-      const prevChild = oldChildren[i];
-      let newIndex;
-
-      if (prevChild.key != null) {
-        newIndex = keyToNewIndexMap.get(prevChild.key);
-      } else {
-        // key不存在，尝试找相同类型的节点
-        for (j = s2; j <= e2; j++) {
-          if (isSameVNodeType(prevChild, newChildren[j])) {
-            newIndex = j;
-            break;
-          }
-        }
-      }
-
-      if (newIndex === undefined) {
-        // 没找到对应节点，删除
-        unmount(prevChild);
-      } else {
-        // 记录新旧节点的映射关系
-        newIndexToOldIndexMap[newIndex - s2] = i + 1;
-        if (newIndex >= maxNewIndexSoFar) {
-          maxNewIndexSoFar = newIndex;
-        } else {
-          // 节点需要移动
-          moved = true;
-        }
-        patch(prevChild, newChildren[newIndex]);
-      }
-    }
-
-    // 5.3 移动和挂载新节点
-    // 使用最长递增子序列优化移动
-    const increasingNewIndexSequence = moved
-      ? getSequence(newIndexToOldIndexMap)
-      : [];
-
-    let j = increasingNewIndexSequence.length - 1;
-    for (i = toBePatched - 1; i >= 0; i--) {
-      const nextIndex = s2 + i;
-      const nextChild = newChildren[nextIndex];
-      const anchor = nextIndex + 1 < l2 ? newChildren[nextIndex + 1].el : null;
-
-      if (newIndexToOldIndexMap[i] === 0) {
-        // 新增节点
-        mount(nextChild, container, anchor);
-      } else if (moved) {
-        // 需要移动
-        if (j < 0 || i !== increasingNewIndexSequence[j]) {
-          move(nextChild, container, anchor);
-        } else {
-          // 位于递增子序列中，不需要移动
-          j--;
-        }
-      }
-    }
-  }
-}
-
-// 最长递增子序列算法（动态规划）
-function getSequence(arr) {
-  const p = arr.slice();
-  const result = [0];
-  let i, j, u, v, c;
-  const len = arr.length;
-
-  for (i = 0; i < len; i++) {
-    const arrI = arr[i];
-    if (arrI !== 0) {
-      j = result[result.length - 1];
-      if (arr[j] < arrI) {
-        p[i] = j;
-        result.push(i);
-        continue;
-      }
-      u = 0;
-      v = result.length - 1;
-      // 二分查找
-      while (u < v) {
-        c = (u + v) >> 1;
-        if (arr[result[c]] < arrI) {
-          u = c + 1;
-        } else {
-          v = c;
-        }
-      }
-      if (arrI < arr[result[u]]) {
-        if (u > 0) {
-          p[i] = result[u - 1];
-        }
-        result[u] = i;
-      }
-    }
-  }
-
-  u = result.length;
-  v = result[u - 1];
-  while (u-- > 0) {
-    result[u] = v;
-    v = p[v];
-  }
-  return result;
-}
-```
-
-**key的作用和重要性：**
-
-```javascript
-// 为什么需要key？
-// 没有key的情况
-<li>A</li>    =>    <li>B</li>
-<li>B</li>    =>    <li>A</li>
-// Vue会复用DOM，只更新内容：
-// li元素1的内容从A改为B
-// li元素2的内容从B改为A
-
-// 有key的情况
-<li key="a">A</li>    =>    <li key="b">B</li>
-<li key="b">B</li>    =>    <li key="a">A</li>
-// Vue会识别出是同一个节点，只需要移动位置
-
-// key的最佳实践
-// ✅ 正确：使用唯一且稳定的值
-<li v-for="item in list" :key="item.id">{{ item.name }}</li>
-
-// ❌ 错误：使用index作为key（列表会变动时）
-<li v-for="(item, index) in list" :key="index">{{ item.name }}</li>
-
-// ❌ 错误：使用随机数
-<li v-for="item in list" :key="Math.random()">{{ item.name }}</li>
-```
-
-**Vue2 vs Vue3 Diff算法对比：**
-
-| 特性 | Vue2 | Vue3 |
-|------|------|------|
-| 算法策略 | 双端比较 | 快速Diff（最长递增子序列） |
-| 时间复杂度 | O(n) | O(n log n)（最坏情况） |
-| 空间复杂度 | O(1) | O(n) |
-| 优化重点 | 减少DOM移动 | 最少的DOM操作 |
-| 静态标记 | 无 | PatchFlag静态标记 |
-| 性能 | 良好 | 更优，特别是大列表 |
-
-**Diff算法性能优化技巧：**
-
-1. **合理使用key**
-   - 使用唯一且稳定的key
-   - 避免使用index作为key
-   - 不要使用随机数或时间戳
-
-2. **避免不必要的节点移动**
-   - 保持列表项的相对顺序
-   - 使用v-show替代频繁的v-if
-
-3. **利用Vue3的优化特性**
-   - 静态提升
-   - PatchFlag
-   - 缓存事件处理函数
-
-### 42. 响应式原理：缺陷、Vue3 改为 Proxy 有什么区别？
+### 41. 响应式原理：缺陷、Vue3 改为 Proxy 有什么区别？ ⭐⭐⭐⭐⭐ 🔥
 
 **Vue2 Object.defineProperty 的缺陷：**
 
@@ -2234,7 +2096,9 @@ proxy.age = 18; // 触发set，新增属性也能监听
 delete proxy.name; // 触发deleteProperty
 ```
 
-### 43. 浏览器不兼容问题
+---
+
+### 42. 浏览器不兼容问题 ⭐⭐⭐
 
 **Vue2 兼容性：**
 
@@ -2270,7 +2134,9 @@ if (!window.Promise) {
 }
 ```
 
-### 44. Dep 算法、Proxy、Reflect 对象分别是什么？
+---
+
+### 43. Dep 算法、Proxy、Reflect 对象分别是什么？ ⭐⭐⭐⭐
 
 **1. Dep（依赖收集器）：**
 
@@ -2360,7 +2226,9 @@ const proxy = new Proxy(obj, {
 });
 ```
 
-### 45. watch 写出来
+---
+
+### 44. watch 写出来 ⭐⭐⭐⭐
 
 **Vue2 Options API：**
 
@@ -2448,125 +2316,398 @@ const stopWatch = watch(message, (newVal) => {
 stopWatch();
 ```
 
-### 46. Pinia 插槽
+---
 
-**Pinia 插槽（Slots）的使用：**
+## 📚 面试技巧总结
+
+### 回答问题的思路
+
+1. **是什么**：概念理解
+2. **为什么**：设计初衷和解决的问题
+3. **怎么做**：实现原理
+4. **优缺点**：对比分析
+5. **应用场景**：实际使用
+
+---
+
+## 🎯 核心知识点速记
+
+### Vue 响应式原理速记
+
+```
+Vue2: Object.defineProperty
+- getter收集依赖（Dep）
+- setter触发更新（notify）
+- 缺陷：无法监听新增/删除属性、数组索引
+
+Vue3: Proxy + Reflect
+- get时track收集依赖
+- set时trigger触发更新
+- 优势：监听动态属性、数组变化、性能更好
+```
+
+### Diff 算法速记
+
+```
+三个核心策略：
+1. 同层比较（Tree Diff）- O(n³)优化到O(n)
+2. 组件比较（Component Diff）- 类型不同直接替换
+3. 元素比较（Element Diff）- key优化节点复用
+
+Vue2: 双端比较（头头、尾尾、头尾、尾头）
+Vue3: 最长递增子序列（最少移动节点）
+```
+
+### 生命周期速记
+
+```
+Vue2                Vue3
+beforeCreate    ->  setup
+created         ->  setup
+beforeMount     ->  onBeforeMount
+mounted         ->  onMounted
+beforeUpdate    ->  onBeforeUpdate
+updated         ->  onUpdated
+beforeDestroy   ->  onBeforeUnmount
+destroyed       ->  onUnmounted
+
+记忆口诀：创建挂载更新销毁
+```
+
+### 组件通信速记
+
+```
+1. props/emit      - 父子通信（单向数据流）
+2. provide/inject  - 跨级通信（依赖注入）
+3. v-model         - 双向绑定（语法糖）
+4. ref             - 父访问子（实例引用）
+5. $attrs          - 透传属性
+6. mitt/EventBus   - 兄弟通信（事件总线）
+7. Pinia/Vuex      - 全局状态管理
+
+记忆口诀：父子props、兄弟bus、跨级provide
+```
+
+---
+
+## 🔥 高频手写代码清单
+
+### 1. 实现简单的响应式系统（Vue2）
 
 ```javascript
-// store/counter.js
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+class Dep {
+  constructor() {
+    this.subscribers = new Set();
+  }
+  depend() {
+    if (Dep.target) {
+      this.subscribers.add(Dep.target);
+    }
+  }
+  notify() {
+    this.subscribers.forEach(sub => sub.update());
+  }
+}
 
-export const useCounterStore = defineStore('counter', () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
+Dep.target = null;
 
-  function increment() {
-    count.value++
+class Watcher {
+  constructor(fn) {
+    this.fn = fn;
+    Dep.target = this;
+    this.fn();
+    Dep.target = null;
+  }
+  update() {
+    this.fn();
+  }
+}
+
+function defineReactive(obj, key, val) {
+  const dep = new Dep();
+  Object.defineProperty(obj, key, {
+    get() {
+      dep.depend();
+      return val;
+    },
+    set(newVal) {
+      val = newVal;
+      dep.notify();
+    }
+  });
+}
+```
+
+### 2. 实现 Vue3 响应式（简化版）
+
+```javascript
+const targetMap = new WeakMap();
+let activeEffect = null;
+
+function track(target, key) {
+  if (activeEffect) {
+    let depsMap = targetMap.get(target);
+    if (!depsMap) {
+      targetMap.set(target, (depsMap = new Map()));
+    }
+    let dep = depsMap.get(key);
+    if (!dep) {
+      depsMap.set(key, (dep = new Set()));
+    }
+    dep.add(activeEffect);
+  }
+}
+
+function trigger(target, key) {
+  const depsMap = targetMap.get(target);
+  if (!depsMap) return;
+  const dep = depsMap.get(key);
+  if (dep) {
+    dep.forEach(effect => effect());
+  }
+}
+
+function reactive(target) {
+  return new Proxy(target, {
+    get(target, key) {
+      track(target, key);
+      return target[key];
+    },
+    set(target, key, value) {
+      target[key] = value;
+      trigger(target, key);
+      return true;
+    }
+  });
+}
+
+function effect(fn) {
+  activeEffect = fn;
+  fn();
+  activeEffect = null;
+}
+```
+
+### 3. 实现 EventBus
+
+```javascript
+class EventBus {
+  constructor() {
+    this.events = {};
   }
 
-  function decrement() {
-    count.value--
+  $on(event, callback) {
+    if (!this.events[event]) {
+      this.events[event] = [];
+    }
+    this.events[event].push(callback);
   }
+
+  $emit(event, ...args) {
+    if (this.events[event]) {
+      this.events[event].forEach(callback => callback(...args));
+    }
+  }
+
+  $off(event, callback) {
+    if (this.events[event]) {
+      if (callback) {
+        this.events[event] = this.events[event].filter(cb => cb !== callback);
+      } else {
+        delete this.events[event];
+      }
+    }
+  }
+
+  $once(event, callback) {
+    const wrapper = (...args) => {
+      callback(...args);
+      this.$off(event, wrapper);
+    };
+    this.$on(event, wrapper);
+  }
+}
+```
+
+### 4. 实现简单的 computed
+
+```javascript
+function computed(getter) {
+  let value;
+  let dirty = true;
 
   return {
-    count,
-    doubleCount,
-    increment,
-    decrement
-  }
-})
-
-// 组件中使用
-<template>
-  <div>
-    <h2>计数器: {{ counter.count }}</h2>
-    <p>双倍: {{ counter.doubleCount }}</p>
-    <button @click="counter.increment">+</button>
-    <button @click="counter.decrement">-</button>
-  </div>
-</template>
-
-<script setup>
-import { useCounterStore } from '@/stores/counter'
-
-const counter = useCounterStore()
-</script>
+    get() {
+      if (dirty) {
+        value = getter();
+        dirty = false;
+      }
+      return value;
+    },
+    depend() {
+      // 收集依赖
+      dirty = true;
+    }
+  };
+}
 ```
 
-**Pinia 的高级特性：**
+### 5. 实现防抖 ref
 
 ```javascript
-// 1. 状态持久化
-import { defineStore } from "pinia";
-import { useStorage } from "@vueuse/core";
+import { customRef } from 'vue';
 
-export const useUserStore = defineStore("user", () => {
-  // 自动持久化到localStorage
-  const token = useStorage("token", "");
-  const userInfo = useStorage("userInfo", {});
-
-  function login(credentials) {
-    // 登录逻辑
-    token.value = "new-token";
-    userInfo.value = { name: "John" };
-  }
-
-  function logout() {
-    token.value = "";
-    userInfo.value = {};
-  }
-
-  return { token, userInfo, login, logout };
-});
-
-// 2. 组合多个store
-import { useCounterStore } from "./counter";
-import { useUserStore } from "./user";
-
-export const useMainStore = defineStore("main", () => {
-  const counter = useCounterStore();
-  const user = useUserStore();
-
-  // 组合逻辑
-  const isLoggedIn = computed(() => !!user.token.value);
-
-  return { counter, user, isLoggedIn };
-});
-
-// 3. 插件系统
-import { createPinia } from "pinia";
-
-const pinia = createPinia();
-
-// 添加插件
-pinia.use(({ store }) => {
-  // 为每个store添加$reset方法
-  store.$reset = () => {
-    store.$patch({});
-  };
-});
-
-// 4. 订阅store变化
-const counter = useCounterStore();
-
-// 监听store变化
-counter.$subscribe((mutation, state) => {
-  console.log("Store changed:", mutation.type, state);
-});
-
-// 监听action
-counter.$onAction(({ name, args, after, onError }) => {
-  console.log("Action started:", name, args);
-
-  after((result) => {
-    console.log("Action succeeded:", result);
+function debounceRef(value, delay = 200) {
+  let timeout;
+  return customRef((track, trigger) => {
+    return {
+      get() {
+        track();
+        return value;
+      },
+      set(newValue) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          value = newValue;
+          trigger();
+        }, delay);
+      }
+    };
   });
-
-  onError((error) => {
-    console.log("Action failed:", error);
-  });
-});
+}
 ```
 
-这些高频面试题涵盖了 Vue2 和 Vue3 的核心概念、生命周期、响应式原理、性能优化等关键知识点，是面试中经常被问到的问题。建议深入理解每个概念的原理和实际应用场景。
+---
+
+## ❓ 面试高频问题速查
+
+### 核心原理类
+
+1. **Vue响应式原理是什么？Vue2和Vue3有什么区别？**
+   - 答案见 [第1节](#1-vue-响应式原理-)
+
+2. **什么是Virtual DOM？为什么需要它？**
+   - 答案见 [第3节](#3-为什么使用-virtual-dom-)
+
+3. **Vue的Diff算法是如何工作的？**
+   - 答案见 [第5节](#5-vue-diff-算法完整解析-)
+
+4. **nextTick的原理和使用场景？**
+   - 答案见 [第32节](#32-nexttick-的使用场景-)
+
+### Vue3新特性类
+
+5. **Vue3相比Vue2有哪些改进？**
+   - 答案见 [第35节](#35-vue3-与-vue2-的主要区别总结-)
+
+6. **什么是Composition API？它解决了什么问题？**
+   - 答案见 [第12节](#12-composition-api-优势-)
+
+7. **ref和reactive的区别是什么？**
+   - 答案见 [第8节](#8-ref-与-reactive-的区别-)
+
+8. **watch和watchEffect的区别？**
+   - 答案见 [第10节](#10-watch-与-watcheffect-)
+
+### 组件通信类
+
+9. **Vue组件通信有哪些方式？**
+   - 答案见 [第19节](#19-vue3-组件通信方式总结-)
+
+10. **v-model的原理是什么？**
+    - 答案见 [第20节](#20-v-model-在组件中的使用-)
+
+### 性能优化类
+
+11. **Vue性能优化有哪些方法？**
+    - 答案见 [第22节](#22-vue-性能优化方案-)
+
+12. **什么是keep-alive？它的作用是什么？**
+    - 答案见 [第23节](#23-keep-alive-缓存组件-)
+
+13. **v-if和v-show的区别？使用场景？**
+    - 答案见对比表格
+
+14. **computed和watch的区别？**
+    - 答案见对比表格
+
+### 路由相关类
+
+15. **Vue Router的query和params传参有什么区别？**
+    - 答案见 [第16节](#16-路由传参方式-)
+
+16. **什么是路由导航守卫？有哪些类型？**
+    - 答案见 [第15节](#15-路由导航守卫-)
+
+### 生命周期类
+
+17. **Vue2和Vue3的生命周期有什么变化？**
+    - 答案见 [第40节](#40-vue2-和-vue3-方法名称有哪些变动-)
+
+18. **在哪个生命周期发送网络请求？**
+    - 答案见 [第38节](#38-网络请求后端-api-写在哪个生命周期函数里面-)
+
+19. **在哪个生命周期操作DOM？**
+    - 答案见 [第37节](#37-操作-dom-元素在哪个生命周期函数执行-)
+
+20. **在哪个生命周期清理定时器和事件监听？**
+    - 答案见 [第39节](#39-移除定时器移除监听函数在哪个生命周期执行-)
+
+---
+
+## 💪 备考建议
+
+### 学习优先级
+
+1. **核心必背（⭐⭐⭐⭐⭐ 🔥 ⚠️）**：
+   - Vue响应式原理
+   - Diff算法
+   - nextTick原理
+   - Vue2 vs Vue3对比
+   - 组件通信
+   - 性能优化
+
+2. **高频考点（⭐⭐⭐⭐ 🔥）**：
+   - ref vs reactive
+   - watch vs watchEffect
+   - 路由传参
+   - 生命周期
+
+3. **重要知识（⭐⭐⭐⭐）**：
+   - Composition API
+   - 路由导航守卫
+   - keep-alive
+   - provide/inject
+
+### 备考方法
+
+1. **理解原理**：不要死记硬背，理解底层实现
+2. **手写代码**：能手写简单的响应式系统、EventBus等
+3. **对比总结**：掌握对比表格中的核心差异
+4. **实践经验**：准备1-2个项目中的实际案例
+5. **记忆口诀**：利用口诀快速回忆关键点
+
+### 面试回答模板
+
+```
+问题：Vue响应式原理是什么？
+
+回答结构：
+1. 概念（是什么）
+   - Vue2使用Object.defineProperty，Vue3使用Proxy
+
+2. 原理（怎么做）
+   - getter收集依赖、setter触发更新
+   - Dep和Watcher的关系
+
+3. 区别（为什么改进）
+   - Vue2的缺陷
+   - Vue3的优势
+
+4. 应用（实际场景）
+   - 项目中的具体使用案例
+```
+
+---
+
+**祝你面试成功！** 🎉
