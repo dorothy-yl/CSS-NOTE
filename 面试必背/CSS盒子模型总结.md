@@ -31,10 +31,13 @@ box-sizing:content-box(默认值，标准盒模型)、border-box(IE盒模型)**\
 
 ## 隐藏元素的方法有那些
 - display:none;元素在页面上消失，不占据空间
-- opcity:0;设置了元素的透明度为0，元素不可见，占据空间位置
+- opacity:0;设置了元素的透明度为0，元素不可见，占据空间位置
 - visibility:hidden让元素消失，占据空间位置，一种不可见的状态
-- position:obsolute
-- clip-paty
+- position:absolute;将元素脱离文档流，配合left:-9999px等移出视口
+- clip-path:polygon(0 0,0 0,0 0,0 0);通过裁剪路径隐藏元素
+- transform:scale(0);将元素缩放为0
+- height:0;overflow:hidden;设置高度为0并隐藏溢出内容
+- z-index:-1;配合position将元素置于其他元素下方
 
 # px和rem的区别是什么
 - px是像素，显示器上给我们呈现的像素，每个像素的大小是一样，绝对的单位长度
@@ -52,7 +55,31 @@ box-sizing:content-box(默认值，标准盒模型)、border-box(IE盒模型)**\
 
 # 预处理器
 预处理语言增加了变量、函数、混入等强大功能
-> SASS LESS
+> SASS LESS Stylus PostCSS
+
+## 主要预处理器对比
+### SASS/SCSS
+- 功能最强大，社区最成熟
+- 支持变量($variable)、嵌套、混入(mixin)、继承(@extend)
+- 两种语法：缩进语法(.sass)和SCSS语法(.scss)
+- 需要Ruby环境或Node-sass/Dart-sass
+
+### LESS
+- 语法简单，易上手
+- 支持变量(@variable)、嵌套、混入、函数
+- 可在浏览器端运行(less.js)
+- Bootstrap 3使用LESS
+
+### Stylus
+- 语法最灵活，可省略花括号、冒号、分号
+- 功能强大，内置函数丰富
+- 主要在Node.js社区流行
+
+### PostCSS
+- 不是预处理器，是后处理器
+- 通过插件系统扩展功能(如Autoprefixer自动添加前缀)
+- 可与其他预处理器配合使用
+- 性能优秀，构建速度快
 
 
 span 元素的默认 display 值
