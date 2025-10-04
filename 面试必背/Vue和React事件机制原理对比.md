@@ -131,9 +131,6 @@ Vue提供了丰富的事件修饰符，让开发者能够以声明式的方式�
 ```
 
 **2. 按键修饰符（Key Modifiers）**
-<<<<<<< HEAD
-弹起来
-=======
 
 > 📖 **官方文档**：[Vue 3 事件处理](https://cn.vuejs.org/guide/essentials/event-handling.html) | [Vue 2 事件处理](https://v2.cn.vuejs.org/v2/guide/events.html)
 
@@ -148,7 +145,6 @@ Vue提供了丰富的事件修饰符，让开发者能够以声明式的方式�
   - input - 内容改变时实时触发
   - change - 失焦且内容改变时触发
 
->>>>>>> f66 4f6c124fd02b2e63f1522e33adee80f4b1ac3
 ```vue
 <!-- 常用按键修饰符 -->
 <input @keyup.enter="handleEnter" placeholder="按回车键" />

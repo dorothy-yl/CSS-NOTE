@@ -200,7 +200,7 @@ xhrPost.send(JSON.stringify({ name: 'test' }));
 |------|-----------|----------------|
 | **返回值** | Promise | 回调函数 |
 | **语法** | 更简洁现代 | 较为复杂 |
-| **错误处理** | 只在网络错误时 reject | 可以处理 HTTP 错误状态 |
+| **错误处理** | 只在网络错误时 reject（？） | 可以处理 HTTP 错误状态 |
 | **请求取消** | AbortController | abort() 方法 |
 | **进度监控** | ❌ 不支持上传进度 | ✅ 支持上传/下载进度 |
 | **超时设置** | 需配合 AbortController | ✅ 原生支持 timeout |
