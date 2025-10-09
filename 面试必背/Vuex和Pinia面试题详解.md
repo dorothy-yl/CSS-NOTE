@@ -164,7 +164,8 @@ Pinia简化数据流程图
 
 ## 一、基础概念题
 
-### 1. 什么是Vuex？它解决了什么问题？ ⭐⭐⭐⭐⭐
+### 1. 什么是Vuex？它解决了什么问题？
+#### 热度：⭐⭐⭐⭐⭐
 
 **答案：**
 Vuex是Vue官方的状态管理库，采用集中式存储管理应用的所有组件状态。
@@ -184,7 +185,8 @@ Vuex是Vue官方的状态管理库，采用集中式存储管理应用的所有�
 4. 多组件共享的列表数据
 ```
 
-### 2. Vuex的核心概念有哪些？ ⭐⭐⭐⭐⭐
+### 2. Vuex的核心概念有哪些？
+#### 热度：⭐⭐⭐⭐⭐
 
 **答案：**
 
@@ -245,7 +247,8 @@ const moduleA = {
 }
 ```
 
-### 3. 为什么Vuex的mutation必须是同步的？ ⭐⭐⭐⭐⭐
+### 3. 为什么Vuex的mutation必须是同步的？
+#### 热度：⭐⭐⭐⭐⭐
 
 **答案：**
 ```javascript
@@ -272,7 +275,8 @@ actions: {
 2. **调试困难**：无法确定状态是何时被更改的
 3. **违背设计原则**：Vuex遵循Flux架构，mutation类似于事件，需要同步触发
 
-### 4. Vuex中action和mutation的区别？ ⭐⭐⭐⭐⭐
+### 4. Vuex中action和mutation的区别？
+#### 热度：⭐⭐⭐⭐⭐
 
 **答案：**
 
@@ -310,7 +314,8 @@ store.commit('SET_USER', user) // mutation
 store.dispatch('login', credentials) // action
 ```
 
-### 5. Pinia相比Vuex有哪些优势？ ⭐⭐⭐⭐⭐
+### 5. Pinia相比Vuex有哪些优势？
+#### 热度：⭐⭐⭐⭐⭐
 
 **答案：**
 
@@ -364,7 +369,8 @@ const useCounterStore = defineStore('counter', () => {
 
 ## 二、实践应用题
 
-### 6. 如何在Vuex中实现模块化？ ⭐⭐⭐⭐
+### 6. 如何在Vuex中实现模块化？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -438,7 +444,8 @@ this.$store.getters['user/isLoggedIn']
 this.$store.dispatch('user/login', credentials)
 ```
 
-### 7. 如何实现Vuex数据持久化？ ⭐⭐⭐⭐
+### 7. 如何实现Vuex数据持久化？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -487,7 +494,8 @@ const selectivePersist = store => {
 }
 ```
 
-### 8. Pinia如何实现状态持久化？ ⭐⭐⭐⭐
+### 8. Pinia如何实现状态持久化？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -534,7 +542,8 @@ export const useUserStore = defineStore('user', () => {
 })
 ```
 
-### 9. 如何在组件外使用Vuex/Pinia？ ⭐⭐⭐⭐
+### 9. 如何在组件外使用Vuex/Pinia？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -587,7 +596,8 @@ axios.interceptors.request.use(config => {
 })
 ```
 
-### 10. 如何优化大型Vuex/Pinia应用？ ⭐⭐⭐⭐
+### 10. 如何优化大型Vuex/Pinia应用？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -643,7 +653,8 @@ const useDataStore = defineStore('data', () => {
 
 ## 三、高级面试题
 
-### 11. 实现一个简化版的Vuex ⭐⭐⭐⭐
+### 11. 实现一个简化版的Vuex
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -721,7 +732,8 @@ const store = new MiniVuex({
 })
 ```
 
-### 12. 实现一个简化版的Pinia ⭐⭐⭐
+### 12. 实现一个简化版的Pinia
+#### 热度：⭐⭐⭐
 
 **答案：**
 
@@ -777,7 +789,8 @@ const useCounterStore = defineStore('counter', () => {
 })
 ```
 
-### 13. Vuex的严格模式是什么？如何实现？ ⭐⭐⭐⭐
+### 13. Vuex的严格模式是什么？如何实现？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -825,7 +838,8 @@ class Store {
 }
 ```
 
-### 14. 如何监听Vuex/Pinia的状态变化？ ⭐⭐⭐⭐
+### 14. 如何监听Vuex/Pinia的状态变化？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -900,7 +914,8 @@ watch(someState, (newValue, oldValue) => {
 })
 ```
 
-### 15. 如何测试Vuex/Pinia？ ⭐⭐⭐
+### 15. 如何测试Vuex/Pinia？
+#### 热度：⭐⭐⭐
 
 **答案：**
 
@@ -987,7 +1002,8 @@ describe('Pinia Store', () => {
 
 ## 四、最佳实践题
 
-### 16. Vuex/Pinia在大型项目中的最佳实践？ ⭐⭐⭐⭐
+### 16. Vuex/Pinia在大型项目中的最佳实践？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -1085,7 +1101,8 @@ export function createAsyncAction(type, apiCall) {
 }
 ```
 
-### 17. 如何处理Vuex/Pinia中的表单数据？ ⭐⭐⭐⭐
+### 17. 如何处理Vuex/Pinia中的表单数据？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -1195,7 +1212,8 @@ export const useFormStore = defineStore('form', () => {
 })
 ```
 
-### 18. 如何处理Vuex/Pinia的异步数据流？ ⭐⭐⭐⭐⭐
+### 18. 如何处理Vuex/Pinia的异步数据流？
+#### 热度：⭐⭐⭐⭐⭐
 
 **答案：**
 
@@ -1309,7 +1327,8 @@ onMounted(async () => {
 
 ## 五、性能优化题
 
-### 19. 如何优化Vuex/Pinia的性能？ ⭐⭐⭐⭐
+### 19. 如何优化Vuex/Pinia的性能？
+#### 热度：⭐⭐⭐⭐
 
 **答案：**
 
@@ -1415,7 +1434,8 @@ router.afterEach((to, from) => {
 })
 ```
 
-### 20. Vuex和Pinia的选择建议？ ⭐⭐⭐⭐⭐
+### 20. Vuex和Pinia的选择建议？
+#### 热度：⭐⭐⭐⭐⭐
 
 **答案：**
 
