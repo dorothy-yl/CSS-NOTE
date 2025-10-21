@@ -118,6 +118,7 @@ Array.isArray({}) // false
 - 相同点：都是假值（falsy），null == undefined 返回true
 - 不同点：typeof null === 'object'，typeof undefined === 'undefined'
 
+
 ### 2. This
 #### 热度：⭐⭐⭐⭐⭐ 🔥 ⚠️
 
@@ -654,11 +655,11 @@ person.sayHello(); // "Hello, I'm Alice"
 - **原型**：每个函数都有prototype属性，每个对象都有__proto__属性
 - **原型链**：对象通过__proto__属性连接起来的链式结构
 
-**原型规则：**
-1. 所有对象都有__proto__属性，指向其构造函数的prototype
-2. 所有函数都有prototype属性，指向一个对象
-3. 所有函数都是Function的实例
-4. Object.prototype.__proto__ === null（原型链顶端）
+
+### 2. 构造函数、原型、实例的关系
+- 构造函数有`prototype`属性指向原型对象
+- 原型对象有`constructor`属性指向构造函数
+- 实例有`__proto__`属性指向原型对象
 
 💡 **记忆口诀：原型链查找规则**
 ```

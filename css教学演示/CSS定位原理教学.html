@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS定位原理详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .demo-container {
+            border: 2px dashed #3498db;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+            min-height: 200px;
+            background: #ecf0f1;
+        }
+        
+        .box {
+            width: 80px;
+            height: 80px;
+            background: #e74c3c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 4px;
+            margin: 10px;
+        }
+        
+        .box-static {
+            background: #27ae60;
+        }
+        
+        .box-relative {
+            background: #f39c12;
+            position: relative;
+            top: 20px;
+            left: 30px;
+        }
+        
+        .box-absolute {
+            background: #e74c3c;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+        }
+        
+        .box-fixed {
+            background: #9b59b6;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .box-sticky {
+            background: #34495e;
+            position: sticky;
+            top: 10px;
+        }
+        
+        .explanation {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+        
+        .parent-container {
+            position: relative;
+            border: 2px solid #2980b9;
+            background: #d5dbdb;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .scroll-container {
+            height: 300px;
+            overflow-y: scroll;
+            border: 2px solid #8e44ad;
+            background: #f8f9fa;
+        }
+        
+        .scroll-content {
+            height: 800px;
+            padding: 20px;
+            background: linear-gradient(to bottom, #fff, #e9ecef);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background: #3498db;
+            color: white;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS定位原理详解 📍</h1>
+    
+    <!-- 1. static定位 -->
+    <div class="section">
+        <h2>1. static定位（默认值）</h2>
+        <div class="explanation">
+            <strong>原理：</strong>元素按照正常的文档流进行排列，不受top、right、bottom、left属性影响。
+        </div>
+        
+        <div class="demo-container">
+            <div class="box box-static">Box 1</div>
+            <div class="box box-static">Box 2</div>
+            <div class="box box-static">Box 3</div>
+        </div>
+        
+        <div class="code">
+.box-static {
+    position: static; /* 默认值，可省略 */
+    /* top、left等属性无效 */
+}</div>
+    </div>
+    
+    <!-- 2. relative定位 -->
+    <div class="section">
+        <h2>2. relative定位（相对定位）</h2>
+        <div class="explanation">
+            <strong>原理：</strong>元素相对于<span class="highlight">自身原本位置</span>进行偏移，但<strong>原位置仍然占据空间</strong>，不影响其他元素的布局。
+        </div>
+        
+        <div class="demo-container">
+            <div class="box box-static">Box 1</div>
+            <div class="box box-relative">Box 2<br>(relative)</div>
+            <div class="box box-static">Box 3</div>
+        </div>
+        
+        <div class="code">
+.box-relative {
+    position: relative;
+    top: 20px;    /* 向下偏移20px */
+    left: 30px;   /* 向右偏移30px */
+    /* 注意：原位置的空间仍然被占据 */
+}</div>
+        
+        <div class="explanation">
+            <strong>关键点：</strong>Box 2虽然视觉上移动了，但它原本的空间依然存在，Box 3的位置没有受到影响。
+        </div>
+    </div>
+    
+    <!-- 3. absolute定位 -->
+    <div class="section">
+        <h2>3. absolute定位（绝对定位）</h2>
+        <div class="explanation">
+            <strong>原理：</strong>元素<span class="highlight">脱离文档流</span>，相对于<strong>最近的非static定位祖先元素</strong>进行定位。如果没有这样的祖先，则相对于初始包含块（通常是html元素）。
+        </div>
+        
+        <div class="parent-container">
+            <strong>父容器 (position: relative)</strong>
+            <div class="demo-container">
+                <div class="box box-static">Box 1</div>
+                <div class="box box-static">Box 2</div>
+                <div class="box box-absolute">Abs</div>
+                <div class="box box-static">Box 3</div>
+            </div>
+        </div>
+        
+        <div class="code">
+.parent-container {
+    position: relative; /* 作为定位参照 */
+}
+
+.box-absolute {
+    position: absolute;
+    top: 50px;     /* 距离定位祖先顶部50px */
+    right: 20px;   /* 距离定位祖先右边20px */
+    /* 完全脱离文档流，不占据空间 */
+}</div>
+        
+        <div class="explanation">
+            <strong>关键点：</strong>
+            <ul>
+                <li>绝对定位元素完全脱离文档流，不占据原来的空间</li>
+                <li>其他元素会忽略它的存在，重新排列</li>
+                <li>定位参照是最近的非static祖先元素</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- 4. fixed定位 -->
+    <div class="section">
+        <h2>4. fixed定位（固定定位）</h2>
+        <div class="explanation">
+            <strong>原理：</strong>元素相对于<span class="highlight">视口（viewport）</span>进行定位，即使页面滚动也保持在固定位置。
+        </div>
+        
+        <div class="demo-container">
+            <p>右上角有一个固定定位的紫色方块，滚动页面时它会保持在视口的固定位置。</p>
+            <div class="box box-fixed">Fixed</div>
+        </div>
+        
+        <div class="code">
+.box-fixed {
+    position: fixed;
+    top: 20px;     /* 距离视口顶部20px */
+    right: 20px;   /* 距离视口右边20px */
+    /* 始终相对于浏览器窗口定位 */
+}</div>
+        
+        <div class="explanation">
+            <strong>应用场景：</strong>返回顶部按钮、悬浮导航、固定头部等
+        </div>
+    </div>
+    
+    <!-- 5. sticky定位 -->
+    <div class="section">
+        <h2>5. sticky定位（粘性定位）</h2>
+        <div class="explanation">
+            <strong>原理：</strong>元素在滚动到指定阈值前表现为relative，达到阈值后表现为fixed。是relative和fixed的结合体。
+        </div>
+        
+        <div class="scroll-container">
+            <div class="scroll-content">
+                <div class="box box-sticky">Sticky Header</div>
+                <p>向下滚动，观察sticky元素的行为...</p>
+                <p>当滚动到顶部时，sticky元素会固定在容器顶部。</p>
+                <p>继续滚动内容...</p>
+                <br><br><br><br><br><br><br><br><br><br>
+                <p>更多内容...</p>
+                <br><br><br><br><br><br><br><br><br><br>
+                <p>滚动到底部了</p>
+            </div>
+        </div>
+        
+        <div class="code">
+.box-sticky {
+    position: sticky;
+    top: 10px;  /* 距离滚动容器顶部10px时开始固定 */
+    /* 在阈值前：表现为relative */
+    /* 在阈值后：表现为fixed */
+}</div>
+    </div>
+    
+    <!-- 对比表格 -->
+    <div class="section">
+        <h2>📊 定位方式对比总结</h2>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>定位类型</th>
+                    <th>定位参照</th>
+                    <th>是否脱离文档流</th>
+                    <th>是否占据空间</th>
+                    <th>常见用途</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>static</strong></td>
+                    <td>无（正常流）</td>
+                    <td>❌ 否</td>
+                    <td>✅ 是</td>
+                    <td>默认布局</td>
+                </tr>
+                <tr>
+                    <td><strong>relative</strong></td>
+                    <td>自身原位置</td>
+                    <td>❌ 否</td>
+                    <td>✅ 是（原位置）</td>
+                    <td>微调位置、作为定位参照</td>
+                </tr>
+                <tr>
+                    <td><strong>absolute</strong></td>
+                    <td>最近非static祖先</td>
+                    <td>✅ 是</td>
+                    <td>❌ 否</td>
+                    <td>弹窗、工具提示、覆盖层</td>
+                </tr>
+                <tr>
+                    <td><strong>fixed</strong></td>
+                    <td>视口(viewport)</td>
+                    <td>✅ 是</td>
+                    <td>❌ 否</td>
+                    <td>固定头部、返回顶部按钮</td>
+                </tr>
+                <tr>
+                    <td><strong>sticky</strong></td>
+                    <td>滚动容器</td>
+                    <td>🔄 部分</td>
+                    <td>🔄 动态</td>
+                    <td>粘性导航、表格头部</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- 重要概念解释 -->
+    <div class="section">
+        <h2>🔑 重要概念解释</h2>
+        
+        <div class="explanation">
+            <h3>1. 文档流（Document Flow）</h3>
+            <p>文档流是指元素在页面中的正常排列顺序。块级元素从上到下排列，内联元素从左到右排列。</p>
+        </div>
+        
+        <div class="explanation">
+            <h3>2. 脱离文档流</h3>
+            <p>当元素脱离文档流时，其他元素会忽略它的存在，就像它不存在一样重新排列。</p>
+        </div>
+        
+        <div class="explanation">
+            <h3>3. 包含块（Containing Block）</h3>
+            <p>包含块是定位元素的参照物：</p>
+            <ul>
+                <li><strong>static/relative：</strong>最近的块级祖先元素</li>
+                <li><strong>absolute：</strong>最近的非static定位祖先元素</li>
+                <li><strong>fixed：</strong>视口（viewport）</li>
+            </ul>
+        </div>
+        
+        <div class="explanation">
+            <h3>4. 层叠上下文（Stacking Context）</h3>
+            <p>定位元素会创建新的层叠上下文，可以使用z-index控制层叠顺序。</p>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>💡 实战技巧</h2>
+        <div class="explanation">
+            <h3>常见组合使用：</h3>
+            <ul>
+                <li><strong>父relative + 子absolute：</strong>最常用的定位组合</li>
+                <li><strong>sticky + top/bottom：</strong>实现粘性效果</li>
+                <li><strong>fixed + z-index：</strong>创建模态框、通知等</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为fixed元素添加点击效果
+            const fixedBox = document.querySelector('.box-fixed');
+            if (fixedBox) {
+                fixedBox.addEventListener('click', function() {
+                    this.style.transform = this.style.transform === 'scale(1.2)' ? 'scale(1)' : 'scale(1.2)';
+                });
+            }
+            
+            // 为sticky演示添加滚动提示
+            const stickyContainer = document.querySelector('.scroll-container');
+            if (stickyContainer) {
+                stickyContainer.addEventListener('scroll', function() {
+                    const stickyBox = this.querySelector('.box-sticky');
+                    if (this.scrollTop > 50) {
+                        stickyBox.style.backgroundColor = '#e67e22';
+                        stickyBox.textContent = 'Sticky!';
+                    } else {
+                        stickyBox.style.backgroundColor = '#34495e';
+                        stickyBox.textContent = 'Sticky Header';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

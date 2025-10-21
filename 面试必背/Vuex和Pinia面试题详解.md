@@ -1531,6 +1531,51 @@ export const useUserStore = defineStore('user', () => {
 - 说明数据流：组件派发动作、动作提交突变、突变改状态
 - 举例说明：登录场景（dispatch login → commit SET_TOKEN → state.token）
 
+**🎤 面试标准话术（直接背诵版）：**
+
+**第一段（总述）：**
+> "Vuex有五大核心概念，我用一个口诀来记：**状动突获模**，也就是State、Action、Mutation、Getter、Module。我分别说一下它们的作用。"
+
+**第二段（逐个解释）：**
+> "**首先是State**，它是单一状态树，用来存储应用的所有状态数据，类似于Vue组件中的data。
+> 
+> **第二个是Getter**，它相当于store的计算属性，类似于Vue中的computed，可以对state进行派生计算，并且结果会被缓存。
+> 
+> **第三个是Mutation**，这是唯一能修改state的途径，它必须是同步函数，通过commit方法来调用。之所以必须同步，是为了让DevTools能够追踪状态的变化。
+> 
+> **第四个是Action**，用来处理异步操作和复杂的业务逻辑。Action不直接修改state，而是通过commit提交Mutation来修改，通过dispatch方法来调用。
+> 
+> **最后是Module**，用于模块化管理，当应用变得复杂时，可以将store拆分成多个模块，每个模块都有自己的state、mutation、action和getter。"
+
+**第三段（数据流）：**
+> "整个数据流程可以总结为：**组件派发动作、动作提交突变、突变改状态**。也就是说，组件通过dispatch派发Action，Action内部处理异步逻辑后commit提交Mutation，Mutation同步修改State，最后State的变化会反映到组件上。"
+
+**第四段（举例）：**
+> "举个实际例子，比如用户登录：用户点击登录按钮，组件dispatch('login')派发一个login Action，Action里调用API接口，登录成功后commit('SET_TOKEN')提交一个Mutation，Mutation把token保存到state中，最后组件就能通过state.token获取到登录状态。"
+
+---
+
+**⚡ 追问准备（面试官可能会问）：**
+
+**Q1: "为什么Mutation必须是同步的？"**
+> "主要有三个原因：第一，DevTools需要追踪状态变化，如果是异步的，DevTools无法准确记录状态改变的时机；第二，便于调试，同步操作能清楚地知道何时何地状态被改变了；第三，这是Vuex遵循Flux架构的设计原则。所以我们的做法是，异步操作放在Action里，Action执行完异步逻辑后，再通过commit提交同步的Mutation。"
+
+**Q2: "Action和Mutation的区别？"**
+> "主要有四个区别：第一，执行方式不同，Mutation必须同步，Action可以异步；第二，调用方式不同，Mutation用commit，Action用dispatch；第三，接收参数不同，Mutation接收(state, payload)，Action接收(context, payload)，context包含commit、dispatch等方法；第四，职责不同，Mutation直接修改state，Action负责业务逻辑，通过提交Mutation来修改state。"
+
+**Q3: "实际项目中你是怎么用Vuex的？"**
+> "我一般用Vuex管理全局状态，比如用户登录信息、token、权限信息、购物车数据等需要多组件共享的数据。我会做模块化拆分，比如分user模块、cart模块等，每个模块开启命名空间。同时我会配合vuex-persistedstate插件做数据持久化，把token等重要数据保存在localStorage。对于大型项目，我还会做动态注册模块，实现按需加载。"
+
+---
+
+**🎯 3秒快速版（如果面试官赶时间）：**
+> "Vuex五大核心：State存数据、Getter算属性、Mutation同步改、Action异步操作、Module模块化。数据流就是：组件dispatch Action，Action commit Mutation，Mutation改State。"
+
+---
+
+**💡 加分项（展现深度理解）：**
+> "补充一点，现在Vue3项目我更推荐使用Pinia，它是Vuex的下一代版本。Pinia去掉了Mutation，可以直接修改state，代码更简洁；对TypeScript支持更好；包体积更小，只有2KB；而且采用扁平化的Store设计，不需要嵌套模块。如果是老项目维护，继续用Vuex；如果是新项目，我会选择Pinia。"
+
 ### 2. 为什么Mutation必须是同步的？
 **答题思路：**
 - DevTools追踪问题：异步操作无法准确追踪状态变化

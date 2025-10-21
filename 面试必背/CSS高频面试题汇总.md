@@ -101,10 +101,12 @@ BFC（Block Formatting Context，块级格式化上下文）是Web页面中盒�
 
 **BFC的创建方式：**
 1. 根元素（`<html>`）
-2. `float` 不为 `none`
-3. `position` 为 `absolute` 或 `fixed`
-4. `display` 为 `inline-block`、`table-cell`、`table-caption`、`flex`、`inline-flex`、`grid`、`inline-grid`
-5. `overflow` 不为 `visible`（常用 `hidden`、`auto`、`scroll`）
+2. `float` 不为 `none`(含义： 设置了浮动的元素会创建BFC)
+3. `position` 为 `absolute` 或 `fixed`(绝对定位和固定定位的元素会创建BFC)
+4. `display` 为 `inline-block`(创建行内块元素，常用于按钮、导航项)、`table-cell`实现等高布局、`table-caption`、`flex`、`inline-flex`、`grid`二维网格布局、`inline-grid`
+5. `overflow` 不为 `visible`
+（常用 `hidden`最常用的BFC创建方式，用于清除浮动、`auto`内容溢出时显示滚动条、`scroll`总是显示滚动条）
+(含义： 设置溢出处理方式（除了默认的visible）会创建BFC)
 
 **BFC的特性和作用：**
 
@@ -1871,14 +1873,15 @@ npx purgecss --css style.css --content index.html --output dist/
 **答案：**
 
 **概念：**
-- **回流（Reflow）**：元素的几何属性变化，浏览器需要重新计算布局
-- **重绘（Repaint）**：元素的外观变化，但布局不变，浏览器重新绘制
+- **回流（Reflow/重排）**：元素的几何属性变化（位置、尺寸），浏览器需要重新计算元素的几何属性，重新构建渲染树
+- **重绘（Repaint）**：元素的外观变化（颜色、背景），但布局不变，浏览器重新绘制元素
 
 **触发回流的操作：**
 ```javascript
 // 1. 修改DOM结构
 element.appendChild(newElement);
 element.remove();
+element.innerHTML = '...';
 
 // 2. 修改几何属性
 element.style.width = '100px';
@@ -1887,19 +1890,27 @@ element.style.padding = '10px';
 element.style.margin = '10px';
 element.style.border = '1px solid';
 element.style.display = 'block';
+element.style.position = 'absolute';
 
 // 3. 获取布局信息（强制同步布局）
 element.offsetWidth;
 element.offsetHeight;
+element.offsetTop;
+element.offsetLeft;
 element.clientWidth;
+element.clientHeight;
 element.scrollTop;
+element.scrollHeight;
 getComputedStyle(element);
+element.getBoundingClientRect();
 
 // 4. 修改字体大小
 element.style.fontSize = '16px';
 
 // 5. 窗口大小变化
 window.resize();
+
+// 6. 激活CSS伪类（如 :hover）
 ```
 
 **只触发重绘的操作：**
@@ -1908,6 +1919,8 @@ element.style.color = 'red';
 element.style.backgroundColor = 'blue';
 element.style.visibility = 'hidden';
 element.style.outline = '1px solid red';
+element.style.boxShadow = '0 0 10px red';
+element.style.borderRadius = '5px';
 ```
 
 **优化方法：**
@@ -1943,6 +1956,16 @@ for (let i = 0; i < 1000; i++) {
   fragment.appendChild(li);
 }
 ul.appendChild(fragment); // 1次回流
+
+// 好：先隐藏，修改完再显示
+element.style.display = 'none';
+// 进行多次修改
+element.style.display = 'block';
+
+// 好：使用cloneNode
+const clone = element.cloneNode(true);
+// 修改clone
+parent.replaceChild(clone, element);
 ```
 
 **3. 使用absolute/fixed脱离文档流**
@@ -1973,12 +1996,12 @@ ul.appendChild(fragment); // 1次回流
 
 **5. 缓存布局信息**
 ```javascript
-// 不好
+// 不好：每次都读取触发强制同步布局
 for (let i = 0; i < 100; i++) {
   element.style.left = element.offsetLeft + 1 + 'px'; // 每次都读取
 }
 
-// 好
+// 好：缓存布局信息
 let left = element.offsetLeft;
 for (let i = 0; i < 100; i++) {
   left += 1;
@@ -2003,6 +2026,426 @@ const visibleItems = items.slice(startIndex, endIndex);
 - 回流成本 >> 重绘成本
 - 回流必定导致重绘
 - 重绘不一定导致回流
+
+---
+
+#### 题目19-1：以下代码会触发几次回流？为什么？
+
+```javascript
+const element = document.getElementById('box');
+element.style.width = '100px';
+element.style.height = '100px';
+element.style.margin = '10px';
+console.log(element.offsetHeight);
+element.style.padding = '10px';
+```
+
+**答案：**
+
+会触发 **2次回流**。
+
+**详细解释：**
+1. **第1次回流**：前三行代码修改样式（width、height、margin）
+   - 浏览器会将样式修改放入队列，批量处理
+   
+2. **第4行** `console.log(element.offsetHeight)` **触发强制同步布局**
+   - 为了获取准确的offsetHeight，浏览器必须立即执行队列中的样式修改
+   - 触发第1次回流
+   
+3. **第2次回流**：第5行修改padding
+   - 再次触发回流
+
+**优化方案：**
+```javascript
+// 方案1：先读后写
+const height = element.offsetHeight;
+element.style.width = '100px';
+element.style.height = '100px';
+element.style.margin = '10px';
+element.style.padding = '10px';
+console.log(height);
+
+// 方案2：使用class批量修改
+element.className = 'new-style';
+```
+
+---
+
+#### 题目19-2：哪些CSS属性会触发回流？哪些只触发重绘？
+
+**答案：**
+
+**触发回流的属性（几何属性）：**
+```css
+/* 盒模型相关 */
+width, height
+padding, margin
+border, border-width
+min-width, max-width
+min-height, max-height
+
+/* 定位相关 */
+position, top, left, right, bottom
+float, clear
+
+/* 布局相关 */
+display
+overflow, overflow-x, overflow-y
+vertical-align
+text-align (某些情况)
+
+/* 字体相关 */
+font-size, font-family, font-weight
+line-height, white-space
+
+/* 其他 */
+flex相关属性
+grid相关属性
+```
+
+**只触发重绘的属性（视觉属性）：**
+```css
+/* 颜色相关 */
+color
+background, background-color, background-image
+background-size, background-position
+
+/* 边框样式（不改变尺寸）*/
+border-color, border-style
+outline, outline-color
+
+/* 其他视觉属性 */
+box-shadow
+border-radius
+visibility
+text-decoration
+cursor
+```
+
+**既不触发回流也不触发重绘（合成层属性）：**
+```css
+transform
+opacity (在某些情况下)
+filter
+will-change
+```
+
+**记忆技巧：**
+- 改变**位置、尺寸**的 → 回流
+- 只改变**外观**的 → 重绘
+- 使用**GPU加速**的 → 合成
+
+---
+
+#### 题目19-3：什么是强制同步布局（Forced Synchronous Layout）？如何避免？
+
+**答案：**
+
+**概念：**
+强制同步布局是指在JavaScript中修改样式后，立即读取布局信息，导致浏览器不得不立即执行布局计算，无法批量优化。
+
+**触发强制同步布局的场景：**
+
+```javascript
+// 场景1：写-读-写循环（最糟糕）
+for (let i = 0; i < 100; i++) {
+  // 写：修改样式
+  element.style.width = element.offsetWidth + 10 + 'px';
+  // 读：立即读取布局信息，触发强制同步布局
+  // 每次循环都触发一次回流！
+}
+
+// 场景2：批量操作中读取布局
+elements.forEach(el => {
+  el.style.width = el.offsetWidth + 10 + 'px'; // 每个元素触发一次
+});
+
+// 场景3：修改后立即读取
+element.style.width = '100px';
+const width = element.offsetWidth; // 强制同步布局
+```
+
+**优化方案：**
+
+```javascript
+// 方案1：先读后写（批量读取，批量修改）
+// 好：先读取所有
+const widths = [];
+for (let i = 0; i < elements.length; i++) {
+  widths[i] = elements[i].offsetWidth;
+}
+// 再修改所有
+for (let i = 0; i < elements.length; i++) {
+  elements[i].style.width = widths[i] + 10 + 'px';
+}
+
+// 方案2：使用requestAnimationFrame
+function updateWidth() {
+  const width = element.offsetWidth;
+  requestAnimationFrame(() => {
+    element.style.width = width + 10 + 'px';
+  });
+}
+
+// 方案3：使用FastDOM库
+fastdom.measure(() => {
+  const width = element.offsetWidth;
+  fastdom.mutate(() => {
+    element.style.width = width + 10 + 'px';
+  });
+});
+
+// 方案4：避免在循环中读取布局
+// 不好
+for (let i = 0; i < 100; i++) {
+  element.style.left = element.offsetLeft + 1 + 'px';
+}
+
+// 好
+let left = element.offsetLeft;
+for (let i = 0; i < 100; i++) {
+  left += 1;
+}
+element.style.left = left + 'px';
+```
+
+**识别强制同步布局：**
+在Chrome DevTools Performance面板中，强制同步布局会显示为红色的"Recalculate Style"和"Layout"警告。
+
+---
+
+#### 题目19-4：如何使用Chrome DevTools分析回流和重绘？
+
+**答案：**
+
+**方法1：Performance面板**
+```
+1. 打开Chrome DevTools → Performance
+2. 点击Record开始录制
+3. 执行你的操作
+4. 停止录制
+5. 查看：
+   - Recalculate Style（样式计算）
+   - Layout（布局/回流）
+   - Paint（绘制/重绘）
+   - Composite Layers（合成）
+```
+
+**性能指标：**
+- 紫色：Recalculate Style（样式重新计算）
+- 紫色：Layout（回流）
+- 绿色：Paint（重绘）
+- 绿色：Composite Layers（合成）
+
+**方法2：Rendering面板**
+```
+1. 打开DevTools → More tools → Rendering
+2. 勾选：
+   - Paint flashing（绘制闪烁）- 绿色高亮重绘区域
+   - Layout Shift Regions（布局偏移）- 蓝色高亮回流区域
+   - Layer borders（图层边界）- 显示合成层
+   - Frame Rendering Stats（帧渲染统计）
+```
+
+**方法3：代码中测量**
+```javascript
+// 方法1：Performance API
+const start = performance.now();
+// 执行可能触发回流的操作
+element.style.width = '100px';
+const width = element.offsetWidth; // 触发回流
+const end = performance.now();
+console.log(`耗时: ${end - start}ms`);
+
+// 方法2：使用PerformanceObserver
+const observer = new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    console.log(entry);
+  }
+});
+observer.observe({ entryTypes: ['measure'] });
+
+// 方法3：监控Layout事件
+performance.mark('start');
+// 执行操作
+element.offsetWidth;
+performance.mark('end');
+performance.measure('layout', 'start', 'end');
+```
+
+---
+
+#### 题目19-5：实际场景优化 - 批量更新1000个元素的样式，如何优化？
+
+**答案：**
+
+**场景描述：**
+```javascript
+// 需求：更新1000个列表项的宽度和背景色
+const items = document.querySelectorAll('.item'); // 1000个元素
+```
+
+**❌ 最差方案（1000次回流）：**
+```javascript
+items.forEach(item => {
+  item.style.width = '100px';
+  item.style.backgroundColor = 'red';
+  // 每个元素触发一次回流
+});
+```
+
+**✅ 优化方案1：批量添加class（1次回流）**
+```javascript
+// CSS
+.item-updated {
+  width: 100px !important;
+  background-color: red !important;
+}
+
+// JavaScript
+items.forEach(item => {
+  item.classList.add('item-updated');
+});
+// 浏览器批量处理，只触发1次回流
+```
+
+**✅ 优化方案2：DocumentFragment + innerHTML**
+```javascript
+const container = document.querySelector('.container');
+const fragment = document.createDocumentFragment();
+
+// 克隆并修改
+items.forEach(item => {
+  const clone = item.cloneNode(true);
+  clone.style.width = '100px';
+  clone.style.backgroundColor = 'red';
+  fragment.appendChild(clone);
+});
+
+// 一次性替换
+container.innerHTML = '';
+container.appendChild(fragment);
+```
+
+**✅ 优化方案3：离线修改（3次回流）**
+```javascript
+const container = document.querySelector('.container');
+
+// 1. 脱离文档流
+container.style.display = 'none'; // 回流1次
+
+// 2. 批量修改
+items.forEach(item => {
+  item.style.width = '100px';
+  item.style.backgroundColor = 'red';
+  // 此时不在渲染树中，不触发回流
+});
+
+// 3. 重新显示
+container.style.display = 'block'; // 回流1次
+```
+
+**✅ 优化方案4：使用cssText**
+```javascript
+items.forEach(item => {
+  item.style.cssText = 'width: 100px; background-color: red;';
+  // 批量修改，减少回流
+});
+```
+
+**✅ 优化方案5：虚拟滚动（只渲染可见元素）**
+```javascript
+// 假设每屏只显示20个元素
+const visibleItems = items.slice(startIndex, startIndex + 20);
+
+visibleItems.forEach(item => {
+  item.style.width = '100px';
+  item.style.backgroundColor = 'red';
+});
+// 只更新可见元素，大幅减少回流
+```
+
+**性能对比：**
+| 方案 | 回流次数 | 性能 | 推荐度 |
+|-----|---------|------|--------|
+| 逐个修改 | 1000次 | 很差 | ❌ |
+| 批量class | 1次 | 很好 | ⭐⭐⭐⭐⭐ |
+| DocumentFragment | 1-2次 | 好 | ⭐⭐⭐⭐ |
+| display:none | 2次 | 好 | ⭐⭐⭐⭐ |
+| cssText | 较少 | 较好 | ⭐⭐⭐ |
+| 虚拟滚动 | 20次 | 很好 | ⭐⭐⭐⭐⭐ |
+
+---
+
+#### 题目19-6：说说浏览器的渲染流程和回流重绘的关系
+
+**答案：**
+
+**浏览器渲染流程：**
+
+```
+1. 解析HTML → DOM Tree（DOM树）
+2. 解析CSS → CSSOM Tree（CSS规则树）
+3. DOM + CSSOM → Render Tree（渲染树）
+4. Layout（布局/回流）→ 计算元素位置和大小
+5. Paint（绘制/重绘）→ 绘制元素样式
+6. Composite（合成）→ 合成图层，显示到屏幕
+```
+
+**详细流程图：**
+```
+HTML ─────┐
+          ├──→ DOM Tree ───┐
+CSS ──────┤                ├──→ Render Tree ──→ Layout ──→ Paint ──→ Composite
+          └──→ CSSOM Tree ─┘                    (回流)    (重绘)      (合成)
+```
+
+**回流（Reflow/Layout）阶段：**
+- 计算每个元素的几何信息（位置、尺寸）
+- 构建布局树（Layout Tree）
+- 触发条件：几何属性变化
+- 影响范围：可能影响整个页面或局部
+
+**重绘（Repaint/Paint）阶段：**
+- 将可见元素绘制到图层上
+- 填充颜色、绘制边框、阴影等
+- 触发条件：视觉属性变化
+- 影响范围：只影响变化的元素
+
+**合成（Composite）阶段：**
+- 将多个图层合成到一起
+- GPU加速
+- 某些属性只触发合成（transform、opacity）
+
+**触发关系：**
+```
+修改几何属性 → Layout(回流) → Paint(重绘) → Composite(合成)
+修改视觉属性 →               Paint(重绘) → Composite(合成)
+修改合成属性 →                             Composite(合成)
+```
+
+**性能对比：**
+- **回流**：最耗性能（需要重新计算布局）
+- **重绘**：较耗性能（需要重新绘制）
+- **合成**：性能最好（GPU加速，不影响布局和绘制）
+
+**优化建议：**
+```css
+/* 最差：触发回流 */
+.box {
+  transition: width 0.3s;
+}
+
+/* 较好：触发重绘 */
+.box {
+  transition: background-color 0.3s;
+}
+
+/* 最好：只触发合成 */
+.box {
+  transition: transform 0.3s;
+}
+```
 
 ---
 

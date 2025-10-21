@@ -93,7 +93,14 @@
 | **刷新保留** | 保留 | 保留(动态路由) | **都能保留** |
 | **使用场景** | 可选参数、搜索条件 | 必要参数、RESTful | **query可选params必要** |
 
+
+query 和 params 的主要区别是：
+显示方式上 query 会在 URL 显示问号参数，params 隐藏在路径中；
+配置要求上 params 需要在路由配置动态路由参数，query 不需要；
+传参方式上 params 只能配合 name 使用，query 两种都可以；
+使用场景上 query 适合可选参数和搜索条件，params 适合必要参数和 RESTful 风格。
 ---
+
 
 ## 第一部分：Vue 基础原理
 
