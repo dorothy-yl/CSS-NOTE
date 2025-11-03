@@ -137,9 +137,14 @@ IE盒模型：width包含padding和border（更直观）
 box-sizing控制：content-box(标准) 或 border-box(IE)
 ```
 
+**浏览器默认盒模型：**
+- **Chrome、Firefox、Safari等现代浏览器**：默认使用**标准盒模型**（content-box）
+- **IE6-7（怪异模式）**：使用IE盒模型（border-box）
+- **IE8+（标准模式）**：使用标准盒模型（content-box）
+
 **最佳实践：**
 ```css
-/* 推荐全局设置为IE盒模型，更符合直觉 */
+/* ✅ 推荐全局设置为IE盒模型，更符合直觉 */
 * {
   box-sizing: border-box;
 }

@@ -12,7 +12,7 @@
 |------|---------|---------|----------|
 | [一、AJAX基础](#一ajax基础) | ⭐⭐⭐⭐⭐ | 概念、原理、使用 | 异步JS和XML、不刷新更新 |
 | [二、XMLHttpRequest](#二xmlhttprequest) | ⭐⭐⭐⭐⭐ | 五种状态、请求流程 | 创开发收、未开头载完 |
-| [三、Fetch API](#三fetch-api) | ⭐⭐⭐⭐⭐ | Promise化、现代请求 | Promise化、更简洁、更灵活 |
+| [三、Fetch API vs Axios](#三fetch-api) | ⭐⭐⭐⭐⭐ | 三者对比、Axios特性 | XHR全面、Fetch简洁、Axios最强 |
 | [四、请求方法对比](#四请求方法对比) | ⭐⭐⭐⭐ | GET vs POST | GET显露POST隐藏 |
 | [五、跨域处理](#五跨域处理) | ⭐⭐⭐⭐⭐ | CORS、JSONP、代理 | CORS首选JSONP兼容 |
 | [六、高级技巧](#六高级技巧) | ⭐⭐⭐⭐ | 取消、超时、重试 | 取消用abort、超时race |
@@ -25,9 +25,10 @@
 
 ### AJAX全局记忆法
 ```
-异步JS和XML（AJAX定义）
+AJAX是技术、XHR是工具（概念区分）
+异步JS和XML、不刷新更新（AJAX定义）
 创开发收不刷新（XMLHttpRequest流程）
-Fetch Promise化（现代请求）
+Fetch简洁、Axios最强（现代选择）
 跨域CORS首选（解决方案）
 ```
 
@@ -36,10 +37,12 @@ Fetch Promise化（现代请求）
 未开头载完（0未送、1已开、2头收、3载中、4完成）
 ```
 
-### Fetch vs XHR记忆法
+### 请求工具选择记忆法
 ```
-Fetch Promise化、语法更简洁
-XHR回调式、功能更全面
+AJAX是技术不是库（概念）
+XHR全面但回调（传统）
+Fetch轻量但手动（现代原生）
+Axios功能最强大（推荐）
 ```
 
 ---
@@ -190,36 +193,101 @@ xhrPost.send(JSON.stringify({ name: 'test' }));
 
 ---
 
-## 三、Fetch API
+## 三、Fetch API vs Axios
 
-### 📝 9. Fetch API 和 XMLHttpRequest 的区别？ ⭐⭐⭐⭐⭐ 🔥
+> ⚠️ **重要概念区分**：
+> - **AJAX** 是一种**技术思想**（异步JavaScript和XML），不是具体的实现
+> - **XMLHttpRequest** 是实现 AJAX 的**原生API**
+> - **Fetch** 是浏览器提供的**新原生API**，用于替代 XMLHttpRequest
+> - **Axios** 是基于 Promise 的第三方**HTTP库**，可用于浏览器和Node.js
+>
+> **简单理解**：AJAX 是技术，XHR/Fetch/Axios 是工具
+
+---
+
+### 📝 9. AJAX、Axios、Fetch 三者的区别？ ⭐⭐⭐⭐⭐ 🔥
+
+**核心理解：**
+- **AJAX** = 技术概念（Asynchronous JavaScript And XML）
+- **XMLHttpRequest** = 实现 AJAX 的传统方式
+- **Fetch** = 实现 AJAX 的现代方式（原生API）
+- **Axios** = 实现 AJAX 的第三方库（功能更强）
 
 **核心对比：**
 
-| 特性 | Fetch API | XMLHttpRequest |
-|------|-----------|----------------|
-| **返回值** | Promise | 回调函数 |
-| **语法** | 更简洁现代 | 较为复杂 |
-| **错误处理** | 只在网络错误时 reject（？） | 可以处理 HTTP 错误状态 |
-| **请求取消** | AbortController | abort() 方法 |
-| **进度监控** | ❌ 不支持上传进度 | ✅ 支持上传/下载进度 |
-| **超时设置** | 需配合 AbortController | ✅ 原生支持 timeout |
-| **Cookie** | 默认不发送（需设置） | 默认发送 |
-| **兼容性** | IE不支持 | 所有浏览器 |
-| **代码风格** | async/await | 回调地狱 |
+| 特性 | XMLHttpRequest | Fetch API | Axios |
+|------|----------------|-----------|-------|
+| **类型** | 原生API | 原生API | 第三方库 |
+| **返回值** | 回调函数 | Promise | Promise |
+| **语法** | 较为复杂 | 简洁现代 | 最简洁 |
+| **浏览器支持** | ✅ 所有浏览器 | ❌ IE不支持 | ✅ 兼容性好 |
+| **请求/响应拦截** | ❌ 不支持 | ❌ 不支持 | ✅ 支持 |
+| **自动转JSON** | ❌ 需手动 | ❌ 需手动调用.json() | ✅ 自动转换 |
+| **请求取消** | abort() | AbortController | CancelToken/AbortController |
+| **进度监控** | ✅ 支持 | ❌ 不支持 | ✅ 支持 |
+| **超时设置** | ✅ 原生timeout | ❌ 需手动实现 | ✅ 原生timeout |
+| **错误处理** | 状态码判断 | 只网络错误reject | HTTP错误自动reject |
+| **XSRF防护** | ❌ 不支持 | ❌ 不支持 | ✅ 内置防护 |
+| **Cookie** | ✅ 默认发送 | ❌ 需设置credentials | ✅ 默认发送 |
+| **文件大小** | 0（原生） | 0（原生） | ~13KB |
 
-**Fetch 示例：**
+**记忆口诀：**
+```
+XHR原生全面、Fetch简洁现代、Axios功能最强
+```
+
+---
+
+### 📝 9-1. XMLHttpRequest vs Fetch vs Axios 代码对比 ⭐⭐⭐⭐⭐ 🔥
+
+#### 1) XMLHttpRequest（原生，兼容性最好）
 ```javascript
-// 简洁的 Fetch 写法
-fetch('https://api.example.com/data')
-  .then(response => response.json())
+const xhr = new XMLHttpRequest();
+xhr.open('GET', '/api/data', true);
+xhr.setRequestHeader('Content-Type', 'application/json');
+
+xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            console.log(data);
+        } else {
+            console.error('请求失败:', xhr.status);
+        }
+    }
+};
+
+xhr.send();
+```
+
+#### 2) Fetch API（现代，简洁）
+```javascript
+// 基础用法
+fetch('/api/data')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
   .then(data => console.log(data))
   .catch(error => console.error(error));
 
 // async/await 写法
 async function getData() {
   try {
-    const response = await fetch('/api/data');
+    const response = await fetch('/api/data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: 'test' })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
     console.log(data);
   } catch (error) {
@@ -228,10 +296,221 @@ async function getData() {
 }
 ```
 
+#### 3) Axios（最强大，推荐）⭐⭐⭐⭐⭐
+```javascript
+// GET 请求
+axios.get('/api/data', {
+  params: { id: 1 }
+})
+.then(response => console.log(response.data))
+.catch(error => console.error(error));
+
+// POST 请求
+axios.post('/api/data', {
+  name: 'test'
+})
+.then(response => console.log(response.data))
+.catch(error => console.error(error));
+
+// async/await 写法
+async function getData() {
+  try {
+    const response = await axios.get('/api/data');
+    console.log(response.data); // 自动解析JSON
+  } catch (error) {
+    console.error(error.response.status); // 自动处理HTTP错误
+  }
+}
+
+// 配置拦截器
+axios.interceptors.request.use(config => {
+  // 添加token
+  config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response.status === 401) {
+      // 跳转登录
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+---
+
+### 📝 9-2. 什么时候用 XMLHttpRequest、Fetch、Axios？ ⭐⭐⭐⭐⭐ 🔥
+
+**选择建议：**
+
+| 场景 | 推荐方案 | 原因 |
+|------|----------|------|
+| **现代项目** | Axios | 功能最全、开箱即用、拦截器强大 |
+| **轻量级项目** | Fetch | 原生支持、无需安装、体积为0 |
+| **老浏览器兼容** | XMLHttpRequest | 兼容性最好、IE支持 |
+| **需要进度监控** | Axios 或 XHR | Fetch不支持上传进度 |
+| **简单的GET请求** | Fetch | 语法简洁、无需配置 |
+| **复杂的企业项目** | Axios | 拦截器、错误处理、取消请求 |
+
+**实际项目推荐：**
+```javascript
+// ✅ 推荐：大部分项目使用 Axios
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'https://api.example.com',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+// 请求拦截器
+api.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => Promise.reject(error)
+);
+
+// 响应拦截器
+api.interceptors.response.use(
+  response => response.data,
+  error => {
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          // 未授权，跳转登录
+          window.location.href = '/login';
+          break;
+        case 403:
+          console.error('没有权限');
+          break;
+        case 404:
+          console.error('请求的资源不存在');
+          break;
+        case 500:
+          console.error('服务器错误');
+          break;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+```
+
 **记忆口诀：**
 ```
-Fetch Promise化、语法更简洁
-XHR回调式、功能更全面
+现代用Axios、轻量用Fetch、兼容用XHR
+```
+
+---
+
+### 📝 9-3. Axios 的核心特性有哪些？ ⭐⭐⭐⭐⭐ 🔥
+
+**十大核心特性：**
+
+| 特性 | 说明 | 优势 |
+|------|------|------|
+| **1. 拦截器** | 请求/响应拦截 | 统一处理token、错误 |
+| **2. 自动转换** | 自动转换JSON | 无需手动JSON.parse() |
+| **3. 请求取消** | CancelToken/AbortController | 避免重复请求 |
+| **4. 超时设置** | timeout配置 | 防止请求卡死 |
+| **5. 进度监控** | onUploadProgress/onDownloadProgress | 文件上传/下载进度 |
+| **6. XSRF防护** | xsrfCookieName/xsrfHeaderName | 防止CSRF攻击 |
+| **7. 并发请求** | axios.all() / axios.spread() | 同时发送多个请求 |
+| **8. 错误处理** | HTTP错误自动reject | 统一错误处理 |
+| **9. 实例化** | axios.create() | 不同API不同配置 |
+| **10. 请求重试** | 配合拦截器 | 网络不稳定时重试 |
+
+**核心代码示例：**
+
+```javascript
+// 1. 拦截器
+axios.interceptors.request.use(config => {
+  config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// 2. 自动转换JSON（无需手动处理）
+const { data } = await axios.get('/api/users');
+console.log(data); // 已经是对象，不是字符串
+
+// 3. 请求取消
+const controller = new AbortController();
+axios.get('/api/data', {
+  signal: controller.signal
+});
+controller.abort(); // 取消请求
+
+// 4. 超时设置
+axios.get('/api/data', {
+  timeout: 5000 // 5秒超时
+});
+
+// 5. 上传进度监控
+axios.post('/api/upload', formData, {
+  onUploadProgress: progressEvent => {
+    const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+    console.log(`上传进度: ${percent}%`);
+  }
+});
+
+// 6. XSRF防护
+axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
+axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
+
+// 7. 并发请求
+Promise.all([
+  axios.get('/api/user'),
+  axios.get('/api/posts')
+]).then(([userRes, postsRes]) => {
+  console.log(userRes.data, postsRes.data);
+});
+
+// 8. 错误处理（自动reject HTTP错误）
+try {
+  await axios.get('/api/data');
+} catch (error) {
+  if (error.response) {
+    console.log(error.response.status); // 404, 500等
+  }
+}
+
+// 9. 创建实例
+const api1 = axios.create({ baseURL: 'https://api1.com' });
+const api2 = axios.create({ baseURL: 'https://api2.com' });
+
+// 10. 请求重试
+axios.interceptors.response.use(null, async error => {
+  const config = error.config;
+  if (!config || !config.retry) return Promise.reject(error);
+
+  config.__retryCount = config.__retryCount || 0;
+  if (config.__retryCount >= config.retry) {
+    return Promise.reject(error);
+  }
+
+  config.__retryCount++;
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return axios(config);
+});
+```
+
+**记忆口诀：**
+```
+拦截转换取消超时（拦截器、自动转换、取消请求、超时设置）
+进度防护并发错误（进度监控、XSRF防护、并发请求、错误处理）
+实例重试更强大（实例化、请求重试）
 ```
 
 ---
@@ -293,20 +572,136 @@ CORS首选、JSONP兼容、代理万能、postMessage窗口
 ```
 
 #### 1) CORS（推荐方案）⭐⭐⭐⭐⭐
+
+**服务器端配置：**
 ```javascript
-// 服务器端设置响应头
-res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+// Node.js Express 示例
+res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // ⚠️ 不能是 '*'
 res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
 res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-res.header('Access-Control-Allow-Credentials', 'true');
+res.header('Access-Control-Allow-Credentials', 'true'); // ⚠️ 必须设置为 true
+```
 
-// 客户端配置
+**客户端配置：**
+
+**方式1：XMLHttpRequest**
+```javascript
+const xhr = new XMLHttpRequest();
+xhr.open('GET', 'http://api.example.com/data', true);
+xhr.withCredentials = true; // ⚠️ 携带 Cookie
+xhr.send();
+```
+
+**方式2：Fetch API**
+```javascript
 fetch('http://api.example.com/data', {
-  credentials: 'include', // 携带cookie
+  credentials: 'include', // ⚠️ 携带 Cookie
   headers: {
     'Content-Type': 'application/json'
   }
 });
+```
+
+**方式3：Axios（推荐）** ⭐⭐⭐⭐⭐
+
+**Axios 携带 Cookie 的四种方式：**
+
+```javascript
+// ✅ 方式1：全局配置（推荐，一次配置全局生效）
+import axios from 'axios';
+axios.defaults.withCredentials = true; // 所有请求都携带 Cookie
+
+// ✅ 方式2：创建实例时配置（推荐用于多域名项目）
+const api = axios.create({
+  baseURL: 'http://api.example.com',
+  withCredentials: true, // 该实例的所有请求都携带 Cookie
+  timeout: 10000
+});
+
+// ✅ 方式3：单个 GET 请求配置
+axios.get('http://api.example.com/data', {
+  withCredentials: true // 仅这个请求携带 Cookie
+});
+
+// ✅ 方式4：单个 POST 请求配置
+axios.post('http://api.example.com/login',
+  { username: 'admin', password: '123456' },
+  { withCredentials: true }
+);
+```
+
+**推荐度排序：**
+1. **方式2（创建实例）** - 最推荐，适合企业项目
+2. **方式1（全局配置）** - 简单项目快速配置
+3. **方式3/4（单个请求）** - 特殊场景下使用
+
+**完整的 Axios Cookie 配置示例：**
+```javascript
+import axios from 'axios';
+
+// 创建 axios 实例
+const api = axios.create({
+  baseURL: 'http://api.example.com',
+  timeout: 10000,
+  withCredentials: true, // ✅ 携带 Cookie（跨域时必须）
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+// 请求拦截器
+api.interceptors.request.use(
+  config => {
+    // 可以在这里添加其他请求头
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => Promise.reject(error)
+);
+
+// 响应拦截器
+api.interceptors.response.use(
+  response => response.data,
+  error => {
+    if (error.response?.status === 401) {
+      // 未授权，跳转登录
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// 使用示例
+api.get('/user/profile').then(data => {
+  console.log('用户信息:', data);
+});
+
+api.post('/user/login', {
+  username: 'admin',
+  password: '123456'
+}).then(data => {
+  console.log('登录成功:', data);
+  // 服务器会通过 Set-Cookie 设置 Cookie
+  // 后续请求会自动携带该 Cookie
+});
+```
+
+**⚠️ 重要注意事项：**
+
+| 配置项 | 客户端要求 | 服务器端要求 |
+|--------|----------|------------|
+| **携带Cookie** | `withCredentials: true` | `Access-Control-Allow-Credentials: true` |
+| **允许的域** | - | `Access-Control-Allow-Origin` 必须是具体域名，**不能是 `*`** |
+| **Cookie设置** | - | 服务器通过 `Set-Cookie` 响应头设置 |
+| **Cookie发送** | 自动携带（配置后） | 自动接收（在请求头 `Cookie` 中） |
+
+**记忆口诀：**
+```
+Axios 携带 Cookie：withCredentials 设为 true
+服务器允许 Cookie：Allow-Credentials 设为 true + Origin 不能是星
 ```
 
 #### 2) JSONP（兼容方案）
@@ -348,17 +743,118 @@ module.exports = {
 };
 ```
 
-#### 4) postMessage（窗口通信）
-```javascript
-// 发送消息（主窗口）
-iframe.contentWindow.postMessage(data, 'http://example.com');
+#### 4) postMessage（多域/跨窗口通信）⭐⭐⭐⭐
 
-// 接收消息（iframe）
+**适用场景：**
+- 主页面与 iframe 之间通信
+- 多个窗口/标签页之间通信
+- Web Worker 与主线程通信
+
+**基本用法：**
+```javascript
+// 场景1：主窗口向 iframe 发送消息
+const iframe = document.getElementById('myIframe');
+iframe.contentWindow.postMessage({ type: 'hello', data: 'world' }, 'https://example.com');
+
+// 场景2：iframe 接收消息并回复
 window.addEventListener('message', function(e) {
-    if (e.origin === 'http://example.com') {
-        console.log('收到消息:', e.data);
+    // ⚠️ 安全检查：验证来源
+    if (e.origin !== 'https://parent-domain.com') return;
+
+    console.log('收到消息:', e.data);
+
+    // 回复消息
+    e.source.postMessage({ type: 'reply', data: 'received' }, e.origin);
+});
+
+// 场景3：window.open 打开的窗口通信
+const newWindow = window.open('https://other-domain.com');
+newWindow.postMessage({ type: 'init' }, 'https://other-domain.com');
+```
+
+**postMessage 事件对象属性：**
+| 属性 | 说明 |
+|------|------|
+| **e.data** | 传递的数据 |
+| **e.origin** | 消息来源的域（用于安全验证） |
+| **e.source** | 发送消息的窗口对象 |
+
+**完整实战示例：**
+```javascript
+// ========== 父页面 (http://parent.com) ==========
+const iframe = document.getElementById('myIframe');
+
+// 等待 iframe 加载完成
+iframe.onload = function() {
+    // 发送初始化消息
+    iframe.contentWindow.postMessage({
+        type: 'INIT',
+        token: 'abc123',
+        data: { userId: 1 }
+    }, 'https://child.com');
+};
+
+// 监听 iframe 的回复
+window.addEventListener('message', function(e) {
+    // ⚠️ 必须验证来源
+    if (e.origin !== 'https://child.com') return;
+
+    switch(e.data.type) {
+        case 'READY':
+            console.log('iframe 已准备就绪');
+            break;
+        case 'DATA_REQUEST':
+            // 发送数据给 iframe
+            e.source.postMessage({
+                type: 'DATA_RESPONSE',
+                data: [1, 2, 3]
+            }, e.origin);
+            break;
     }
 });
+
+// ========== 子页面/iframe (https://child.com) ==========
+// 监听父页面的消息
+window.addEventListener('message', function(e) {
+    // ⚠️ 必须验证来源
+    if (e.origin !== 'http://parent.com') return;
+
+    switch(e.data.type) {
+        case 'INIT':
+            console.log('收到初始化数据:', e.data.data);
+            // 通知父页面已准备就绪
+            parent.postMessage({ type: 'READY' }, e.origin);
+            break;
+        case 'DATA_RESPONSE':
+            console.log('收到数据:', e.data.data);
+            break;
+    }
+});
+
+// 向父页面请求数据
+parent.postMessage({ type: 'DATA_REQUEST' }, 'http://parent.com');
+```
+
+**⚠️ 安全注意事项：**
+1. **必须验证 origin**：避免接收恶意消息
+   ```javascript
+   if (e.origin !== 'https://trusted-domain.com') return;
+   ```
+2. **避免使用通配符**：不要用 `'*'` 作为 targetOrigin
+   ```javascript
+   // ❌ 不安全
+   iframe.contentWindow.postMessage(data, '*');
+
+   // ✅ 安全
+   iframe.contentWindow.postMessage(data, 'https://trusted-domain.com');
+   ```
+3. **验证数据格式**：接收的数据可能被篡改
+4. **敏感数据加密**：传输敏感信息时进行加密
+
+**记忆口诀：**
+```
+postMessage 跨窗口、iframe 通信最常用
+验证 origin 保安全、source 回复有来源
 ```
 
 ---
@@ -395,6 +891,123 @@ window.addEventListener('message', function(e) {
 ```
 script标签不跨域、回调函数传数据、只支持GET请求、安全性较差
 ```
+
+---
+
+### 📝 7-1. 跨域请求如何携带Cookie（Credentials）？ ⭐⭐⭐⭐⭐ 🔥 ⚠️
+
+**核心概念：**
+跨域请求默认不携带 Cookie，需要同时配置客户端和服务器端才能携带。
+
+**三种方式对比：**
+
+| 方式 | 客户端配置 | 服务器端要求 |
+|------|----------|------------|
+| **XMLHttpRequest** | `xhr.withCredentials = true` | `Access-Control-Allow-Credentials: true` |
+| **Fetch API** | `credentials: 'include'` | `Access-Control-Allow-Credentials: true` |
+| **Axios** | `withCredentials: true` | `Access-Control-Allow-Credentials: true` |
+
+**Axios 四种配置方式：**
+
+```javascript
+// ✅ 方式1：全局配置（推荐）
+axios.defaults.withCredentials = true;
+
+// ✅ 方式2：创建实例时配置
+const api = axios.create({
+  baseURL: 'http://api.example.com',
+  withCredentials: true
+});
+
+// ✅ 方式3：单个 GET 请求
+axios.get('/api/user', {
+  withCredentials: true
+});
+
+// ✅ 方式4：单个 POST 请求
+axios.post('/api/login',
+  { username: 'admin' },
+  { withCredentials: true }
+);
+```
+
+**服务器端配置（Node.js Express）：**
+```javascript
+// ⚠️ 重要：携带 Cookie 时，Origin 不能是 '*'
+res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // 必须是具体域名
+res.header('Access-Control-Allow-Credentials', 'true'); // 必须设置
+res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
+res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+```
+
+**完整流程示例：**
+```javascript
+// 1. 登录接口（服务器设置 Cookie）
+axios.post('http://api.example.com/login', {
+  username: 'admin',
+  password: '123456'
+}, {
+  withCredentials: true // 允许接收服务器的 Set-Cookie
+})
+.then(response => {
+  console.log('登录成功');
+  // 服务器通过 Set-Cookie 响应头设置了 Cookie
+  // 浏览器会自动保存这个 Cookie
+});
+
+// 2. 后续请求自动携带 Cookie
+axios.get('http://api.example.com/user/profile', {
+  withCredentials: true // 自动携带之前保存的 Cookie
+})
+.then(response => {
+  console.log('用户信息:', response.data);
+});
+```
+
+**常见错误及解决：**
+
+| 错误信息 | 原因 | 解决方案 |
+|---------|------|---------|
+| `Access to XMLHttpRequest has been blocked by CORS policy` | 服务器未设置 `Allow-Credentials` | 服务器添加 `Access-Control-Allow-Credentials: true` |
+| `The value of 'Access-Control-Allow-Origin' must not be '*'` | 携带Cookie时Origin是通配符 | 服务器改为具体域名 `http://localhost:3000` |
+| `Cookie未携带` | 客户端未设置 `withCredentials` | 设置 `withCredentials: true` |
+| `Cookie被阻止（SameSite）` | Cookie的SameSite属性限制 | 服务器设置 `SameSite=None; Secure` |
+
+**SameSite Cookie 配置（服务器端）：**
+```javascript
+// Node.js Express
+res.cookie('sessionId', '12345', {
+  httpOnly: true,      // 防止XSS攻击
+  secure: true,        // 仅HTTPS传输
+  sameSite: 'none',    // 允许跨站携带（必须配合secure使用）
+  maxAge: 24 * 60 * 60 * 1000 // 有效期1天
+});
+```
+
+**credentials 三个值的区别（Fetch API）：**
+```javascript
+// 1. same-origin（默认）：同源请求才携带Cookie
+fetch('/api/data', { credentials: 'same-origin' });
+
+// 2. include：同源和跨域都携带Cookie
+fetch('http://api.example.com/data', { credentials: 'include' });
+
+// 3. omit：都不携带Cookie
+fetch('/api/data', { credentials: 'omit' });
+```
+
+**记忆口诀：**
+```
+跨域带Cookie双方配：
+客户端 withCredentials 为 true
+服务器 Allow-Credentials 为 true + Origin 具体域名不能星
+```
+
+**⚠️ 安全提醒：**
+1. 只对可信的域名开放跨域Cookie访问
+2. 使用 `httpOnly` 防止XSS攻击
+3. HTTPS 环境下使用 `secure` 属性
+4. 注意 SameSite 属性的兼容性
 
 ---
 
@@ -999,11 +1612,18 @@ function sendMessage(msg) {
 判断：readyState===4 && status===200
 ```
 
-### 3. Fetch API
+### 3. AJAX vs XHR vs Fetch vs Axios
 ```
-特点：Promise化、语法简洁、现代化
-优势：链式调用、async/await友好
-劣势：无进度监控、需额外处理超时
+概念区分：
+- AJAX：技术思想（异步JS和XML）
+- XHR：实现AJAX的传统API（回调地狱）
+- Fetch：实现AJAX的现代API（Promise化、轻量）
+- Axios：实现AJAX的第三方库（功能最强、推荐）
+
+快速选择：
+- 兼容老浏览器 → XHR
+- 轻量简单项目 → Fetch
+- 企业级项目 → Axios（拦截器、自动转换）
 ```
 
 ### 4. 请求方法
@@ -1018,6 +1638,10 @@ GET vs POST：
 ```
 优先级：CORS首选、JSONP兼容、代理万能
 预检请求：非简单请求先预检、OPTIONS问服务器
+携带Cookie：
+- Axios: withCredentials 为 true
+- 服务器: Allow-Credentials 为 true + Origin 不能是星
+- SameSite: 跨域需设为 None + Secure
 ```
 
 ### 6. 高级技巧
@@ -1058,8 +1682,8 @@ GET数据在URL、有大小限制、可缓存；POST数据在body、无限制、
 ### Q4: 如何解决跨域问题？⭐⭐⭐⭐⭐ 🔥
 CORS（首选）、JSONP（兼容）、代理服务器、postMessage
 
-### Q5: Fetch和XMLHttpRequest的区别？⭐⭐⭐⭐⭐ 🔥
-Fetch是Promise、语法简洁；XHR是回调、功能全面（支持进度）
+### Q5: XMLHttpRequest、Fetch、Axios的区别？⭐⭐⭐⭐⭐ 🔥
+XHR原生全面但回调地狱；Fetch现代简洁但需手动处理；Axios功能最强推荐使用
 
 ### Q6: 什么是预检请求？⭐⭐⭐⭐⭐ 🔥
 非简单请求前发送OPTIONS请求，检查服务器是否允许
@@ -1090,6 +1714,12 @@ XHR设置timeout属性；Fetch用Promise.race或AbortController
 
 ### Q15: CORS需要哪些响应头？⭐⭐⭐⭐⭐
 Access-Control-Allow-Origin、Methods、Headers、Credentials
+
+### Q16: Axios的核心优势有哪些？⭐⭐⭐⭐⭐ 🔥
+拦截器、自动转JSON、超时设置、进度监控、XSRF防护、错误处理、实例化
+
+### Q17: Axios如何携带Cookie？⭐⭐⭐⭐⭐ 🔥
+设置 `withCredentials: true`，服务器需设置 `Allow-Credentials: true` 且 `Allow-Origin` 不能是 `*`
 
 ---
 
@@ -1132,26 +1762,32 @@ Access-Control-Allow-Origin、Methods、Headers、Credentials
 ## 📖 学习建议
 
 ### 重点掌握（必背）⭐⭐⭐⭐⭐
-1. XMLHttpRequest的五种状态和使用流程
-2. Fetch API vs XMLHttpRequest对比
-3. GET vs POST的区别
-4. 跨域解决方案（CORS为主）
-5. 预检请求的触发条件
+1. **AJAX概念区分**：AJAX是技术思想，XHR/Fetch/Axios是实现工具
+2. **XMLHttpRequest**：五种状态和使用流程（创开发收）
+3. **三者对比**：XHR vs Fetch vs Axios 的区别和选择
+4. **Axios核心特性**：拦截器、自动转换、超时、进度监控
+5. **GET vs POST**：八大维度区别
+6. **跨域解决方案**：CORS为主（四种响应头）
+7. **预检请求**：触发条件和处理流程
 
 ### 重要理解（常考）⭐⭐⭐⭐
-6. 请求取消、超时、重试机制
-7. 请求并发控制
-8. 缓存处理策略
-9. 通用AJAX库的封装
-10. 轮询、长轮询、WebSocket
+8. **请求取消**：XHR用abort、Fetch用AbortController、Axios两者都支持
+9. **超时处理**：XHR原生timeout、Fetch用race、Axios原生支持
+10. **请求重试**：失败重试、指数退避、最大次数
+11. **请求并发控制**：队列控制、达限等待
+12. **缓存处理**：时间戳、HTTP缓存、内存缓存
+13. **通用库封装**：基础配置、拦截器、便捷方法
+14. **实时通信**：轮询、长轮询、WebSocket对比
 
 ### 加分项（选学）⭐⭐⭐
-11. 请求拦截器的实现
-12. 错误处理和重试策略
-13. 实时通信的最佳实践
+15. **Axios高级用法**：实例化、请求重试拦截器、XSRF防护
+16. **并发请求优化**：Promise.all、请求队列管理
+17. **性能优化**：请求缓存、请求合并、请求去重
+18. **错误处理最佳实践**：统一错误拦截、错误重试策略
 
 ---
 
-**最后更新**: 2025-09-30
+**最后更新**: 2025-10-22
 **难度等级**: ⭐⭐⭐⭐⭐（必背）
 **面试频率**: 极高（约70%的面试会涉及）
+**新增内容**: ✨ 新增 AJAX vs Axios 概念区分、Axios 核心特性详解、三者对比完整版

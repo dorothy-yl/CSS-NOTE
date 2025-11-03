@@ -505,33 +505,141 @@ const routes = [
 ```
 
 ### 3. 路由守卫
+
+**面试话术（三步回答）：**
+
+**第一步：说清楚"是什么"**
+Vue路由守卫是在路由跳转过程中设置的钩子函数，用来控制路由的访问权限、导航流程等。
+
+**第二步：分类讲解**
+路由守卫分为三类：
+1. **全局守卫** - 在整个应用生效
+   - `beforeEach` - 全局前置守卫，每次导航前触发
+   - `beforeResolve` - 全局解析守卫，导航被确认前触发
+   - `afterEach` - 全局后置钩子，导航完成后触发
+
+2. **路由独享守卫** - 在路由配置中定义
+   - `beforeEnter` - 只在进入该路由时触发
+
+3. **组件内守卫** - 在组件内部定义
+   - `beforeRouteEnter` - 进入组件前（无法访问this）
+   - `beforeRouteUpdate` - 路由参数变化时
+   - `beforeRouteLeave` - 离开组件时
+
+**第三步：实际应用场景**
+常用场景包括：权限验证、登录拦截、页面访问统计、离开提示等。
+
+**记忆口诀：** 全局拦截用beforeEach，组件内控制用三个守卫
+
+---
+
+**完整执行顺序：**
+```
+导航被触发
+  ↓
+beforeRouteLeave (离开的组件)
+  ↓
+beforeEach (全局前置)
+  ↓
+beforeEnter (路由独享)
+  ↓
+beforeRouteEnter (进入的组件)
+  ↓
+beforeResolve (全局解析)
+  ↓
+导航被确认
+  ↓
+afterEach (全局后置)
+  ↓
+DOM更新
+```
+
+---
+
+**代码示例：**
+
 ```javascript
-// 全局前置守卫
+// 1. 全局前置守卫 - 权限验证
 router.beforeEach((to, from, next) => {
+  // to: 即将进入的路由
+  // from: 正要离开的路由
+  // next: 必须调用，否则路由不会跳转
+
   if (to.meta.requiresAuth) {
     if (isAuthenticated()) {
-      next();
+      next(); // 放行
     } else {
-      next('/login');
+      next('/login'); // 重定向到登录页
     }
   } else {
     next();
   }
 });
 
-// 组件内守卫
+// 2. 全局后置钩子 - 页面标题设置
+router.afterEach((to, from) => {
+  document.title = to.meta.title || '默认标题';
+});
+
+// 3. 路由独享守卫
+const routes = [
+  {
+    path: '/admin',
+    component: Admin,
+    beforeEnter: (to, from, next) => {
+      if (isAdmin()) {
+        next();
+      } else {
+        next('/403');
+      }
+    }
+  }
+];
+
+// 4. 组件内守卫
 export default {
+  // 进入组件前（无法访问this，因为组件实例还未创建）
   beforeRouteEnter(to, from, next) {
-    // 组件实例创建前
+    // 可以通过next回调访问组件实例
+    next(vm => {
+      // vm就是组件实例
+      vm.loadData();
+    });
   },
+
+  // 路由参数变化时（如 /user/1 到 /user/2）
   beforeRouteUpdate(to, from, next) {
-    // 路由参数变化时
+    // 可以访问this
+    this.userId = to.params.id;
+    this.loadUserData();
+    next();
   },
+
+  // 离开组件时
   beforeRouteLeave(to, from, next) {
-    // 离开路由时
+    // 可以访问this
+    if (this.hasUnsavedChanges) {
+      const answer = window.confirm('有未保存的更改，确定离开吗？');
+      if (answer) {
+        next();
+      } else {
+        next(false); // 取消导航
+      }
+    } else {
+      next();
+    }
   }
 }
 ```
+
+**重要注意事项：**
+1. **必须调用next()**：每个守卫中必须调用next()，否则路由不会继续
+2. **next()参数**：
+   - `next()` - 放行
+   - `next(false)` - 中断导航
+   - `next('/path')` - 重定向到指定路由
+   - `next(error)` - 导航终止并传递错误
+3. **beforeRouteEnter无法访问this**：因为此时组件实例还未创建
 
 ## 六、Vue性能优化
 

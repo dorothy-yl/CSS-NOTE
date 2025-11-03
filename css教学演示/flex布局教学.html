@@ -78,9 +78,17 @@
             color: #ecf0f1;
             padding: 15px;
             border-radius: 5px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             margin: 10px 0;
             overflow-x: auto;
+            white-space: pre;
+            line-height: 1.6;
+            font-size: 14px;
+            border-left: 4px solid #3498db;
+        }
+
+        .code-block code {
+            color: #ecf0f1;
         }
         
         /* 基础演示样式 */
@@ -196,13 +204,139 @@
             padding: 20px;
             border-radius: 5px;
         }
+
+        /* 导航样式 */
+        .nav-menu {
+            position: sticky;
+            top: 0;
+            background: #2c3e50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu h3 {
+            color: #fff;
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .nav-menu li {
+            margin: 0;
+        }
+
+        .nav-menu a {
+            display: inline-block;
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 8px 15px;
+            background: #34495e;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .nav-menu a:hover {
+            background: #3498db;
+            transform: translateY(-2px);
+        }
+
+        /* flex:1 + min-width 演示样式 */
+        .min-width-demo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            background: #ecf0f1;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+        }
+
+        .min-width-item {
+            flex: 1 1 300px;
+            min-width: 300px;
+            background: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .max-width-demo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            background: #ecf0f1;
+            border: 2px solid #e74c3c;
+            border-radius: 5px;
+        }
+
+        .max-width-item {
+            flex: 1 1 300px;
+            min-width: 300px;
+            max-width: 400px;
+            background: #e74c3c;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .responsive-card-demo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 2px solid #2ecc71;
+            border-radius: 5px;
+        }
+
+        .responsive-card {
+            flex: 1 1 300px;
+            min-width: 300px;
+            max-width: calc(50% - 10px);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .responsive-card h4 {
+            color: #2ecc71;
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎯 Flex布局教学演示</h1>
-        
-        <h2>1. Flex布局基础概念</h2>
+
+        <!-- 导航菜单 -->
+        <nav class="nav-menu">
+            <h3>📑 快速导航</h3>
+            <ul>
+                <li><a href="#section-1">1. 基础概念</a></li>
+                <li><a href="#section-2">2. 容器属性</a></li>
+                <li><a href="#section-3">3. 项目属性</a></li>
+                <li><a href="#section-4">4. 实际应用</a></li>
+                <li><a href="#section-5">5. flex:1+min-width</a></li>
+                <li><a href="#section-6">6. 面试题</a></li>
+            </ul>
+        </nav>
+
+        <h2 id="section-1">1. Flex布局基础概念</h2>
         <div class="demo-section">
             <h3>什么是Flex布局？</h3>
             <p>Flex布局（Flexible Box Layout）是CSS3新增的一种布局方式，能够更加高效地排列、分布和对齐容器中的项目。</p>
@@ -227,7 +361,7 @@
             </div>
         </div>
         
-        <h2>2. 容器属性演示</h2>
+        <h2 id="section-2">2. 容器属性演示</h2>
         
         <div class="demo-section">
             <h3>justify-content（主轴对齐）</h3>
@@ -375,7 +509,7 @@
             <div class="code-block">flex-wrap: wrap;</div>
         </div>
         
-        <h2>3. 项目属性演示</h2>
+        <h2 id="section-3">3. 项目属性演示</h2>
         
         <div class="demo-section">
             <h3>flex-grow（放大比例）</h3>
@@ -431,7 +565,7 @@
 .item3 { flex: 1; }</div>
         </div>
         
-        <h2>4. 实际应用案例</h2>
+        <h2 id="section-4">4. 实际应用案例</h2>
         
         <div class="demo-section">
             <h3>水平垂直居中</h3>
@@ -501,7 +635,182 @@
 .aside { width: 150px; }</div>
         </div>
         
-        <h2>🎯 经典Flex布局面试题</h2>
+        <h2 id="section-5">5. flex: 1 配合 min-width/max-width 实战</h2>
+
+        <div class="demo-section">
+            <h3>💡 核心问题：如何实现最小宽度300px、可自适应扩张的flex布局？</h3>
+            <p>这是一个非常常见的面试题和实际开发场景，涉及到flex属性与min-width/max-width的组合使用。</p>
+        </div>
+
+        <div class="demo-section">
+            <h3>方案1：flex: 1 + min-width（基础方案）</h3>
+            <p><strong>效果：</strong>元素会平均分配空间，但最小不会小于300px</p>
+
+            <div class="min-width-demo">
+                <div class="min-width-item">卡片 1<br>flex: 1 1 300px<br>min-width: 300px</div>
+                <div class="min-width-item">卡片 2<br>flex: 1 1 300px<br>min-width: 300px</div>
+                <div class="min-width-item">卡片 3<br>flex: 1 1 300px<br>min-width: 300px</div>
+            </div>
+
+            <div class="code-block">
+.container {
+    display: flex;
+    flex-wrap: wrap; /* 允许换行 */
+    gap: 20px;
+}
+
+.item {
+    flex: 1 1 300px; /* 基准300px，可伸缩 */
+    min-width: 300px; /* 确保最小300px */
+}
+
+/* 说明：
+   - flex-grow: 1 - 可以扩张占据剩余空间
+   - flex-shrink: 1 - 可以收缩
+   - flex-basis: 300px - 初始宽度300px
+   - min-width: 300px - 确保不会小于300px
+*/</div>
+
+            <p><strong>💡 试试调整浏览器窗口大小，观察卡片如何自适应！</strong></p>
+        </div>
+
+        <div class="demo-section">
+            <h3>方案2：flex: 1 + min-width + max-width（完全控制）</h3>
+            <p><strong>效果：</strong>元素宽度在300px~400px之间自适应</p>
+
+            <div class="max-width-demo">
+                <div class="max-width-item">卡片 1<br>min: 300px<br>max: 400px</div>
+                <div class="max-width-item">卡片 2<br>min: 300px<br>max: 400px</div>
+                <div class="max-width-item">卡片 3<br>min: 300px<br>max: 400px</div>
+            </div>
+
+            <div class="code-block">
+.item {
+    flex: 1 1 300px;
+    min-width: 300px; /* 最小宽度 */
+    max-width: 400px; /* 最大宽度 */
+}
+
+/* 效果说明：
+   - 容器宽度 < 300px：卡片保持300px（会溢出或换行）
+   - 300px ≤ 容器 ≤ 400px：卡片自适应扩张
+   - 容器宽度 > 400px：卡片保持400px，多余空间留白
+*/</div>
+        </div>
+
+        <div class="demo-section">
+            <h3>方案3：响应式卡片网格（实战案例）</h3>
+            <p><strong>效果：</strong>响应式卡片布局，最多显示两列</p>
+
+            <div class="responsive-card-demo">
+                <div class="responsive-card">
+                    <h4>📱 卡片 1</h4>
+                    <p>这是一个响应式卡片</p>
+                    <p>最小宽度：300px</p>
+                    <p>最大宽度：50% - 10px</p>
+                </div>
+                <div class="responsive-card">
+                    <h4>💻 卡片 2</h4>
+                    <p>调整浏览器窗口大小</p>
+                    <p>观察卡片如何自适应</p>
+                    <p>空间不足时会自动换行</p>
+                </div>
+                <div class="responsive-card">
+                    <h4>🖥️ 卡片 3</h4>
+                    <p>这是实际项目中</p>
+                    <p>最常用的布局方式</p>
+                    <p>非常实用！</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+.card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    flex: 1 1 300px; /* 基准300px */
+    min-width: 300px; /* 最小300px */
+    max-width: calc(50% - 10px); /* 最多两列 */
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 响应式处理 */
+@media (max-width: 768px) {
+    .card {
+        flex: 1 1 100%;
+        max-width: 100%; /* 小屏单列 */
+    }
+}</div>
+        </div>
+
+        <div class="interview-section">
+            <div class="question">🎯 面试重点：为什么要同时使用 flex-basis 和 min-width？</div>
+            <div class="answer">
+                <strong>答案：</strong><br><br>
+
+                <strong>1. flex-basis 的作用：</strong><br>
+                • 设置flex项目在分配剩余空间之前的初始大小<br>
+                • 作为flex算法的基准值<br><br>
+
+                <strong>2. min-width 的作用：</strong><br>
+                • 设置元素的最小宽度限制<br>
+                • 防止元素被过度压缩<br><br>
+
+                <strong>3. 两者优先级：</strong><br>
+                <code>max-width > min-width > flex-basis > width</code><br><br>
+
+                <strong>4. 实际效果：</strong><br>
+                • <code>flex: 1 1 300px</code> - flex-basis设置为300px<br>
+                • <code>min-width: 300px</code> - 确保不会被压缩到小于300px<br>
+                • 两者结合才能保证元素在任何情况下都不小于300px<br><br>
+
+                <strong>5. 常见误区：</strong><br>
+                ❌ 只用 <code>flex: 1 1 300px</code> - 元素可能被压缩小于300px<br>
+                ✅ 同时使用 <code>flex: 1 1 300px</code> + <code>min-width: 300px</code> - 完全保证最小宽度
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>📊 三种方案对比</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <thead>
+                    <tr style="background: #3498db; color: white;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">方案</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">优点</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">缺点</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">适用场景</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><code>flex: 1</code> + <code>min-width</code></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">简单直观，自动换行</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">需要配合flex-wrap</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">等分布局，自动换行</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><code>flex: 1 0 300px</code></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">不会缩小</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">可能溢出容器</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">固定最小尺寸的卡片</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><code>flex: 1</code> + <code>min-width</code> + <code>max-width</code></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">完全可控，响应式好</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">代码稍多</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">响应式卡片网格⭐推荐</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 id="section-6">🎯 经典Flex布局面试题</h2>
         
         <div class="interview-section">
             <div class="question">面试题1：flex: 1 表示什么意思？</div>
@@ -511,7 +820,34 @@
                 • flex-grow: 1（项目会放大占满剩余空间）<br>
                 • flex-shrink: 1（项目会收缩）<br>
                 • flex-basis: 0%（项目的初始大小为0%）<br><br>
-                <strong>实际效果：</strong>项目会平均分配容器的可用空间。
+
+                <strong>📊 实际效果演示：</strong><br>
+                <div style="display: flex; gap: 10px; margin: 15px 0; border: 2px solid #3498db; padding: 10px; background: #ecf0f1;">
+                    <div style="flex: 1; background: #e74c3c; color: white; padding: 20px; text-align: center; border-radius: 5px;">
+                        flex: 1<br>占1份
+                    </div>
+                    <div style="flex: 1; background: #3498db; color: white; padding: 20px; text-align: center; border-radius: 5px;">
+                        flex: 1<br>占1份
+                    </div>
+                    <div style="flex: 1; background: #2ecc71; color: white; padding: 20px; text-align: center; border-radius: 5px;">
+                        flex: 1<br>占1份
+                    </div>
+                </div>
+                <p style="margin: 10px 0; color: #666;">👆 三个元素平均分配空间，每个占1/3</p>
+
+                <strong>对比：不同的flex值</strong>
+                <div style="display: flex; gap: 10px; margin: 15px 0; border: 2px solid #e74c3c; padding: 10px; background: #ecf0f1;">
+                    <div style="flex: 1; background: #e74c3c; color: white; padding: 20px; text-align: center; border-radius: 5px;">
+                        flex: 1
+                    </div>
+                    <div style="flex: 2; background: #3498db; color: white; padding: 20px; text-align: center; border-radius: 5px;">
+                        flex: 2<br>占2倍空间
+                    </div>
+                    <div style="flex: 1; background: #2ecc71; color: white; padding: 20px; text-align: center; border-radius: 5px;">
+                        flex: 1
+                    </div>
+                </div>
+                <p style="margin: 10px 0; color: #666;">👆 中间元素flex: 2，占用2倍空间（总共4份，占2/4 = 50%）</p>
             </div>
         </div>
         
@@ -520,27 +856,101 @@
             <div class="answer">
                 <strong>答案：</strong><br>
                 • <strong>justify-content</strong>：控制项目在主轴上的对齐方式<br>
-                &nbsp;&nbsp;- flex-direction: row 时控制水平对齐<br>
-                &nbsp;&nbsp;- flex-direction: column 时控制垂直对齐<br><br>
-                • <strong>align-items</strong>：控制项目在交叉轴上的对齐方式<br>
-                &nbsp;&nbsp;- flex-direction: row 时控制垂直对齐<br>
-                &nbsp;&nbsp;- flex-direction: column 时控制水平对齐<br><br>
-                <strong>记忆技巧：</strong>justify-content 是"主轴对齐"，align-items 是"交叉轴对齐"
+                • <strong>align-items</strong>：控制项目在交叉轴上的对齐方式<br><br>
+
+                <strong>📊 实际效果演示（flex-direction: row）：</strong><br>
+
+                <p style="margin: 10px 0; font-weight: bold; color: #e74c3c;">justify-content: center（主轴 = 水平）</p>
+                <div style="display: flex; justify-content: center; height: 100px; border: 2px solid #3498db; padding: 10px; background: #ecf0f1; margin: 10px 0;">
+                    <div style="background: #e74c3c; color: white; padding: 15px; margin: 5px; border-radius: 5px;">项目1</div>
+                    <div style="background: #3498db; color: white; padding: 15px; margin: 5px; border-radius: 5px;">项目2</div>
+                    <div style="background: #2ecc71; color: white; padding: 15px; margin: 5px; border-radius: 5px;">项目3</div>
+                </div>
+                <p style="margin: 10px 0; color: #666;">👆 项目在水平方向居中</p>
+
+                <p style="margin: 10px 0; font-weight: bold; color: #3498db;">align-items: center（交叉轴 = 垂直）</p>
+                <div style="display: flex; align-items: center; height: 100px; border: 2px solid #3498db; padding: 10px; background: #ecf0f1; margin: 10px 0;">
+                    <div style="background: #e74c3c; color: white; padding: 15px; margin: 5px; border-radius: 5px;">项目1</div>
+                    <div style="background: #3498db; color: white; padding: 15px; margin: 5px; border-radius: 5px;">项目2<br>高度不同</div>
+                    <div style="background: #2ecc71; color: white; padding: 15px; margin: 5px; border-radius: 5px;">项目3</div>
+                </div>
+                <p style="margin: 10px 0; color: #666;">👆 项目在垂直方向居中</p>
+
+                <p style="margin: 10px 0; font-weight: bold; color: #2ecc71;">两者结合：完美居中</p>
+                <div style="display: flex; justify-content: center; align-items: center; height: 100px; border: 2px solid #2ecc71; padding: 10px; background: #ecf0f1; margin: 10px 0;">
+                    <div style="background: #e74c3c; color: white; padding: 20px; border-radius: 5px; font-size: 18px;">
+                        完美居中 🎯
+                    </div>
+                </div>
+                <p style="margin: 10px 0; color: #666;">👆 水平垂直都居中</p>
+
+                <strong>💡 记忆技巧：</strong>justify-content管"主轴"，align-items管"交叉轴"
             </div>
         </div>
         
         <div class="interview-section">
             <div class="question">面试题3：如何实现一个元素在容器中完美居中？</div>
             <div class="answer">
-                <strong>答案：</strong><br>
-                <div class="code-block">
-.container {
+                <strong>📌 面试回答（推荐）：</strong><br>
+                <p style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 10px 0;">
+                    "使用 Flex 布局是最简单的居中方案，只需要在父容器上设置 <code>display: flex</code>、
+                    <code>justify-content: center</code>（水平居中）和 <code>align-items: center</code>（垂直居中）即可。
+                    这个方案兼容性好，代码简洁，是实际项目中最常用的居中方式。"
+                </p>
+
+                <strong>📊 实际效果演示：</strong><br>
+                <div style="display: flex; justify-content: center; align-items: center; height: 150px; border: 3px dashed #3498db; background: #ecf0f1; margin: 15px 0; position: relative;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 50px; border-radius: 10px; font-size: 20px; font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        完美居中 🎯
+                    </div>
+                    <div style="position: absolute; top: 5px; left: 10px; font-size: 12px; color: #666;">↕️ 垂直居中（align-items: center）</div>
+                    <div style="position: absolute; bottom: 5px; right: 10px; font-size: 12px; color: #666;">↔️ 水平居中（justify-content: center）</div>
+                </div>
+
+                <strong>💻 完整代码：</strong><br>
+                <div class="code-block">.container {
     display: flex;
-    justify-content: center; /* 水平居中 */
-    align-items: center;     /* 垂直居中 */
-    height: 100vh; /* 或者指定容器高度 */
+    justify-content: center;  /* 水平居中 */
+    align-items: center;      /* 垂直居中 */
+    height: 100vh;            /* 容器高度（可自定义） */
+}
+
+.box {
+    /* 子元素无需任何样式，自动居中 */
 }</div>
-                <strong>原理：</strong>justify-content: center 让元素在主轴居中，align-items: center 让元素在交叉轴居中。
+
+                <strong>🎓 其他居中方案对比：</strong><br>
+                <table style="width: 100%; margin: 15px 0; border-collapse: collapse;">
+                    <tr style="background: #3498db; color: white;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">方案</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">优点</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">缺点</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">推荐度</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Flex布局</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">简单、直观、兼容性好</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">IE9及以下不支持</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Grid布局</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">功能强大、代码更简洁</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">IE不支持</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>绝对定位+transform</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">兼容性好</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">代码较复杂</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">⭐⭐⭐</td>
+                    </tr>
+                </table>
+
+                <strong>💡 面试加分项：</strong><br>
+                • 可以补充说明：Flex 布局是 CSS3 标准，现代浏览器都支持<br>
+                • 可以对比说明：相比传统的 position + margin 方案更简洁<br>
+                • 实际项目中：这是最推荐的居中方案
             </div>
         </div>
         
@@ -607,10 +1017,40 @@
                 • <strong>space-between</strong>：两端对齐，项目之间的间距相等，首末项目贴边<br>
                 • <strong>space-around</strong>：每个项目两侧的间距相等，所以项目之间的间距比边缘间距大一倍<br>
                 • <strong>space-evenly</strong>：所有间距都相等，包括首末项目到边缘的距离<br><br>
-                <strong>可视化理解：</strong><br>
-                space-between: |item| ——— |item| ——— |item|<br>
-                space-around:  ——|item|——— |item|——— |item|——<br>
-                space-evenly:  ——|item|—— |item|—— |item|——
+
+                <strong>📊 实际效果对比：</strong><br>
+
+                <p style="margin: 10px 0; font-weight: bold; color: #e74c3c;">space-between（两端对齐）</p>
+                <div style="display: flex; justify-content: space-between; border: 2px solid #e74c3c; padding: 10px; background: #ecf0f1; margin: 10px 0;">
+                    <div style="background: #e74c3c; color: white; padding: 15px; border-radius: 5px;">项目1</div>
+                    <div style="background: #e74c3c; color: white; padding: 15px; border-radius: 5px;">项目2</div>
+                    <div style="background: #e74c3c; color: white; padding: 15px; border-radius: 5px;">项目3</div>
+                </div>
+                <p style="margin: 10px 0; color: #666;">👆 首尾贴边，中间间距相等</p>
+                <p style="margin: 10px 0; color: #666; font-family: monospace;">|item|————————|item|————————|item|</p>
+
+                <p style="margin: 10px 0; font-weight: bold; color: #3498db;">space-around（环绕间距）</p>
+                <div style="display: flex; justify-content: space-around; border: 2px solid #3498db; padding: 10px; background: #ecf0f1; margin: 10px 0;">
+                    <div style="background: #3498db; color: white; padding: 15px; border-radius: 5px;">项目1</div>
+                    <div style="background: #3498db; color: white; padding: 15px; border-radius: 5px;">项目2</div>
+                    <div style="background: #3498db; color: white; padding: 15px; border-radius: 5px;">项目3</div>
+                </div>
+                <p style="margin: 10px 0; color: #666;">👆 每个项目两侧间距相等，中间是边缘的2倍</p>
+                <p style="margin: 10px 0; color: #666; font-family: monospace;">——|item|————|item|————|item|——</p>
+
+                <p style="margin: 10px 0; font-weight: bold; color: #2ecc71;">space-evenly（均匀分布）</p>
+                <div style="display: flex; justify-content: space-evenly; border: 2px solid #2ecc71; padding: 10px; background: #ecf0f1; margin: 10px 0;">
+                    <div style="background: #2ecc71; color: white; padding: 15px; border-radius: 5px;">项目1</div>
+                    <div style="background: #2ecc71; color: white; padding: 15px; border-radius: 5px;">项目2</div>
+                    <div style="background: #2ecc71; color: white; padding: 15px; border-radius: 5px;">项目3</div>
+                </div>
+                <p style="margin: 10px 0; color: #666;">👆 所有间距完全相等（最均匀）</p>
+                <p style="margin: 10px 0; color: #666; font-family: monospace;">———|item|———|item|———|item|———</p>
+
+                <strong>💡 快速记忆：</strong><br>
+                • between：首尾<strong>贴边</strong><br>
+                • around：首尾有<strong>一半</strong>间距<br>
+                • evenly：<strong>完全</strong>均匀
             </div>
         </div>
         
@@ -640,12 +1080,30 @@
                 <strong>可选值：</strong><br>
                 • auto（默认）：继承父元素的align-items属性<br>
                 • flex-start、flex-end、center、baseline、stretch<br><br>
-                <strong>示例：</strong><br>
-                <div style="display: flex; align-items: flex-start; height: 80px; border: 2px solid #3498db; margin: 10px 0;">
-                    <div class="flex-item">正常</div>
-                    <div class="flex-item" style="align-self: center;">center</div>
-                    <div class="flex-item" style="align-self: flex-end;">flex-end</div>
+
+                <strong>📊 实际效果演示：</strong><br>
+                <p style="margin: 10px 0; color: #666;">容器设置 align-items: flex-start，但可以单独控制每个项目</p>
+
+                <div style="display: flex; align-items: flex-start; height: 120px; border: 2px solid #3498db; padding: 10px; background: #ecf0f1; margin: 10px 0; position: relative;">
+                    <div style="background: #95a5a6; color: white; padding: 15px; margin: 5px; border-radius: 5px;">
+                        默认<br>(flex-start)
+                    </div>
+                    <div style="background: #e74c3c; color: white; padding: 15px; margin: 5px; border-radius: 5px; align-self: center;">
+                        align-self:<br>center
+                    </div>
+                    <div style="background: #3498db; color: white; padding: 15px; margin: 5px; border-radius: 5px; align-self: flex-end;">
+                        align-self:<br>flex-end
+                    </div>
+                    <div style="background: #2ecc71; color: white; padding: 15px; margin: 5px; border-radius: 5px; align-self: stretch;">
+                        align-self:<br>stretch
+                    </div>
                 </div>
+                <p style="margin: 10px 0; color: #666;">👆 每个项目可以有不同的对齐方式</p>
+
+                <strong>💡 使用场景：</strong><br>
+                • 导航栏中某个按钮需要特殊对齐<br>
+                • 卡片布局中某个卡片需要居中显示<br>
+                • 表单中某个字段需要不同的垂直对齐
             </div>
         </div>
         
