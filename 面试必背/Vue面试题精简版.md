@@ -9,7 +9,7 @@
 **Vue2：** Object.defineProperty
 - 遍历data属性，转为getter/setter
 - getter收集依赖，setter触发更新
-- 缺陷：无法监听新增/删除属性、数组变化
+- 缺陷：无法监听新增/删除属性、数组变化（如何解决）
 
 **Vue3：** Proxy
 - 直接代理整个对象
