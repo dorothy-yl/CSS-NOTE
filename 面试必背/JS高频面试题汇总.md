@@ -537,9 +537,9 @@ fn1();
 闭包是指函数能够访问其定义时所在作用域的变量，即使函数在其他地方执行。
 
 **闭包的特点（闭包三要素）：**
-1. 函数嵌套函数
-2. 内部函数引用外部函数的变量
-3. 内部函数被返回或传递到外部
+1. 函数嵌套函数（一个内部函数嵌套在一个外部函数的里面）
+2. 内部函数引用外部函数作用域中的变量
+3. 外部函数执行后，内部函数被返回到外部并保存，使得内部函数依然能访问到外部函数的作用域
 
 💡 **记忆口诀：闭包三要素**
 ```
@@ -571,7 +571,7 @@ counter.increment();
 console.log(counter.getCount()); // 1
 ```
 
-2. **函数工厂**
+1. **函数工厂**
 ```javascript
 function createMultiplier(multiplier) {
   return function(x) {
@@ -584,7 +584,7 @@ console.log(double(5)); // 10
 console.log(triple(5)); // 15
 ```
 
-3. **事件处理和回调**
+1. **事件处理和回调**
 ```javascript
 function addHandlers() {
   for (let i = 0; i < 5; i++) {
